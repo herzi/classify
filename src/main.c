@@ -30,11 +30,35 @@ enum {
 	N_COLUMNS
 };
 
+static void
+button_clicked_cb (GtkButton  * button,
+		   GtkTreeView* tree)
+{
+	GtkListStore* store = GTK_LIST_STORE (gtk_tree_view_get_model (tree));
+	GtkTreePath * path;
+	GtkTreeIter   iter;
+
+	gtk_list_store_append (store, &iter);
+	gtk_list_store_set    (store, &iter,
+			       COL_TEXT, _("new task"),
+			       -1);
+
+	path = gtk_tree_model_get_path (gtk_tree_view_get_model (tree),
+				        &iter);
+
+	gtk_tree_view_row_activated (tree,
+				     path,
+				     gtk_tree_view_get_column (tree, 0));
+
+	gtk_tree_path_free (path);
+}
+
 int
 main (int   argc,
       char**argv)
 {
 	GtkListStore* store;
+	GtkWidget   * button;
 	GtkWidget   * tree;
 	GtkWidget   * vbox;
 	GtkWidget   * window;
@@ -48,9 +72,21 @@ main (int   argc,
 	g_signal_connect (window, "destroy",
 			  G_CALLBACK (gtk_main_quit), NULL);
 
+	store = gtk_list_store_new (N_COLUMNS, G_TYPE_STRING);
+	tree = gtk_tree_view_new ();
+
 	vbox = gtk_vbox_new (FALSE, 0);
 
-	tree = gtk_tree_view_new ();
+	button = gtk_button_new_from_stock (GTK_STOCK_ADD);
+	g_signal_connect (button, "clicked",
+			  G_CALLBACK (button_clicked_cb), tree);
+	gtk_widget_show (button);
+	gtk_box_pack_start (GTK_BOX (vbox),
+			    button,
+			    FALSE,
+			    FALSE,
+			    0);
+
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (tree),
 						     -1,
 						     _("Task"),
@@ -58,7 +94,6 @@ main (int   argc,
 						     "text", COL_TEXT,
 						     NULL);
 
-	store = gtk_list_store_new (N_COLUMNS, G_TYPE_STRING);
 	gtk_tree_view_set_model (GTK_TREE_VIEW (tree),
 				 GTK_TREE_MODEL (store));
 	g_object_unref (store);
