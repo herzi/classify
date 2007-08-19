@@ -69,17 +69,42 @@ edited_cb (GtkCellRendererText* renderer,
 	gtk_tree_path_free (_path);
 }
 
+static gboolean
+write_node_to_file (GtkTreeModel* model,
+		    GtkTreePath * path,
+		    GtkTreeIter * iter,
+		    gpointer      data)
+{
+	FILE* file = data;
+	gchar* task = NULL;
+	gchar* line;
+
+	gtk_tree_model_get (model, iter,
+			    COL_TEXT, &task,
+			    -1);
+	line = g_strescape (task, NULL);
+
+	fprintf (file, "%s\n", line);
+
+	g_free (line);
+	g_free (task);
+
+	return FALSE;
+}
+
 int
 main (int   argc,
       char**argv)
 {
 	GtkCellRenderer* renderer;
 	GtkListStore* store;
+	GMappedFile * _file;
 	GtkTreeIter   iter;
 	GtkWidget   * button;
 	GtkWidget   * tree;
 	GtkWidget   * vbox;
 	GtkWidget   * window;
+	FILE        * file;
 
 	gtk_init (&argc, &argv);
 	window = gtk_window_new     (GTK_WINDOW_TOPLEVEL);
@@ -91,6 +116,25 @@ main (int   argc,
 			  G_CALLBACK (gtk_main_quit), NULL);
 
 	store = gtk_list_store_new (N_COLUMNS, G_TYPE_STRING);
+	_file = g_mapped_file_new ("/home/herzi/.local/share/classify",
+				   FALSE,
+				   NULL);
+
+	if (_file) {
+		gchar** lines = g_strsplit (g_mapped_file_get_contents (_file), "\n", 0);
+		gchar** liter;
+		for (liter = lines; liter && *liter; liter++) {
+			gchar* line = g_strcompress (*liter);
+			gtk_list_store_append (store, &iter);
+			gtk_list_store_set    (store, &iter,
+					       COL_TEXT, line,
+					       -1);
+			g_free (line);
+		}
+		g_strfreev (lines);
+		g_mapped_file_free (_file);
+	}
+
 	tree = gtk_tree_view_new ();
 
 	vbox = gtk_vbox_new (FALSE, 0);
@@ -118,7 +162,6 @@ main (int   argc,
 
 	gtk_tree_view_set_model (GTK_TREE_VIEW (tree),
 				 GTK_TREE_MODEL (store));
-	g_object_unref (store);
 
 	gtk_widget_show   (tree);
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), tree);
@@ -128,6 +171,14 @@ main (int   argc,
 
 	gtk_widget_show (window);
 	gtk_main ();
+
+	file = fopen ("/home/herzi/.local/share/classify", "w");
+	gtk_tree_model_foreach (GTK_TREE_MODEL (store),
+				write_node_to_file,
+				file);
+	fclose (file);
+
+	g_object_unref (store);
 	return 0;
 }
 
