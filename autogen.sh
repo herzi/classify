@@ -4,7 +4,7 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-PKG_NAME="autotool"
+PKG_NAME="classify"
 REQUIRED_LIBTOOL_VERSION=1.4.3
 REQUIRED_AUTOMAKE_VERSION=1.10
 #ACLOCAL_FLAGS="-I macros $ACLOCAL_FLAGS"

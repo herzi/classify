@@ -1,5 +1,5 @@
-bin_PROGRAMS=autotool
+bin_PROGRAMS=classify
 
-autotool_SOURCES=\
+classify_SOURCES=\
 	src/main.c \
 	$(NULL)
