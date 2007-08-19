@@ -1,0 +1,7 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Tasks Application
+Comment=Manage your daily tasks
+Exec=classify
+Icon=classify
