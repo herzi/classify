@@ -36,6 +36,7 @@ main (int   argc,
 {
 	GtkListStore* store;
 	GtkWidget   * tree;
+	GtkWidget   * vbox;
 	GtkWidget   * window;
 
 	gtk_init (&argc, &argv);
@@ -46,6 +47,8 @@ main (int   argc,
 				     _("Classify"));
 	g_signal_connect (window, "destroy",
 			  G_CALLBACK (gtk_main_quit), NULL);
+
+	vbox = gtk_vbox_new (FALSE, 0);
 
 	tree = gtk_tree_view_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (tree),
@@ -61,8 +64,10 @@ main (int   argc,
 	g_object_unref (store);
 
 	gtk_widget_show   (tree);
+	gtk_box_pack_start_defaults (GTK_BOX (vbox), tree);
+	gtk_widget_show (vbox);
 	gtk_container_add (GTK_CONTAINER (window),
-			   tree);
+			   vbox);
 
 	gtk_widget_show (window);
 	gtk_main ();
