@@ -46,18 +46,36 @@ button_clicked_cb (GtkButton  * button,
 	path = gtk_tree_model_get_path (gtk_tree_view_get_model (tree),
 				        &iter);
 
-	gtk_tree_view_row_activated (tree,
-				     path,
-				     gtk_tree_view_get_column (tree, 0));
+	gtk_tree_view_set_cursor (tree,
+				  path,
+				  gtk_tree_view_get_column (tree, 0),
+				  TRUE);
 
 	gtk_tree_path_free (path);
+}
+
+static void
+edited_cb (GtkCellRendererText* renderer,
+	   gchar* path,
+	   gchar* new_text,
+	   GtkListStore* store)
+{
+	GtkTreePath* _path = gtk_tree_path_new_from_string (path);
+	GtkTreeIter  iter;
+	gtk_tree_model_get_iter (GTK_TREE_MODEL (store), &iter, _path);
+	gtk_list_store_set (store, &iter,
+			    COL_TEXT, new_text,
+			    -1);
+	gtk_tree_path_free (_path);
 }
 
 int
 main (int   argc,
       char**argv)
 {
+	GtkCellRenderer* renderer;
 	GtkListStore* store;
+	GtkTreeIter   iter;
 	GtkWidget   * button;
 	GtkWidget   * tree;
 	GtkWidget   * vbox;
@@ -87,10 +105,14 @@ main (int   argc,
 			    FALSE,
 			    0);
 
+	renderer = gtk_cell_renderer_text_new ();
+	g_object_set (renderer, "editable", TRUE, NULL);
+	g_signal_connect (renderer, "edited",
+			  G_CALLBACK (edited_cb), store);
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (tree),
 						     -1,
 						     _("Task"),
-						     gtk_cell_renderer_text_new (),
+						     renderer,
 						     "text", COL_TEXT,
 						     NULL);
 
