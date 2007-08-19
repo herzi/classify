@@ -25,11 +25,18 @@
 
 #include <glib/gi18n.h>
 
+enum {
+	COL_TEXT,
+	N_COLUMNS
+};
+
 int
 main (int   argc,
       char**argv)
 {
-	GtkWidget* window;
+	GtkListStore* store;
+	GtkWidget   * tree;
+	GtkWidget   * window;
 
 	gtk_init (&argc, &argv);
 	window = gtk_window_new     (GTK_WINDOW_TOPLEVEL);
@@ -39,6 +46,23 @@ main (int   argc,
 				     _("Classify"));
 	g_signal_connect (window, "destroy",
 			  G_CALLBACK (gtk_main_quit), NULL);
+
+	tree = gtk_tree_view_new ();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (tree),
+						     -1,
+						     _("Task"),
+						     gtk_cell_renderer_text_new (),
+						     "text", COL_TEXT,
+						     NULL);
+
+	store = gtk_list_store_new (N_COLUMNS, G_TYPE_STRING);
+	gtk_tree_view_set_model (GTK_TREE_VIEW (tree),
+				 GTK_TREE_MODEL (store));
+	g_object_unref (store);
+
+	gtk_widget_show   (tree);
+	gtk_container_add (GTK_CONTAINER (window),
+			   tree);
 
 	gtk_widget_show (window);
 	gtk_main ();
