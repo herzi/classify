@@ -57,10 +57,7 @@ button_clicked_cb (GtkButton  * button,
 	GtkTreePath * path;
 	GtkTreeIter   iter;
 
-	gtk_list_store_append (store, &iter);
-	gtk_list_store_set    (store, &iter,
-			       COL_TEXT, _("new task"),
-			       -1);
+	c_task_list_append (store, _("New Task"));
 
 	path = gtk_tree_model_get_path (gtk_tree_view_get_model (tree),
 				        &iter);
@@ -192,10 +189,7 @@ main (int   argc,
 				continue;
 			}
 			gchar* line = g_strcompress (*liter);
-			gtk_list_store_append (store, &iter);
-			gtk_list_store_set    (store, &iter,
-					       COL_TEXT, line,
-					       -1);
+			c_task_list_append (store, line);
 			g_free (line);
 		}
 		g_strfreev (lines);
