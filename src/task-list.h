@@ -35,6 +35,7 @@ G_BEGIN_DECLS
 CTaskList* c_task_list_new           (void);
 CTaskList* c_task_list_new_from_file (gchar const* path);
 void       c_task_list_append        (CTaskList   * self,
+				      GtkTreeIter * iter,
 				      gchar const * text);
 gchar*     c_task_list_get_text      (CTaskList   * self,
 				      GtkTreeIter * iter);

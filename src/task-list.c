@@ -32,12 +32,17 @@ enum {
 
 void
 c_task_list_append (CTaskList  * store,
-		    gchar const* task)
+		    GtkTreeIter * iter,
+		    gchar const * task)
 {
-	GtkTreeIter iter;
+	GtkTreeIter iter2;
 
-	gtk_list_store_append (store, &iter);
-	c_task_list_set_text  (store, &iter, task);
+	gtk_list_store_append (store, &iter2);
+	c_task_list_set_text  (store, &iter2, task);
+
+	if (iter) {
+		*iter = iter2;
+	}
 }
 
 gchar*
@@ -81,7 +86,7 @@ c_task_list_new_from_file (gchar const* path)
 				continue;
 			}
 			gchar* line = g_strcompress (*liter);
-			c_task_list_append (self, line);
+			c_task_list_append (self, NULL, line);
 			g_free (line);
 		}
 		g_strfreev (lines);

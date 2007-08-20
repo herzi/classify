@@ -51,7 +51,7 @@ button_clicked_cb (GtkButton  * button,
 	GtkTreePath * path;
 	GtkTreeIter   iter;
 
-	c_task_list_append (store, _("New Task"));
+	c_task_list_append (store, &iter, _("New Task"));
 
 	path = gtk_tree_model_get_path (gtk_tree_view_get_model (tree),
 				        &iter);
