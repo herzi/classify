@@ -2,6 +2,8 @@ bin_PROGRAMS=classify
 
 classify_SOURCES=\
 	src/main.c \
+	src/task-list.c \
+	src/task-list.h \
 	$(NULL)
 classify_LDADD=\
 	$(CLASSIFY_LIBS) \
