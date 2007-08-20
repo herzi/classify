@@ -27,13 +27,6 @@
 
 #include <glib/gi18n.h>
 
-#if 1
-enum {
-	COL_TEXT,
-	N_COLUMNS
-};
-#endif
-
 static void
 tree_edit_path (GtkTreeView* tree,
 		GtkTreePath* path)
@@ -145,6 +138,18 @@ tree_key_press_event (GtkTreeView* tree,
 	return FALSE;
 }
 
+static void
+task_list_data_func (GtkTreeViewColumn* column,
+		     GtkCellRenderer  * renderer,
+		     GtkTreeModel     * model,
+		     GtkTreeIter      * iter,
+		     gpointer           data)
+{
+	gchar* text = c_task_list_get_text (C_TASK_LIST (model), iter);
+	g_object_set (renderer, "text", text, NULL);
+	g_free (text);
+}
+
 int
 main (int   argc,
       char**argv)
@@ -211,12 +216,12 @@ main (int   argc,
 	renderer = gtk_cell_renderer_text_new ();
 	g_signal_connect (renderer, "edited",
 			  G_CALLBACK (edited_cb), store);
-	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (tree),
-						     -1,
-						     _("Task"),
-						     renderer,
-						     "text", COL_TEXT,
-						     NULL);
+	gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
+						    -1,
+						    _("Task"),
+						    renderer,
+						    task_list_data_func,
+						    NULL, NULL);
 
 	gtk_tree_view_set_model (GTK_TREE_VIEW (tree),
 				 GTK_TREE_MODEL (store));
