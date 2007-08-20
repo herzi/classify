@@ -2,6 +2,8 @@ bin_PROGRAMS=classify
 
 classify_SOURCES=\
 	src/main.c \
+	src/preferences.c \
+	src/preferences.h \
 	src/task-list.c \
 	src/task-list.h \
 	src/window.c \
