@@ -28,6 +28,19 @@ enum {
 	N_COLUMNS
 };
 
+#warning "FIXME: request a CTaskList, not a GtkListStore"
+void
+c_task_list_append (GtkListStore* store,
+		    gchar const * task)
+{
+	GtkTreeIter iter;
+
+	gtk_list_store_append (store, &iter);
+	gtk_list_store_set    (store, &iter,
+			       COL_TEXT, task,
+			       -1);
+}
+
 #warning "FIXME: return CTaskList"
 GtkListStore*
 c_task_list_new (void)

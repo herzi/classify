@@ -28,7 +28,9 @@
 
 G_BEGIN_DECLS
 
-GtkListStore* c_task_list_new (void);
+GtkListStore* c_task_list_new    (void);
+void          c_task_list_append (GtkListStore* store,
+				  gchar const * task);
 
 G_END_DECLS
 
