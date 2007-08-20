@@ -160,6 +160,7 @@ main (int   argc,
 	GMappedFile * _file;
 	GtkTreeIter   iter;
 	GtkWidget   * button;
+	GtkWidget   * swin;
 	GtkWidget   * tree;
 	GtkWidget   * vbox;
 	GtkWidget   * window;
@@ -217,7 +218,6 @@ main (int   argc,
 			    0);
 
 	renderer = gtk_cell_renderer_text_new ();
-	//g_object_set (renderer, "editable", TRUE, NULL);
 	g_signal_connect (renderer, "edited",
 			  G_CALLBACK (edited_cb), store);
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (tree),
@@ -230,8 +230,11 @@ main (int   argc,
 	gtk_tree_view_set_model (GTK_TREE_VIEW (tree),
 				 GTK_TREE_MODEL (store));
 
-	gtk_widget_show   (tree);
-	gtk_box_pack_start_defaults (GTK_BOX (vbox), tree);
+	gtk_widget_show (tree);
+	swin = gtk_scrolled_window_new (NULL, NULL);
+	gtk_container_add (GTK_CONTAINER (swin), tree);
+	gtk_widget_show (swin);
+	gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
 	gtk_widget_show (vbox);
 	gtk_container_add (GTK_CONTAINER (window),
 			   vbox);
