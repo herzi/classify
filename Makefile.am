@@ -9,3 +9,7 @@ classify_LDADD=\
 AM_CPPFLAGS=\
 	$(CLASSIFY_CFLAGS) \
 	$(NULL)
+
+applications_DATA=classify.desktop
+applicationsdir=$(datarootdir)/applications
+
