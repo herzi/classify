@@ -28,24 +28,29 @@ enum {
 	N_COLUMNS
 };
 
-#warning "FIXME: request a CTaskList, not a GtkListStore"
 void
-c_task_list_append (GtkListStore* store,
-		    gchar const * task)
+c_task_list_append (CTaskList  * store,
+		    gchar const* task)
 {
 	GtkTreeIter iter;
 
 	gtk_list_store_append (store, &iter);
-	gtk_list_store_set    (store, &iter,
-			       COL_TEXT, task,
-			       -1);
+	c_task_list_set_text  (store, &iter, task);
 }
 
-#warning "FIXME: return CTaskList"
-GtkListStore*
+CTaskList*
 c_task_list_new (void)
 {
 	return gtk_list_store_new (N_COLUMNS,
 				   G_TYPE_STRING);
 }
 
+void
+c_task_list_set_text (CTaskList   * store,
+		      GtkTreeIter * iter,
+		      gchar const * text)
+{
+	gtk_list_store_set (store, iter,
+			    COL_TEXT, text,
+			    -1);
+}
