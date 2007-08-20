@@ -23,13 +23,16 @@
 
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
+#include "task-list.h"
 
 #include <glib/gi18n.h>
 
+#if 1
 enum {
 	COL_TEXT,
 	N_COLUMNS
 };
+#endif
 
 static void
 tree_edit_path (GtkTreeView* tree,
@@ -175,7 +178,7 @@ main (int   argc,
 	g_signal_connect (window, "destroy",
 			  G_CALLBACK (gtk_main_quit), NULL);
 
-	store = gtk_list_store_new (N_COLUMNS, G_TYPE_STRING);
+	store = c_task_list_new ();
 	_file = g_mapped_file_new ("/home/herzi/.local/share/classify",
 				   FALSE,
 				   NULL);
