@@ -195,6 +195,8 @@ main (int   argc,
 
 	gtk_widget_show (tree);
 	swin = gtk_scrolled_window_new (NULL, NULL);
+	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (swin),
+					     GTK_SHADOW_IN);
 	gtk_container_add (GTK_CONTAINER (swin), tree);
 	gtk_widget_show (swin);
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
