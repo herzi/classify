@@ -24,6 +24,7 @@
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 #include "task-list.h"
+#include "window.h"
 
 #include <glib/gi18n.h>
 
@@ -146,7 +147,7 @@ main (int   argc,
 	gchar       * path;
 
 	gtk_init (&argc, &argv);
-	window = gtk_window_new     (GTK_WINDOW_TOPLEVEL);
+	window = c_window_new ();
 	gtk_window_set_default_size (GTK_WINDOW (window),
 				     400, 300);
 	gtk_window_set_title        (GTK_WINDOW (window),
