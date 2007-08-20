@@ -23,9 +23,24 @@
 
 #include "window.h"
 
+#include <gtk/gtk.h>
+
+GtkWidget*
+c_window_get_vbox (CWindow* self)
+{
+	return gtk_bin_get_child (GTK_BIN (self));
+}
+
 GtkWidget*
 c_window_new (void)
 {
-	return gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	GtkWidget* result = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	GtkWidget* vbox   = gtk_vbox_new   (FALSE, 0);
+
+	gtk_widget_show   (vbox);
+	gtk_container_add (GTK_CONTAINER (result),
+			   vbox);
+
+	return result;
 }
 

@@ -168,7 +168,7 @@ main (int   argc,
 	g_signal_connect (tree, "key-press-event",
 			  G_CALLBACK (tree_key_press_event), NULL);
 
-	vbox = gtk_vbox_new (FALSE, 0);
+	vbox = c_window_get_vbox (C_WINDOW (window));
 
 	button = gtk_button_new_from_stock (GTK_STOCK_ADD);
 	g_signal_connect (button, "clicked",
