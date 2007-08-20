@@ -199,8 +199,6 @@ main (int   argc,
 	gtk_widget_show (swin);
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
 	gtk_widget_show (vbox);
-	gtk_container_add (GTK_CONTAINER (window),
-			   vbox);
 
 	gtk_widget_show (window);
 	gtk_main ();
