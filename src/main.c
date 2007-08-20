@@ -163,6 +163,7 @@ main (int   argc,
 	GtkWidget   * tree;
 	GtkWidget   * vbox;
 	GtkWidget   * window;
+	gchar       * path;
 	FILE        * file;
 
 	gtk_init (&argc, &argv);
@@ -175,7 +176,12 @@ main (int   argc,
 			  G_CALLBACK (gtk_main_quit), NULL);
 
 	store = c_task_list_new ();
-	_file = g_mapped_file_new ("/home/herzi/.local/share/classify",
+	path = g_build_filename (g_get_home_dir (),
+				 ".local",
+				 "share",
+				 "classify",
+				 NULL);
+	_file = g_mapped_file_new (path,
 				   FALSE,
 				   NULL);
 
@@ -238,11 +244,12 @@ main (int   argc,
 	gtk_widget_show (window);
 	gtk_main ();
 
-	file = fopen ("/home/herzi/.local/share/classify", "w");
+	file = fopen (path, "w");
 	gtk_tree_model_foreach (GTK_TREE_MODEL (store),
 				write_node_to_file,
 				file);
 	fclose (file);
+	g_free (path);
 
 	g_object_unref (store);
 	return 0;
