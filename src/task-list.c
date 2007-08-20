@@ -23,6 +23,8 @@
 
 #include "task-list.h"
 
+#include <glib/gstdio.h>
+
 enum {
 	COL_TEXT,
 	N_COLUMNS
@@ -87,6 +89,40 @@ c_task_list_new_from_file (gchar const* path)
 	}
 
 	return self;
+}
+
+static gboolean
+write_node_to_file (GtkTreeModel* model,
+		    GtkTreePath * path,
+		    GtkTreeIter * iter,
+		    gpointer      data)
+{
+	FILE* file = data;
+	gchar* task;
+	gchar* line;
+
+	task = c_task_list_get_text (C_TASK_LIST (model), iter);
+	line = g_strescape (task, NULL);
+	fprintf (file, "%s\n", line);
+	g_free (line);
+	g_free (task);
+
+	return FALSE;
+}
+
+void
+c_task_list_save (CTaskList  * self,
+		  gchar const* path)
+{
+	FILE* file;
+
+	g_return_if_fail (C_IS_TASK_LIST (self));
+
+	file = fopen (path, "w");
+	gtk_tree_model_foreach (GTK_TREE_MODEL (self),
+				write_node_to_file,
+				file);
+	fclose (file);
 }
 
 void

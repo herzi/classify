@@ -38,6 +38,8 @@ void       c_task_list_append        (CTaskList   * self,
 				      gchar const * text);
 gchar*     c_task_list_get_text      (CTaskList   * self,
 				      GtkTreeIter * iter);
+void       c_task_list_save          (CTaskList   * self,
+				      gchar const * path);
 void       c_task_list_set_text      (CTaskList   * self,
 				      GtkTreeIter * iter,
 				      gchar const * text);
