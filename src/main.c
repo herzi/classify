@@ -76,9 +76,7 @@ edited_cb (GtkCellRendererText* renderer,
 	GtkTreePath* _path = gtk_tree_path_new_from_string (path);
 	GtkTreeIter  iter;
 	gtk_tree_model_get_iter (GTK_TREE_MODEL (store), &iter, _path);
-	gtk_list_store_set (store, &iter,
-			    COL_TEXT, new_text,
-			    -1);
+	c_task_list_set_text (store, &iter, new_text);
 	gtk_tree_path_free (_path);
 }
 
