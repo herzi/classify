@@ -21,6 +21,7 @@
  * USA
  */
 
+#include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
 #include <glib/gi18n.h>
@@ -29,6 +30,21 @@ enum {
 	COL_TEXT,
 	N_COLUMNS
 };
+
+static void
+tree_edit_path (GtkTreeView* tree,
+		GtkTreePath* path)
+{
+	GList       * renderers;
+	renderers = gtk_tree_view_column_get_cell_renderers (gtk_tree_view_get_column (tree, 0));
+	g_object_set (renderers->data, "editable", TRUE, NULL);
+	gtk_tree_view_set_cursor (tree,
+				  path,
+				  gtk_tree_view_get_column (tree, 0),
+				  TRUE);
+	g_object_set (renderers->data, "editable", FALSE, NULL);
+	g_list_free (renderers);
+}
 
 static void
 button_clicked_cb (GtkButton  * button,
@@ -46,10 +62,7 @@ button_clicked_cb (GtkButton  * button,
 	path = gtk_tree_model_get_path (gtk_tree_view_get_model (tree),
 				        &iter);
 
-	gtk_tree_view_set_cursor (tree,
-				  path,
-				  gtk_tree_view_get_column (tree, 0),
-				  TRUE);
+	tree_edit_path (tree, path);
 
 	gtk_tree_path_free (path);
 }
@@ -92,6 +105,52 @@ write_node_to_file (GtkTreeModel* model,
 	return FALSE;
 }
 
+static gboolean
+tree_key_press_event (GtkTreeView* tree,
+		      GdkEventKey* event)
+{
+	switch (event->keyval) {
+	case GDK_F2:
+		if (gtk_tree_selection_count_selected_rows (gtk_tree_view_get_selection (tree)) == 1) {
+			GList* list;
+
+			list = gtk_tree_selection_get_selected_rows (gtk_tree_view_get_selection (tree), NULL);
+			tree_edit_path (tree, list->data);
+			g_list_foreach (list, (GFunc)gtk_tree_path_free, NULL);
+			g_list_free    (list);
+
+			return TRUE;
+		}
+		break;
+	case GDK_Delete:
+		if (gtk_tree_selection_count_selected_rows (gtk_tree_view_get_selection (tree)) > 0) {
+			GtkTreeModel* model = NULL;
+			GList       * selected = gtk_tree_selection_get_selected_rows (gtk_tree_view_get_selection (tree), &model);
+			GList       * iter;
+
+			for (iter = selected; iter; iter = iter->next) {
+				GtkTreePath* path = iter->data;
+				iter->data = gtk_tree_row_reference_new (model, path);
+				gtk_tree_path_free (path);
+			}
+			for (iter = selected; iter; iter = iter->next) {
+				GtkTreeIter titer;
+				gtk_tree_model_get_iter (model, &titer,
+							 gtk_tree_row_reference_get_path (iter->data));
+				gtk_list_store_remove   (GTK_LIST_STORE (model),
+						         &titer);
+				gtk_tree_row_reference_free (iter->data);
+			}
+
+			g_list_free (selected);
+			return TRUE;
+		}
+		break;
+	}
+
+	return FALSE;
+}
+
 int
 main (int   argc,
       char**argv)
@@ -124,6 +183,10 @@ main (int   argc,
 		gchar** lines = g_strsplit (g_mapped_file_get_contents (_file), "\n", 0);
 		gchar** liter;
 		for (liter = lines; liter && *liter; liter++) {
+			if (!**liter) {
+				// empty string
+				continue;
+			}
 			gchar* line = g_strcompress (*liter);
 			gtk_list_store_append (store, &iter);
 			gtk_list_store_set    (store, &iter,
@@ -136,6 +199,10 @@ main (int   argc,
 	}
 
 	tree = gtk_tree_view_new ();
+	gtk_tree_view_set_reorderable (GTK_TREE_VIEW (tree),
+				       TRUE);
+	g_signal_connect (tree, "key-press-event",
+			  G_CALLBACK (tree_key_press_event), NULL);
 
 	vbox = gtk_vbox_new (FALSE, 0);
 
@@ -150,7 +217,7 @@ main (int   argc,
 			    0);
 
 	renderer = gtk_cell_renderer_text_new ();
-	g_object_set (renderer, "editable", TRUE, NULL);
+	//g_object_set (renderer, "editable", TRUE, NULL);
 	g_signal_connect (renderer, "edited",
 			  G_CALLBACK (edited_cb), store);
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (tree),
