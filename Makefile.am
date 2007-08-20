@@ -14,11 +14,9 @@ classify_LDADD=\
 	$(NULL)
 AM_CPPFLAGS=\
 	$(CLASSIFY_CFLAGS) \
+	-DBIN_DIR=\""$(bindir)"\"
 	$(NULL)
 
 applications_DATA=classify.desktop
 applicationsdir=$(datarootdir)/applications
-
-autostart_DATA=classify-auto.desktop
-autostartdir=/home/herzi/.config/autostart
 
