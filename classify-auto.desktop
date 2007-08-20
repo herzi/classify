@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Tasks Application
+Comment=Manage your daily tasks
+Exec=/home/herzi/.local/bin/classify
+Icon=classify
+Categories=
+OnlyShowIn=GNOME;
+X-GNOME-Autostart-enabled=true
