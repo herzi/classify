@@ -87,16 +87,12 @@ write_node_to_file (GtkTreeModel* model,
 		    gpointer      data)
 {
 	FILE* file = data;
-	gchar* task = NULL;
+	gchar* task;
 	gchar* line;
 
-	gtk_tree_model_get (model, iter,
-			    COL_TEXT, &task,
-			    -1);
+	task = c_task_list_get_text (C_TASK_LIST (model), iter);
 	line = g_strescape (task, NULL);
-
 	fprintf (file, "%s\n", line);
-
 	g_free (line);
 	g_free (task);
 
