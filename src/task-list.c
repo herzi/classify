@@ -60,6 +60,35 @@ c_task_list_new (void)
 				   G_TYPE_STRING);
 }
 
+CTaskList*
+c_task_list_new_from_file (gchar const* path)
+{
+	GMappedFile* file;
+	CTaskList  * self = c_task_list_new ();
+
+	file = g_mapped_file_new (path,
+				   FALSE,
+				   NULL);
+
+	if (file) {
+		gchar** lines = g_strsplit (g_mapped_file_get_contents (file), "\n", 0);
+		gchar** liter;
+		for (liter = lines; liter && *liter; liter++) {
+			if (!**liter) {
+				// empty string
+				continue;
+			}
+			gchar* line = g_strcompress (*liter);
+			c_task_list_append (self, line);
+			g_free (line);
+		}
+		g_strfreev (lines);
+		g_mapped_file_free (file);
+	}
+
+	return self;
+}
+
 void
 c_task_list_set_text (CTaskList   * store,
 		      GtkTreeIter * iter,
