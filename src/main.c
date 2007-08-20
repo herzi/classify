@@ -74,25 +74,6 @@ edited_cb (GtkCellRendererText* renderer,
 }
 
 static gboolean
-write_node_to_file (GtkTreeModel* model,
-		    GtkTreePath * path,
-		    GtkTreeIter * iter,
-		    gpointer      data)
-{
-	FILE* file = data;
-	gchar* task;
-	gchar* line;
-
-	task = c_task_list_get_text (C_TASK_LIST (model), iter);
-	line = g_strescape (task, NULL);
-	fprintf (file, "%s\n", line);
-	g_free (line);
-	g_free (task);
-
-	return FALSE;
-}
-
-static gboolean
 tree_key_press_event (GtkTreeView* tree,
 		      GdkEventKey* event)
 {
@@ -156,7 +137,6 @@ main (int   argc,
 {
 	GtkCellRenderer* renderer;
 	GtkListStore* store;
-	GMappedFile * _file;
 	GtkTreeIter   iter;
 	GtkWidget   * button;
 	GtkWidget   * swin;
@@ -164,7 +144,6 @@ main (int   argc,
 	GtkWidget   * vbox;
 	GtkWidget   * window;
 	gchar       * path;
-	FILE        * file;
 
 	gtk_init (&argc, &argv);
 	window = gtk_window_new     (GTK_WINDOW_TOPLEVEL);
@@ -175,31 +154,12 @@ main (int   argc,
 	g_signal_connect (window, "destroy",
 			  G_CALLBACK (gtk_main_quit), NULL);
 
-	store = c_task_list_new ();
 	path = g_build_filename (g_get_home_dir (),
 				 ".local",
 				 "share",
 				 "classify",
 				 NULL);
-	_file = g_mapped_file_new (path,
-				   FALSE,
-				   NULL);
-
-	if (_file) {
-		gchar** lines = g_strsplit (g_mapped_file_get_contents (_file), "\n", 0);
-		gchar** liter;
-		for (liter = lines; liter && *liter; liter++) {
-			if (!**liter) {
-				// empty string
-				continue;
-			}
-			gchar* line = g_strcompress (*liter);
-			c_task_list_append (store, line);
-			g_free (line);
-		}
-		g_strfreev (lines);
-		g_mapped_file_free (_file);
-	}
+	store = c_task_list_new_from_file (path);
 
 	tree = gtk_tree_view_new ();
 	gtk_tree_view_set_reorderable (GTK_TREE_VIEW (tree),
@@ -244,11 +204,7 @@ main (int   argc,
 	gtk_widget_show (window);
 	gtk_main ();
 
-	file = fopen (path, "w");
-	gtk_tree_model_foreach (GTK_TREE_MODEL (store),
-				write_node_to_file,
-				file);
-	fclose (file);
+	c_task_list_save (store, path);
 	g_free (path);
 
 	g_object_unref (store);
