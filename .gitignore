@@ -5,7 +5,7 @@ Makefile
 Makefile.in
 aclocal.m4
 autom4te.cache
-autotool
+classify
 config.log
 config.status
 configure
