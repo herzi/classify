@@ -38,6 +38,21 @@ c_task_list_append (CTaskList  * store,
 	c_task_list_set_text  (store, &iter, task);
 }
 
+gchar*
+c_task_list_get_text (CTaskList  * self,
+		      GtkTreeIter* iter)
+{
+	gchar* result = NULL;
+
+	g_return_val_if_fail (C_IS_TASK_LIST (self), NULL);
+
+	gtk_tree_model_get (GTK_TREE_MODEL (self), iter,
+			    COL_TEXT, &result,
+			    -1);
+
+	return result;
+}
+
 CTaskList*
 c_task_list_new (void)
 {

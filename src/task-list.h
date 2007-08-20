@@ -28,11 +28,15 @@
 
 G_BEGIN_DECLS
 
-#define CTaskList GtkListStore
+#define CTaskList         GtkListStore
+#define C_TASK_LIST(i)    GTK_LIST_STORE(i)
+#define C_IS_TASK_LIST(i) GTK_IS_LIST_STORE(i)
 
 CTaskList* c_task_list_new      (void);
 void       c_task_list_append   (CTaskList   * self,
 				 gchar const * text);
+gchar*     c_task_list_get_text (CTaskList   * self,
+				 GtkTreeIter * iter);
 void       c_task_list_set_text (CTaskList   * self,
 				 GtkTreeIter * iter,
 				 gchar const * text);
