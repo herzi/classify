@@ -28,7 +28,7 @@
 
 G_BEGIN_DECLS
 
-GtkWidget* c_preferences_new (void);
+GtkWidget* c_preferences_new (GtkWindow* parent);
 
 G_END_DECLS
 

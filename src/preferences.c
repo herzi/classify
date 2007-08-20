@@ -23,9 +23,21 @@
 
 #include "preferences.h"
 
+#include <gtk/gtk.h>
+
+#include <glib/gi18n.h>
+
 GtkWidget*
-c_preferences_new (void)
+c_preferences_new (GtkWindow* parent)
 {
-	return gtk_dialog_new ();
+	GtkWidget* result = gtk_dialog_new_with_buttons (_("Preferences"),
+					    parent,
+					    GTK_DIALOG_MODAL | GTK_DIALOG_NO_SEPARATOR,
+					    GTK_STOCK_CLOSE,
+					    GTK_RESPONSE_ACCEPT,
+					    NULL);
+	gtk_dialog_set_default_response (GTK_DIALOG (result),
+					 GTK_RESPONSE_ACCEPT);
+	return result;
 }
 
