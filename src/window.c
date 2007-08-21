@@ -72,12 +72,33 @@ static void
 task_new_activated (GtkAction* action,
 		    CWindow  * self)
 {
+	GtkTreeSelection* selection;
 	GtkTreeView * tree  = GTK_TREE_VIEW  (c_window_get_tree (self));
 	GtkListStore* store = GTK_LIST_STORE (gtk_tree_view_get_model (tree));
 	GtkTreePath * path;
 	GtkTreeIter   iter;
 
-	c_task_list_append (store, &iter, _("New Task"));
+	selection = gtk_tree_view_get_selection (tree);
+
+	if (gtk_tree_selection_count_selected_rows (selection) == 1) {
+		GtkTreeIter  selected_iter;
+		GList      * selected = gtk_tree_selection_get_selected_rows (selection, NULL);
+
+		if (selected && gtk_tree_model_get_iter (GTK_TREE_MODEL (store), &selected_iter, selected->data)) {
+			c_task_list_append (store,
+					    &iter,
+					    &selected_iter,
+					    _("New Task"));
+		} else {
+			// FIXME: this is not supposed to happen
+			c_task_list_append (store, &iter, NULL, _("New Task"));
+		}
+
+		g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
+		g_list_free    (selected);
+	} else {
+		c_task_list_append (store, &iter, NULL, _("New Task"));
+	}
 
 	path = gtk_tree_model_get_path (gtk_tree_view_get_model (tree),
 				        &iter);
