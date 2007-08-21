@@ -171,11 +171,14 @@ c_window_new (void)
 				"CWindow::TreeView",
 				g_object_ref_sink (tree),
 				g_object_unref);
+	gtk_widget_show (tree);
 
 	g_object_set_data_full (G_OBJECT (result),
 				"CWindow::UIManager",
 				ui_manager,
 				g_object_unref);
+
+	gtk_widget_show (vbox);
 
 	return result;
 }
