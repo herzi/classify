@@ -45,6 +45,13 @@ c_window_get_tree (CWindow* self)
 }
 
 static void
+file_close_activated (GtkAction* action,
+		      CWindow  * self)
+{
+	gtk_widget_destroy (GTK_WIDGET (self));
+}
+
+static void
 open_prefs (GtkAction* action,
 	    CWindow  * self)
 {
@@ -227,6 +234,10 @@ c_window_init (CWindow* self)
 	GtkActionEntry  entries[] = {
 		{"File", NULL, N_("_File")},
 
+		{"FileClose", GTK_STOCK_CLOSE, NULL,
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (file_close_activated)},
+
 		{"EditPreferences", GTK_STOCK_PREFERENCES, NULL,
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (open_prefs)},
@@ -243,6 +254,9 @@ c_window_init (CWindow* self)
 	GtkWidget   * tree;
 	GtkWidget   * vbox   = gtk_vbox_new   (FALSE, 0);
 	GError      * error = NULL;
+
+	gtk_window_add_accel_group  (GTK_WINDOW (self),
+				     gtk_ui_manager_get_accel_group (ui_manager));
 
 	gtk_window_set_default_size (GTK_WINDOW (result),
 				     400, 300);
@@ -262,6 +276,8 @@ c_window_init (CWindow* self)
 						"<menubar name='menubar'>"
 							"<menu action='File'>"
 								"<menuitem action='EditPreferences' />"
+								"<separator/>"
+								"<menuitem action='FileClose' />"
 							"</menu>"
 						"</menubar>"
 						"<toolbar name='toolbar'>"
