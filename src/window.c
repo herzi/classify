@@ -29,6 +29,12 @@
 #include <glib/gi18n.h>
 
 GtkWidget*
+c_window_get_button (CWindow* self)
+{
+	return g_object_get_data (G_OBJECT (self), "CWindow::Button");
+}
+
+GtkWidget*
 c_window_get_tree (CWindow* self)
 {
 	return g_object_get_data (G_OBJECT (self), "CWindow::TreeView");
@@ -97,6 +103,7 @@ c_window_new (void)
 	};
 	GtkActionGroup* group;
 	GtkUIManager* ui_manager = gtk_ui_manager_new ();
+	GtkWidget   * button;
 	GtkWidget   * result = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	GtkWidget   * tree;
 	GtkWidget   * vbox   = gtk_vbox_new   (FALSE, 0);
@@ -142,6 +149,12 @@ c_window_new (void)
 	gtk_widget_show    (vbox);
 	gtk_container_add  (GTK_CONTAINER (result),
 			    vbox);
+
+	button = gtk_button_new_from_stock (GTK_STOCK_ADD);
+	g_object_set_data_full (G_OBJECT (result),
+				"CWindow::Button",
+				g_object_ref_sink (button),
+				g_object_unref);
 
 	tree = gtk_tree_view_new ();
 	g_signal_connect (tree, "button-press-event",
