@@ -177,7 +177,7 @@ main (int   argc,
 	gtk_tree_view_set_model (GTK_TREE_VIEW (tree),
 				 GTK_TREE_MODEL (store));
 
-	swin = gtk_scrolled_window_new (NULL, NULL);
+	swin = c_window_get_swin (C_WINDOW (window));
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (swin),
 					     GTK_SHADOW_IN);
 	gtk_container_add (GTK_CONTAINER (swin), tree);
