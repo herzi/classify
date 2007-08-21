@@ -140,7 +140,6 @@ main (int   argc,
 	GtkListStore* store;
 	GtkTreeIter   iter;
 	GtkWidget   * tree;
-	GtkWidget   * vbox;
 	GtkWidget   * window;
 	gchar       * path;
 
@@ -154,7 +153,6 @@ main (int   argc,
 				 NULL);
 	store = c_task_list_new_from_file (path);
 
-	vbox = c_window_get_vbox (C_WINDOW (window));
 	tree = c_window_get_tree (C_WINDOW (window));
 
 	g_signal_connect (tree, "key-press-event",
