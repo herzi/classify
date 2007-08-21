@@ -217,7 +217,6 @@ c_window_init (CWindow* self)
 	GtkCellRenderer* renderer;
 	GtkActionGroup* group;
 	GtkUIManager* ui_manager = gtk_ui_manager_new ();
-	GtkWidget   * button;
 	GtkWidget   * result = GTK_WIDGET (self); // FIXME: remove this line
 	GtkWidget   * swin;
 	GtkWidget   * tree;
@@ -244,7 +243,9 @@ c_window_init (CWindow* self)
 								"<menuitem action='EditPreferences' />"
 							"</menu>"
 						"</menubar>"
-						"<toolbar name='toolbar'/>"
+						"<toolbar name='toolbar'>"
+							"<toolitem action='TaskNew'/>"
+						"</toolbar>"
 					    "</ui>",
 					    -1,
 					    &error);
@@ -267,20 +268,6 @@ c_window_init (CWindow* self)
 			    FALSE,
 			    FALSE,
 			    0);
-
-	button = gtk_button_new_from_stock (GTK_STOCK_ADD);
-	gtk_widget_show (button);
-	gtk_box_pack_start (GTK_BOX (vbox),
-			    button,
-			    FALSE,
-			    FALSE,
-			    0);
-	g_object_set_data_full (G_OBJECT (result),
-				"CWindow::Button",
-				g_object_ref_sink (button),
-				g_object_unref);
-	gtk_action_connect_proxy (gtk_action_group_get_action (group, "TaskNew"),
-				  button);
 
 	swin = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (swin),
