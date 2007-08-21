@@ -156,7 +156,7 @@ main (int   argc,
 				 NULL);
 	store = c_task_list_new_from_file (path);
 
-	tree = gtk_tree_view_new ();
+	tree = c_window_get_tree (C_WINDOW (window));
 	gtk_tree_view_set_reorderable (GTK_TREE_VIEW (tree),
 				       TRUE);
 	g_signal_connect (tree, "key-press-event",
