@@ -69,9 +69,10 @@ tree_edit_path (GtkTreeView* tree,
 }
 
 static void
-button_clicked_cb (GtkButton  * button,
-		   GtkTreeView* tree)
+task_new_activated (GtkAction* action,
+		    CWindow  * self)
 {
+	GtkTreeView * tree  = GTK_TREE_VIEW  (c_window_get_tree (self));
 	GtkListStore* store = GTK_LIST_STORE (gtk_tree_view_get_model (tree));
 	GtkTreePath * path;
 	GtkTreeIter   iter;
@@ -207,7 +208,11 @@ c_window_init (CWindow* self)
 
 		{"EditPreferences", GTK_STOCK_PREFERENCES, NULL,
 		 NULL, NULL, // FIXME: add tooltip
-		 G_CALLBACK (open_prefs)}
+		 G_CALLBACK (open_prefs)},
+
+		{"TaskNew", GTK_STOCK_ADD, NULL,
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (task_new_activated)}
 	};
 	GtkCellRenderer* renderer;
 	GtkActionGroup* group;
@@ -271,6 +276,8 @@ c_window_init (CWindow* self)
 				"CWindow::Button",
 				g_object_ref_sink (button),
 				g_object_unref);
+	gtk_action_connect_proxy (gtk_action_group_get_action (group, "TaskNew"),
+				  button);
 
 	swin = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (swin),
@@ -301,9 +308,6 @@ c_window_init (CWindow* self)
 						    renderer,
 						    task_list_data_func,
 						    NULL, NULL);
-
-	g_signal_connect (button, "clicked",
-			  G_CALLBACK (button_clicked_cb), tree);
 
 	g_object_set_data_full (G_OBJECT (result),
 				"CWindow::UIManager",
