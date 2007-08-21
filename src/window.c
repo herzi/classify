@@ -50,6 +50,24 @@ open_prefs (GtkAction* action,
 	gtk_widget_destroy (dialog);
 }
 
+static void
+button_clicked_cb (GtkButton  * button,
+		   GtkTreeView* tree)
+{
+	GtkListStore* store = GTK_LIST_STORE (gtk_tree_view_get_model (tree));
+	GtkTreePath * path;
+	GtkTreeIter   iter;
+
+	c_task_list_append (store, &iter, _("New Task"));
+
+	path = gtk_tree_model_get_path (gtk_tree_view_get_model (tree),
+				        &iter);
+
+	tree_edit_path (tree, path);
+
+	gtk_tree_path_free (path);
+}
+
 static gboolean
 tree_button_press_event (GtkWidget     * tree,
 			 GdkEventButton* event,
@@ -223,6 +241,9 @@ c_window_new (void)
 				g_object_unref);
 	gtk_widget_show (tree);
 	gtk_container_add (GTK_CONTAINER (swin), tree);
+
+	g_signal_connect (button, "clicked",
+			  G_CALLBACK (button_clicked_cb), tree);
 
 	g_object_set_data_full (G_OBJECT (result),
 				"CWindow::UIManager",

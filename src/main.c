@@ -43,24 +43,6 @@ tree_edit_path (GtkTreeView* tree,
 }
 
 static void
-button_clicked_cb (GtkButton  * button,
-		   GtkTreeView* tree)
-{
-	GtkListStore* store = GTK_LIST_STORE (gtk_tree_view_get_model (tree));
-	GtkTreePath * path;
-	GtkTreeIter   iter;
-
-	c_task_list_append (store, &iter, _("New Task"));
-
-	path = gtk_tree_model_get_path (gtk_tree_view_get_model (tree),
-				        &iter);
-
-	tree_edit_path (tree, path);
-
-	gtk_tree_path_free (path);
-}
-
-static void
 edited_cb (GtkCellRendererText* renderer,
 	   gchar* path,
 	   gchar* new_text,
@@ -107,9 +89,6 @@ main (int   argc,
 	store = c_task_list_new_from_file (path);
 
 	tree = c_window_get_tree (C_WINDOW (window));
-
-	g_signal_connect (c_window_get_button (C_WINDOW (window)), "clicked",
-			  G_CALLBACK (button_clicked_cb), tree);
 
 	renderer = gtk_cell_renderer_text_new ();
 	g_signal_connect (renderer, "edited",
