@@ -30,6 +30,8 @@
 
 #include <glib/gi18n.h>
 
+G_DEFINE_TYPE (CWindow, c_window, GTK_TYPE_WINDOW);
+
 GtkWidget*
 c_window_get_button (CWindow* self)
 {
@@ -194,6 +196,12 @@ task_list_data_func (GtkTreeViewColumn* column,
 GtkWidget*
 c_window_new (void)
 {
+	return g_object_new (C_TYPE_WINDOW, NULL);
+}
+
+static void
+c_window_init (CWindow* self)
+{
 	GtkActionEntry  entries[] = {
 		{"File", NULL, N_("_File")},
 
@@ -205,7 +213,7 @@ c_window_new (void)
 	GtkActionGroup* group;
 	GtkUIManager* ui_manager = gtk_ui_manager_new ();
 	GtkWidget   * button;
-	GtkWidget   * result = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	GtkWidget   * result = GTK_WIDGET (self); // FIXME: remove this line
 	GtkWidget   * swin;
 	GtkWidget   * tree;
 	GtkWidget   * vbox   = gtk_vbox_new   (FALSE, 0);
@@ -303,7 +311,9 @@ c_window_new (void)
 				g_object_unref);
 
 	gtk_widget_show (vbox);
-
-	return result;
 }
+
+static void
+c_window_class_init (CWindowClass* self_class)
+{}
 

@@ -28,12 +28,30 @@
 
 G_BEGIN_DECLS
 
-#define CWindow     GtkWindow
-#define C_WINDOW(i) GTK_WINDOW(i)
+typedef struct _CWindow        CWindow;
+typedef struct _CWindowPrivate CWindowPrivate;
+typedef struct _CWindowClass   CWindowClass;
 
+#define C_TYPE_WINDOW         (c_window_get_type ())
+#define C_WINDOW(i)           (G_TYPE_CHECK_INSTANCE_CAST ((i), C_TYPE_WINDOW, CWindow))
+#define C_WINDOW_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), C_TYPE_WINDOW, CWindowClass))
+#define C_IS_WINDOW(i)        (G_TYPE_CHECK_INSTANCE_TYPE ((i), C_TYPE_WINDOW))
+#define C_IS_WINDOW_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), C_TYPE_WINDOW))
+#define C_WINDOW_GET_CLASS(i) (G_TYPE_INSTANCE_GET_CLASS ((i), C_TYPE_WINDOW, CWindowClass))
+
+GType      c_window_get_type   (void);
+GtkWidget* c_window_new        (void);
 GtkWidget* c_window_get_button (CWindow* self);
 GtkWidget* c_window_get_tree   (CWindow* self);
-GtkWidget* c_window_new        (void);
+
+struct _CWindow {
+	GtkWindow       base_instance;
+	CWindowPrivate* _private;
+};
+
+struct _CWindowClass {
+	GtkWindowClass  base_class;
+};
 
 G_END_DECLS
 
