@@ -139,7 +139,6 @@ main (int   argc,
 	GtkCellRenderer* renderer;
 	GtkListStore* store;
 	GtkTreeIter   iter;
-	GtkWidget   * button;
 	GtkWidget   * swin;
 	GtkWidget   * tree;
 	GtkWidget   * vbox;
@@ -163,8 +162,7 @@ main (int   argc,
 			  G_CALLBACK (tree_key_press_event), NULL);
 
 	vbox   = c_window_get_vbox (C_WINDOW (window));
-	button = c_window_get_button (C_WINDOW (window));
-	g_signal_connect (button, "clicked",
+	g_signal_connect (c_window_get_button (C_WINDOW (window)), "clicked",
 			  G_CALLBACK (button_clicked_cb), tree);
 
 	renderer = gtk_cell_renderer_text_new ();
