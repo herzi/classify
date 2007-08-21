@@ -170,11 +170,14 @@ c_window_new (void)
 				g_object_unref);
 
 	swin = gtk_scrolled_window_new (NULL, NULL);
+	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (swin),
+					     GTK_SHADOW_IN);
 	g_object_set_data_full (G_OBJECT (result),
 				"CWindow::ScrolledWindow",
 				g_object_ref_sink (swin),
 				g_object_unref);
 	gtk_widget_show (swin);
+	gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
 
 	tree = gtk_tree_view_new ();
 	gtk_tree_view_set_reorderable (GTK_TREE_VIEW (tree),
@@ -186,6 +189,7 @@ c_window_new (void)
 				g_object_ref_sink (tree),
 				g_object_unref);
 	gtk_widget_show (tree);
+	gtk_container_add (GTK_CONTAINER (swin), tree);
 
 	g_object_set_data_full (G_OBJECT (result),
 				"CWindow::UIManager",
