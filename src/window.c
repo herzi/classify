@@ -174,6 +174,7 @@ c_window_new (void)
 				"CWindow::ScrolledWindow",
 				g_object_ref_sink (swin),
 				g_object_unref);
+	gtk_widget_show (swin);
 
 	tree = gtk_tree_view_new ();
 	gtk_tree_view_set_reorderable (GTK_TREE_VIEW (tree),
