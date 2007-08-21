@@ -27,56 +27,13 @@
 
 #include <glib/gi18n.h>
 
-void
-tree_edit_path (GtkTreeView* tree,
-		GtkTreePath* path)
-{
-	GList       * renderers;
-	renderers = gtk_tree_view_column_get_cell_renderers (gtk_tree_view_get_column (tree, 0));
-	g_object_set (renderers->data, "editable", TRUE, NULL);
-	gtk_tree_view_set_cursor (tree,
-				  path,
-				  gtk_tree_view_get_column (tree, 0),
-				  TRUE);
-	g_object_set (renderers->data, "editable", FALSE, NULL);
-	g_list_free (renderers);
-}
-
-static void
-edited_cb (GtkCellRendererText* renderer,
-	   gchar* path,
-	   gchar* new_text,
-	   GtkListStore* store)
-{
-	GtkTreePath* _path = gtk_tree_path_new_from_string (path);
-	GtkTreeIter  iter;
-	gtk_tree_model_get_iter (GTK_TREE_MODEL (store), &iter, _path);
-	c_task_list_set_text (store, &iter, new_text);
-	gtk_tree_path_free (_path);
-}
-
-static void
-task_list_data_func (GtkTreeViewColumn* column,
-		     GtkCellRenderer  * renderer,
-		     GtkTreeModel     * model,
-		     GtkTreeIter      * iter,
-		     gpointer           data)
-{
-	gchar* text = c_task_list_get_text (C_TASK_LIST (model), iter);
-	g_object_set (renderer, "text", text, NULL);
-	g_free (text);
-}
-
 int
 main (int   argc,
       char**argv)
 {
-	GtkCellRenderer* renderer;
-	GtkListStore* store;
-	GtkTreeIter   iter;
-	GtkWidget   * tree;
-	GtkWidget   * window;
-	gchar       * path;
+	CTaskList* store;
+	GtkWidget* window;
+	gchar    * path;
 
 	gtk_init (&argc, &argv);
 	window = c_window_new ();
@@ -88,19 +45,7 @@ main (int   argc,
 				 NULL);
 	store = c_task_list_new_from_file (path);
 
-	tree = c_window_get_tree (C_WINDOW (window));
-
-	renderer = gtk_cell_renderer_text_new ();
-	g_signal_connect (renderer, "edited",
-			  G_CALLBACK (edited_cb), store);
-	gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
-						    -1,
-						    _("Task"),
-						    renderer,
-						    task_list_data_func,
-						    NULL, NULL);
-
-	gtk_tree_view_set_model (GTK_TREE_VIEW (tree),
+	gtk_tree_view_set_model (GTK_TREE_VIEW (c_window_get_tree (C_WINDOW (window))),
 				 GTK_TREE_MODEL (store));
 
 	gtk_widget_show (window);

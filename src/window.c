@@ -26,6 +26,7 @@
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 #include "preferences.h"
+#include "task-list.h"
 
 #include <glib/gi18n.h>
 
@@ -48,6 +49,21 @@ open_prefs (GtkAction* action,
 	GtkWidget* dialog = c_preferences_new (GTK_WINDOW (self));
 	gtk_dialog_run     (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
+}
+
+static void
+tree_edit_path (GtkTreeView* tree,
+		GtkTreePath* path)
+{
+	GList       * renderers;
+	renderers = gtk_tree_view_column_get_cell_renderers (gtk_tree_view_get_column (tree, 0));
+	g_object_set (renderers->data, "editable", TRUE, NULL);
+	gtk_tree_view_set_cursor (tree,
+				  path,
+				  gtk_tree_view_get_column (tree, 0),
+				  TRUE);
+	g_object_set (renderers->data, "editable", FALSE, NULL);
+	g_list_free (renderers);
 }
 
 static void
@@ -150,6 +166,31 @@ tree_key_press_event (GtkTreeView* tree,
 	return FALSE;
 }
 
+static void
+edited_cb (GtkCellRendererText* renderer,
+	   gchar* path,
+	   gchar* new_text,
+	   GtkTreeView        * tree)
+{
+	GtkTreePath* _path = gtk_tree_path_new_from_string (path);
+	GtkTreeIter  iter;
+	gtk_tree_model_get_iter (gtk_tree_view_get_model (tree), &iter, _path);
+	c_task_list_set_text (C_TASK_LIST (gtk_tree_view_get_model (tree)), &iter, new_text);
+	gtk_tree_path_free (_path);
+}
+
+static void
+task_list_data_func (GtkTreeViewColumn* column,
+		     GtkCellRenderer  * renderer,
+		     GtkTreeModel     * model,
+		     GtkTreeIter      * iter,
+		     gpointer           data)
+{
+	gchar* text = c_task_list_get_text (C_TASK_LIST (model), iter);
+	g_object_set (renderer, "text", text, NULL);
+	g_free (text);
+}
+
 GtkWidget*
 c_window_new (void)
 {
@@ -160,6 +201,7 @@ c_window_new (void)
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (open_prefs)}
 	};
+	GtkCellRenderer* renderer;
 	GtkActionGroup* group;
 	GtkUIManager* ui_manager = gtk_ui_manager_new ();
 	GtkWidget   * button;
@@ -241,6 +283,16 @@ c_window_new (void)
 				g_object_unref);
 	gtk_widget_show (tree);
 	gtk_container_add (GTK_CONTAINER (swin), tree);
+
+	renderer = gtk_cell_renderer_text_new ();
+	g_signal_connect (renderer, "edited",
+			  G_CALLBACK (edited_cb), tree);
+	gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
+						    -1,
+						    _("Task"),
+						    renderer,
+						    task_list_data_func,
+						    NULL, NULL);
 
 	g_signal_connect (button, "clicked",
 			  G_CALLBACK (button_clicked_cb), tree);
