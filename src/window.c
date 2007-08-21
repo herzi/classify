@@ -59,6 +59,13 @@ c_window_new (void)
 	GtkWidget   * vbox   = gtk_vbox_new   (FALSE, 0);
 	GError      * error = NULL;
 
+	gtk_window_set_default_size (GTK_WINDOW (result),
+				     400, 300);
+	gtk_window_set_title        (GTK_WINDOW (result),
+				     _("Classify"));
+	g_signal_connect (result, "destroy",
+			  G_CALLBACK (gtk_main_quit), NULL);
+
 	group = gtk_action_group_new ("main-group");
 	gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), result);
 
