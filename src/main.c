@@ -156,12 +156,11 @@ main (int   argc,
 	store = c_task_list_new_from_file (path);
 
 	tree = c_window_get_tree (C_WINDOW (window));
-	gtk_tree_view_set_reorderable (GTK_TREE_VIEW (tree),
-				       TRUE);
 	g_signal_connect (tree, "key-press-event",
 			  G_CALLBACK (tree_key_press_event), NULL);
 
 	vbox   = c_window_get_vbox (C_WINDOW (window));
+
 	g_signal_connect (c_window_get_button (C_WINDOW (window)), "clicked",
 			  G_CALLBACK (button_clicked_cb), tree);
 

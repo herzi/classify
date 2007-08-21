@@ -163,6 +163,8 @@ c_window_new (void)
 				g_object_unref);
 
 	tree = gtk_tree_view_new ();
+	gtk_tree_view_set_reorderable (GTK_TREE_VIEW (tree),
+				       TRUE);
 	g_signal_connect (tree, "button-press-event",
 			  G_CALLBACK (tree_button_press_event), result);
 	g_object_set_data_full (G_OBJECT (result),
