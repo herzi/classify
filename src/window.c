@@ -244,6 +244,7 @@ c_window_init (CWindow* self)
 								"<menuitem action='EditPreferences' />"
 							"</menu>"
 						"</menubar>"
+						"<toolbar name='toolbar'/>"
 					    "</ui>",
 					    -1,
 					    &error);
@@ -261,9 +262,11 @@ c_window_init (CWindow* self)
 			    FALSE,
 			    FALSE,
 			    0);
-	gtk_widget_show    (vbox);
-	gtk_container_add  (GTK_CONTAINER (result),
-			    vbox);
+	gtk_box_pack_start (GTK_BOX (vbox),
+			    gtk_ui_manager_get_widget (ui_manager, "/toolbar"),
+			    FALSE,
+			    FALSE,
+			    0);
 
 	button = gtk_button_new_from_stock (GTK_STOCK_ADD);
 	gtk_widget_show (button);
@@ -314,7 +317,9 @@ c_window_init (CWindow* self)
 				ui_manager,
 				g_object_unref);
 
-	gtk_widget_show (vbox);
+	gtk_widget_show    (vbox);
+	gtk_container_add  (GTK_CONTAINER (result),
+			    vbox);
 }
 
 static void
