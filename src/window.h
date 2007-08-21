@@ -35,6 +35,8 @@ GtkWidget* c_window_get_button (CWindow* self);
 GtkWidget* c_window_get_tree   (CWindow* self);
 GtkWidget* c_window_new        (void);
 
+gboolean tree_key_press_event (GtkTreeView* tree, GdkEventKey* event);
+
 G_END_DECLS
 
 #endif /* !WINDOW_H */

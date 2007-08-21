@@ -74,7 +74,7 @@ edited_cb (GtkCellRendererText* renderer,
 	gtk_tree_path_free (_path);
 }
 
-static gboolean
+gboolean
 tree_key_press_event (GtkTreeView* tree,
 		      GdkEventKey* event)
 {
