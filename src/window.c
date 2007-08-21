@@ -49,6 +49,42 @@ open_prefs (GtkAction* action,
 	gtk_widget_destroy (dialog);
 }
 
+static gboolean
+tree_button_press_event (GtkWidget     * tree,
+			 GdkEventButton* event,
+			 CWindow       * window)
+{
+	gboolean result = FALSE;
+
+	if (event->button == 1 && event->type == GDK_2BUTTON_PRESS) {
+		GtkTreeSelection* selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+		if (gtk_tree_selection_count_selected_rows (selection) == 1) {
+			GtkTreeViewColumn* column;
+			GtkTreeModel* model = NULL;
+			GList       * selected = gtk_tree_selection_get_selected_rows (selection, &model);
+			GList       * renderers;
+
+			column    = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 0);
+			renderers = gtk_tree_view_column_get_cell_renderers (column);
+
+			g_object_set (renderers->data, "editable", TRUE, NULL);
+			gtk_tree_view_set_cursor (GTK_TREE_VIEW (tree),
+						  selected->data,
+						  column,
+						  TRUE);
+			g_object_set (renderers->data, "editable", FALSE, NULL);
+			g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
+			g_list_free    (selected);
+
+			g_list_free    (renderers);
+
+			result = TRUE;
+		}
+	}
+
+	return result;
+}
+
 GtkWidget*
 c_window_new (void)
 {
@@ -108,6 +144,8 @@ c_window_new (void)
 			    vbox);
 
 	tree = gtk_tree_view_new ();
+	g_signal_connect (tree, "button-press-event",
+			  G_CALLBACK (tree_button_press_event), result);
 	g_object_set_data_full (G_OBJECT (result),
 				"CWindow::TreeView",
 				g_object_ref_sink (tree),
