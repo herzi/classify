@@ -166,12 +166,6 @@ main (int   argc,
 	button = c_window_get_button (C_WINDOW (window));
 	g_signal_connect (button, "clicked",
 			  G_CALLBACK (button_clicked_cb), tree);
-	gtk_widget_show (button);
-	gtk_box_pack_start (GTK_BOX (vbox),
-			    button,
-			    FALSE,
-			    FALSE,
-			    0);
 
 	renderer = gtk_cell_renderer_text_new ();
 	g_signal_connect (renderer, "edited",

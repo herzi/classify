@@ -151,6 +151,12 @@ c_window_new (void)
 			    vbox);
 
 	button = gtk_button_new_from_stock (GTK_STOCK_ADD);
+	gtk_widget_show (button);
+	gtk_box_pack_start (GTK_BOX (vbox),
+			    button,
+			    FALSE,
+			    FALSE,
+			    0);
 	g_object_set_data_full (G_OBJECT (result),
 				"CWindow::Button",
 				g_object_ref_sink (button),
