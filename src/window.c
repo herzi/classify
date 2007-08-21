@@ -35,12 +35,6 @@ c_window_get_button (CWindow* self)
 }
 
 GtkWidget*
-c_window_get_swin (CWindow* self)
-{
-	return g_object_get_data (G_OBJECT (self), "CWindow::ScrolledWindow");
-}
-
-GtkWidget*
 c_window_get_tree (CWindow* self)
 {
 	return g_object_get_data (G_OBJECT (self), "CWindow::TreeView");
@@ -172,10 +166,6 @@ c_window_new (void)
 	swin = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (swin),
 					     GTK_SHADOW_IN);
-	g_object_set_data_full (G_OBJECT (result),
-				"CWindow::ScrolledWindow",
-				g_object_ref_sink (swin),
-				g_object_unref);
 	gtk_widget_show (swin);
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
 
