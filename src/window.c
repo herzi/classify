@@ -40,12 +40,6 @@ c_window_get_tree (CWindow* self)
 	return g_object_get_data (G_OBJECT (self), "CWindow::TreeView");
 }
 
-GtkWidget*
-c_window_get_vbox (CWindow* self)
-{
-	return gtk_bin_get_child (GTK_BIN (self));
-}
-
 static void
 open_prefs (GtkAction* action,
 	    CWindow  * self)
