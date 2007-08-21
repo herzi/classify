@@ -29,6 +29,12 @@
 #include <glib/gi18n.h>
 
 GtkWidget*
+c_window_get_tree (CWindow* self)
+{
+	return g_object_get_data (G_OBJECT (self), "CWindow::TreeView");
+}
+
+GtkWidget*
 c_window_get_vbox (CWindow* self)
 {
 	return gtk_bin_get_child (GTK_BIN (self));
@@ -56,6 +62,7 @@ c_window_new (void)
 	GtkActionGroup* group;
 	GtkUIManager* ui_manager = gtk_ui_manager_new ();
 	GtkWidget   * result = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	GtkWidget   * tree;
 	GtkWidget   * vbox   = gtk_vbox_new   (FALSE, 0);
 	GError      * error = NULL;
 
@@ -99,6 +106,12 @@ c_window_new (void)
 	gtk_widget_show    (vbox);
 	gtk_container_add  (GTK_CONTAINER (result),
 			    vbox);
+
+	tree = gtk_tree_view_new ();
+	g_object_set_data_full (G_OBJECT (result),
+				"CWindow::TreeView",
+				g_object_ref_sink (tree),
+				g_object_unref);
 
 	g_object_set_data_full (G_OBJECT (result),
 				"CWindow::UIManager",

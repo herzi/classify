@@ -31,6 +31,7 @@ G_BEGIN_DECLS
 #define CWindow     GtkWindow
 #define C_WINDOW(i) GTK_WINDOW(i)
 
+GtkWidget* c_window_get_tree (CWindow* self);
 GtkWidget* c_window_get_vbox (CWindow* self);
 GtkWidget* c_window_new      (void);
 
