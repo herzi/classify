@@ -76,6 +76,32 @@ tree_edit_path (GtkTreeView* tree,
 }
 
 static void
+task_bottom_activated (GtkAction* action,
+		       CWindow  * self)
+{
+	GtkTreeSelection* selection;
+	GtkTreeIter       iter;
+	GList           * selected;
+
+	g_return_if_fail (C_IS_WINDOW (self));
+
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (c_window_get_tree (self)));
+
+	if (1 != gtk_tree_selection_count_selected_rows (selection)) {
+		return;
+	}
+
+	selected = gtk_tree_selection_get_selected_rows (selection, NULL);
+	g_return_if_fail (selected);
+	g_return_if_fail (gtk_tree_model_get_iter (gtk_tree_view_get_model (GTK_TREE_VIEW (c_window_get_tree (self))), &iter, selected->data));
+	gtk_list_store_move_before (GTK_LIST_STORE (gtk_tree_view_get_model (GTK_TREE_VIEW (c_window_get_tree (self)))),
+				    &iter,
+				    NULL);
+	g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
+	g_list_free    (selected);
+}
+
+static void
 task_new_activated (GtkAction* action,
 		    CWindow  * self)
 {
@@ -113,6 +139,32 @@ task_new_activated (GtkAction* action,
 	tree_edit_path (tree, path);
 
 	gtk_tree_path_free (path);
+}
+
+static void
+task_top_activated (GtkAction* action,
+		    CWindow  * self)
+{
+	GtkTreeSelection* selection;
+	GtkTreeIter       iter;
+	GList           * selected;
+
+	g_return_if_fail (C_IS_WINDOW (self));
+
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (c_window_get_tree (self)));
+
+	if (1 != gtk_tree_selection_count_selected_rows (selection)) {
+		return;
+	}
+
+	selected = gtk_tree_selection_get_selected_rows (selection, NULL);
+	g_return_if_fail (selected);
+	g_return_if_fail (gtk_tree_model_get_iter (gtk_tree_view_get_model (GTK_TREE_VIEW (c_window_get_tree (self))), &iter, selected->data));
+	gtk_list_store_move_after (GTK_LIST_STORE (gtk_tree_view_get_model (GTK_TREE_VIEW (c_window_get_tree (self)))),
+				   &iter,
+				   NULL);
+	g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
+	g_list_free    (selected);
 }
 
 static gboolean
@@ -242,9 +294,15 @@ c_window_init (CWindow* self)
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (open_prefs)},
 
+		{"TaskBottom", GTK_STOCK_GOTO_BOTTOM, N_("To _Bottom"),
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (task_bottom_activated)},
 		{"TaskNew", GTK_STOCK_ADD, NULL,
 		 NULL, NULL, // FIXME: add tooltip
-		 G_CALLBACK (task_new_activated)}
+		 G_CALLBACK (task_new_activated)},
+		{"TaskTop", GTK_STOCK_GOTO_TOP, N_("To _Top"),
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (task_top_activated)}
 	};
 	GtkCellRenderer* renderer;
 	GtkActionGroup* group;
@@ -282,6 +340,9 @@ c_window_init (CWindow* self)
 						"</menubar>"
 						"<toolbar name='toolbar'>"
 							"<toolitem action='TaskNew'/>"
+							"<separator/>"
+							"<toolitem action='TaskTop'/>"
+							"<toolitem action='TaskBottom'/>"
 						"</toolbar>"
 					    "</ui>",
 					    -1,
