@@ -23,6 +23,7 @@
 
 #include "window.h"
 
+#include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 #include "preferences.h"
 
@@ -85,7 +86,7 @@ tree_button_press_event (GtkWidget     * tree,
 	return result;
 }
 
-gboolean
+static gboolean
 tree_key_press_event (GtkTreeView* tree,
 		      GdkEventKey* event)
 {
@@ -210,6 +211,8 @@ c_window_new (void)
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
 
 	tree = gtk_tree_view_new ();
+	g_signal_connect (tree, "key-press-event",
+			  G_CALLBACK (tree_key_press_event), NULL);
 	gtk_tree_view_set_reorderable (GTK_TREE_VIEW (tree),
 				       TRUE);
 	g_signal_connect (tree, "button-press-event",

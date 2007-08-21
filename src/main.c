@@ -21,14 +21,13 @@
  * USA
  */
 
-#include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 #include "task-list.h"
 #include "window.h"
 
 #include <glib/gi18n.h>
 
-static void
+void
 tree_edit_path (GtkTreeView* tree,
 		GtkTreePath* path)
 {
@@ -108,9 +107,6 @@ main (int   argc,
 	store = c_task_list_new_from_file (path);
 
 	tree = c_window_get_tree (C_WINDOW (window));
-
-	g_signal_connect (tree, "key-press-event",
-			  G_CALLBACK (tree_key_press_event), NULL);
 
 	g_signal_connect (c_window_get_button (C_WINDOW (window)), "clicked",
 			  G_CALLBACK (button_clicked_cb), tree);
