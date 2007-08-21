@@ -74,52 +74,6 @@ edited_cb (GtkCellRendererText* renderer,
 	gtk_tree_path_free (_path);
 }
 
-gboolean
-tree_key_press_event (GtkTreeView* tree,
-		      GdkEventKey* event)
-{
-	switch (event->keyval) {
-	case GDK_F2:
-		if (gtk_tree_selection_count_selected_rows (gtk_tree_view_get_selection (tree)) == 1) {
-			GList* list;
-
-			list = gtk_tree_selection_get_selected_rows (gtk_tree_view_get_selection (tree), NULL);
-			tree_edit_path (tree, list->data);
-			g_list_foreach (list, (GFunc)gtk_tree_path_free, NULL);
-			g_list_free    (list);
-
-			return TRUE;
-		}
-		break;
-	case GDK_Delete:
-		if (gtk_tree_selection_count_selected_rows (gtk_tree_view_get_selection (tree)) > 0) {
-			GtkTreeModel* model = NULL;
-			GList       * selected = gtk_tree_selection_get_selected_rows (gtk_tree_view_get_selection (tree), &model);
-			GList       * iter;
-
-			for (iter = selected; iter; iter = iter->next) {
-				GtkTreePath* path = iter->data;
-				iter->data = gtk_tree_row_reference_new (model, path);
-				gtk_tree_path_free (path);
-			}
-			for (iter = selected; iter; iter = iter->next) {
-				GtkTreeIter titer;
-				gtk_tree_model_get_iter (model, &titer,
-							 gtk_tree_row_reference_get_path (iter->data));
-				gtk_list_store_remove   (GTK_LIST_STORE (model),
-						         &titer);
-				gtk_tree_row_reference_free (iter->data);
-			}
-
-			g_list_free (selected);
-			return TRUE;
-		}
-		break;
-	}
-
-	return FALSE;
-}
-
 static void
 task_list_data_func (GtkTreeViewColumn* column,
 		     GtkCellRenderer  * renderer,
