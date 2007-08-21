@@ -35,6 +35,12 @@ c_window_get_button (CWindow* self)
 }
 
 GtkWidget*
+c_window_get_swin (CWindow* self)
+{
+	return g_object_get_data (G_OBJECT (self), "CWindow::ScrolledWindow");
+}
+
+GtkWidget*
 c_window_get_tree (CWindow* self)
 {
 	return g_object_get_data (G_OBJECT (self), "CWindow::TreeView");
@@ -105,6 +111,7 @@ c_window_new (void)
 	GtkUIManager* ui_manager = gtk_ui_manager_new ();
 	GtkWidget   * button;
 	GtkWidget   * result = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	GtkWidget   * swin;
 	GtkWidget   * tree;
 	GtkWidget   * vbox   = gtk_vbox_new   (FALSE, 0);
 	GError      * error = NULL;
@@ -160,6 +167,12 @@ c_window_new (void)
 	g_object_set_data_full (G_OBJECT (result),
 				"CWindow::Button",
 				g_object_ref_sink (button),
+				g_object_unref);
+
+	swin = gtk_scrolled_window_new (NULL, NULL);
+	g_object_set_data_full (G_OBJECT (result),
+				"CWindow::ScrolledWindow",
+				g_object_ref_sink (swin),
 				g_object_unref);
 
 	tree = gtk_tree_view_new ();
