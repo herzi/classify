@@ -139,7 +139,6 @@ main (int   argc,
 	GtkCellRenderer* renderer;
 	GtkListStore* store;
 	GtkTreeIter   iter;
-	GtkWidget   * swin;
 	GtkWidget   * tree;
 	GtkWidget   * vbox;
 	GtkWidget   * window;
@@ -156,7 +155,6 @@ main (int   argc,
 	store = c_task_list_new_from_file (path);
 
 	vbox = c_window_get_vbox (C_WINDOW (window));
-	swin = c_window_get_swin (C_WINDOW (window));
 	tree = c_window_get_tree (C_WINDOW (window));
 
 	g_signal_connect (tree, "key-press-event",
