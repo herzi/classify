@@ -418,10 +418,12 @@ c_window_init (CWindow* self)
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
 
 	tree = gtk_tree_view_new ();
-	g_signal_connect (tree, "key-press-event",
-			  G_CALLBACK (tree_key_press_event), NULL);
 	gtk_tree_view_set_reorderable (GTK_TREE_VIEW (tree),
 				       TRUE);
+	gtk_tree_view_set_rules_hint  (GTK_TREE_VIEW (tree),
+				       TRUE);
+	g_signal_connect (tree, "key-press-event",
+			  G_CALLBACK (tree_key_press_event), NULL);
 	g_signal_connect (tree, "button-press-event",
 			  G_CALLBACK (tree_button_press_event), result);
 	g_signal_connect (tree, "size-allocate",
