@@ -281,6 +281,33 @@ c_window_new (void)
 }
 
 static void
+tree_size_allocate_after (GtkWidget    * tree_widget,
+			  GtkAllocation* allocation)
+{
+	GtkTreeViewColumn* column;
+	GtkTreeView      * view;
+	GList            * renderers;
+	gint               wrap_width;
+
+	view      = GTK_TREE_VIEW (tree_widget);
+	column    = gtk_tree_view_get_column (view, 0);
+	renderers = gtk_tree_view_column_get_cell_renderers (column);
+
+	g_object_get (renderers->data, "wrap-width", &wrap_width, NULL);
+
+	if (allocation->width != wrap_width) {
+		gtk_tree_view_column_set_sizing      (column, GTK_TREE_VIEW_COLUMN_FIXED);
+		gtk_tree_view_column_set_fixed_width (column, allocation->width);
+
+		g_object_set (renderers->data,
+			      "wrap-width", column->width,
+			      NULL);
+	}
+
+	g_list_free (renderers);
+}
+
+static void
 c_window_init (CWindow* self)
 {
 	GtkActionEntry  entries[] = {
@@ -368,6 +395,9 @@ c_window_init (CWindow* self)
 			    0);
 
 	swin = gtk_scrolled_window_new (NULL, NULL);
+	//gtk_scrolled_window_set_policy      (GTK_SCROLLED_WINDOW (swin),
+	//				     GTK_POLICY_NEVER,
+	//				     GTK_POLICY_AUTOMATIC);
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (swin),
 					     GTK_SHADOW_IN);
 	gtk_widget_show (swin);
@@ -380,6 +410,8 @@ c_window_init (CWindow* self)
 				       TRUE);
 	g_signal_connect (tree, "button-press-event",
 			  G_CALLBACK (tree_button_press_event), result);
+	g_signal_connect (tree, "size-allocate",
+			        G_CALLBACK (tree_size_allocate_after), NULL);
 	g_object_set_data_full (G_OBJECT (result),
 				"CWindow::TreeView",
 				g_object_ref_sink (tree),
@@ -388,6 +420,9 @@ c_window_init (CWindow* self)
 	gtk_container_add (GTK_CONTAINER (swin), tree);
 
 	renderer = gtk_cell_renderer_text_new ();
+	g_object_set     (renderer,
+			  "wrap-mode", PANGO_WRAP_WORD_CHAR,
+			  NULL);
 	g_signal_connect (renderer, "edited",
 			  G_CALLBACK (edited_cb), tree);
 	gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
