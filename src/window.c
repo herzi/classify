@@ -280,6 +280,16 @@ c_window_new (void)
 	return g_object_new (C_TYPE_WINDOW, NULL);
 }
 
+static gboolean
+all_changed (GtkTreeModel* model,
+	     GtkTreePath * path,
+	     GtkTreeIter * iter,
+	     gpointer      data)
+{
+	gtk_tree_model_row_changed (model, path, iter);
+	return FALSE;
+}
+
 static void
 tree_size_allocate_after (GtkWidget    * tree_widget,
 			  GtkAllocation* allocation)
@@ -314,7 +324,7 @@ tree_size_allocate_after (GtkWidget    * tree_widget,
 		model = gtk_tree_view_get_model (view);
 
 		gtk_tree_model_foreach (model,
-					(GtkTreeModelForeachFunc)gtk_tree_model_row_changed,
+					all_changed,
 					NULL);
 	}
 
