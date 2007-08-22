@@ -296,12 +296,25 @@ tree_size_allocate_after (GtkWidget    * tree_widget,
 	g_object_get (renderers->data, "wrap-width", &wrap_width, NULL);
 
 	if (allocation->width != wrap_width) {
+		GtkTreeModel* model;
+		GtkTreeIter   iter;
+
 		gtk_tree_view_column_set_sizing      (column, GTK_TREE_VIEW_COLUMN_FIXED);
 		gtk_tree_view_column_set_fixed_width (column, allocation->width);
 
 		g_object_set (renderers->data,
 			      "wrap-width", column->width,
 			      NULL);
+
+		model = gtk_tree_view_get_model (view);
+
+		if (gtk_tree_model_get_iter_first (model, &iter)) {
+			GtkTreePath* path = gtk_tree_model_get_path (model, &iter);
+			gtk_tree_model_row_changed (model,
+						    path,
+						    &iter);
+			gtk_tree_path_free (path);
+		}
 	}
 
 	g_list_free (renderers);
