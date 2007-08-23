@@ -74,15 +74,13 @@ c_task_list_new (void)
 				   G_TYPE_STRING);
 }
 
-CTaskList*
-c_task_list_new_from_file (gchar const* path)
+static void
+task_list_populate_from_text_file (CTaskList  * self,
+				   gchar const* path)
 {
-	GMappedFile* file;
-	CTaskList  * self = c_task_list_new ();
-
-	file = g_mapped_file_new (path,
-				   FALSE,
-				   NULL);
+	GMappedFile* file = g_mapped_file_new (path,
+					       FALSE,
+					       NULL);
 
 	if (file) {
 		gchar** lines = g_strsplit (g_mapped_file_get_contents (file), "\n", 0);
@@ -98,6 +96,20 @@ c_task_list_new_from_file (gchar const* path)
 		}
 		g_strfreev (lines);
 		g_mapped_file_free (file);
+	}
+}
+
+CTaskList*
+c_task_list_new_from_file (gchar const* path)
+{
+	CTaskList  * self = c_task_list_new ();
+
+	// FIXME: detect the file type and act accordingly
+
+	if (g_file_test (path, G_FILE_TEST_IS_DIR)) {
+		// FIXME: parse XML file
+	} else {
+		task_list_populate_from_text_file (self, path);
 	}
 
 	return self;
