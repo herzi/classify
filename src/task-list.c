@@ -78,15 +78,18 @@ c_task_list_new (void)
 CTaskList*
 c_task_list_new_from_file (gchar const* path)
 {
-	CTaskList  * self = c_task_list_new ();
+	CTaskList* self = c_task_list_new ();
+	gchar    * xml_path = g_strdup_printf ("%s.xml", path);
 
 	// FIXME: detect the file type and act accordingly
 
-	if (g_file_test (path, G_FILE_TEST_IS_DIR)) {
-		// FIXME: parse XML file
-	} else {
+	if (g_file_test (xml_path, G_FILE_TEST_IS_REGULAR)) {
+		task_list_io_xml_load  (self, xml_path);
+	} else if (g_file_test (path, G_FILE_TEST_IS_REGULAR)) {
 		task_list_io_text_load (self, path);
 	}
+
+	g_free (xml_path);
 
 	return self;
 }
