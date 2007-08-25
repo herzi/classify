@@ -102,9 +102,6 @@ c_task_list_save (CTaskList  * self,
 
 	g_return_if_fail (C_IS_TASK_LIST (self));
 
-	task_list_io_text_save (self,
-				path);
-
 	xml_path = g_strdup_printf ("%s.xml", path);
 	task_list_io_xml_save  (self,
 				xml_path);
