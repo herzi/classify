@@ -23,3 +23,28 @@
 
 #include "task-list-io-text.h"
 
+void
+task_list_io_text_load (CTaskList  * self,
+			gchar const* path)
+{
+	GMappedFile* file = g_mapped_file_new (path,
+					       FALSE,
+					       NULL);
+
+	if (file) {
+		gchar** lines = g_strsplit (g_mapped_file_get_contents (file), "\n", 0);
+		gchar** liter;
+		for (liter = lines; liter && *liter; liter++) {
+			if (!**liter) {
+				// empty string
+				continue;
+			}
+			gchar* line = g_strcompress (*liter);
+			c_task_list_append (self, NULL, NULL, line);
+			g_free (line);
+		}
+		g_strfreev (lines);
+		g_mapped_file_free (file);
+	}
+}
+
