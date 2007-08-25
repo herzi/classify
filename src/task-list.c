@@ -24,6 +24,7 @@
 #include "task-list.h"
 
 #include "task-list-io-text.h"
+#include "task-list-io-xml.h"
 
 enum {
 	COL_TEXT,
@@ -94,10 +95,17 @@ void
 c_task_list_save (CTaskList  * self,
 		  gchar const* path)
 {
+	gchar* xml_path;
+
 	g_return_if_fail (C_IS_TASK_LIST (self));
 
 	task_list_io_text_save (self,
 				path);
+
+	xml_path = g_strdup_printf ("%s.xml", path);
+	task_list_io_xml_save  (self,
+				path);
+	g_free (xml_path);
 }
 
 void
