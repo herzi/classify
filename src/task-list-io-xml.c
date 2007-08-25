@@ -28,6 +28,37 @@
 #include <libxml/SAX2.h>
 
 static void
+sax_start_element_cb (gpointer       ctx,
+		      xmlChar const* localname,
+		      xmlChar const* prefix,
+		      xmlChar const* uri,
+		      int            n_namespaces,
+		      xmlChar const**namespaces,
+		      int            n_attributes,
+		      int            n_defaulted,
+		      xmlChar const**attributes)
+{
+	if (prefix) {
+		g_print ("<%s:%s>", prefix, localname);
+	} else {
+		g_print ("<%s>", localname);
+	}
+}
+
+static void
+sax_end_element_cb (gpointer       ctx,
+		    xmlChar const* localname,
+		    xmlChar const* prefix,
+		    xmlChar const* uri)
+{
+	if (prefix) {
+		g_print ("</%s:%s>\n", prefix, localname);
+	} else {
+		g_print ("</%s>\n", localname);
+	}
+}
+
+static void
 log_v (gpointer        ctx,
        gchar const   * message,
        va_list         argv,
@@ -98,10 +129,10 @@ task_list_io_xml_load (CTaskList  * self,
 		NULL, // getParameterEntity
 		NULL, // cdataBlock
 		NULL, // externalSubset
-		0, // initialized
+		XML_SAX2_MAGIC, // initialized
 		NULL, // _private
-		NULL, // startElementNs
-		NULL, // endElementNs
+		sax_start_element_cb,
+		sax_end_element_cb,
 		NULL  // serror
 	};
 
