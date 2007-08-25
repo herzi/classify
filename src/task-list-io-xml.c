@@ -28,8 +28,24 @@
 #include <libxml/SAX2.h>
 
 struct ParserData {
-	guint unknown_depth;
+	guint      unknown_depth;
+	CTaskList* task_list;
+	GList    * stack;
 };
+
+static void
+sax_characters_cb (gpointer       ctx,
+		   xmlChar const* text,
+		   int            length)
+{
+	struct ParserData* pdata = ((xmlParserCtxt*)ctx)->_private;
+
+	if (pdata->stack) {
+		g_string_append_len (pdata->stack->data,
+				     text,
+				     length);
+	}
+}
 
 static void
 sax_start_element_cb (gpointer       ctx,
@@ -49,7 +65,12 @@ sax_start_element_cb (gpointer       ctx,
 		return;
 	}
 
-	if (TRUE) {
+	if (!strcmp (localname, "tasks")) {
+		// toplevel tasks item
+	} else if (!strcmp (localname, "task")) {
+		// task item
+		pdata->stack = g_list_prepend (pdata->stack, g_string_new (""));
+	} else {
 		g_warning ("unknown tag <%s%s%s> read",
 			   prefix ? (char const*)prefix : "",
 			   prefix ? ":" : "",
@@ -69,6 +90,15 @@ sax_end_element_cb (gpointer       ctx,
 	if (pdata->unknown_depth) {
 		pdata->unknown_depth--;
 		return;
+	}
+
+	if (!strcmp (localname, "task")) {
+		c_task_list_append (pdata->task_list,
+				    NULL, NULL,
+				    ((GString*)pdata->stack->data)->str);
+
+		g_string_free (pdata->stack->data, TRUE);
+		pdata->stack = g_list_delete_link (pdata->stack, pdata->stack);
 	}
 }
 
@@ -133,7 +163,7 @@ task_list_io_xml_load (CTaskList  * self,
 		NULL, // startElement
 		NULL, // endElement
 		NULL, // reference
-		NULL, // characters
+		sax_characters_cb,
 		NULL, // ignorableWhitespace
 		NULL, // processingInstruction
 		NULL, // comment
@@ -150,7 +180,9 @@ task_list_io_xml_load (CTaskList  * self,
 		NULL  // serror
 	};
 	struct ParserData pdata = {
-		0
+		0,
+		self,
+		NULL
 	};
 
 	xmlSAXParseFileWithData (&sax,
