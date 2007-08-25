@@ -23,6 +23,8 @@
 
 #include "task-list-io-text.h"
 
+#include <glib/gstdio.h>
+
 void
 task_list_io_text_load (CTaskList  * self,
 			gchar const* path)
@@ -46,5 +48,37 @@ task_list_io_text_load (CTaskList  * self,
 		g_strfreev (lines);
 		g_mapped_file_free (file);
 	}
+}
+
+static gboolean
+write_node_to_file (GtkTreeModel* model,
+		    GtkTreePath * path,
+		    GtkTreeIter * iter,
+		    gpointer      data)
+{
+	FILE* file = data;
+	gchar* task;
+	gchar* line;
+
+	task = c_task_list_get_text (C_TASK_LIST (model), iter);
+	line = g_strescape (task, NULL);
+	fprintf (file, "%s\n", line);
+	g_free (line);
+	g_free (task);
+
+	return FALSE;
+}
+
+void
+task_list_io_text_save (CTaskList  * self,
+			gchar const* path)
+{
+	FILE* file;
+
+	file = fopen (path, "w");
+	gtk_tree_model_foreach (GTK_TREE_MODEL (self),
+				write_node_to_file,
+				file);
+	fclose (file);
 }
 
