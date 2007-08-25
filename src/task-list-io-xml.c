@@ -25,12 +25,51 @@
 
 #include <errno.h>
 #include <glib/gstdio.h>
+#include <libxml/SAX2.h>
 
 void
 task_list_io_xml_load (CTaskList  * self,
 		       gchar const* path)
 {
-	// FIXME: add implementation
+	xmlSAXHandler sax = {
+		NULL, // internalSubset
+		NULL, // isStandalone
+		NULL, // hasInternalSubset
+		NULL, // hasExternalSubset
+		NULL, // resolveEntity
+		NULL, // getEntity
+		NULL, // entityDecl
+		NULL, // notationDecl
+		NULL, // attributeDecl
+		NULL, // elementDecl
+		NULL, // unparsedEntityDecl
+		NULL, // setDocumentLocator
+		NULL, // startDocument
+		NULL, // endDocument
+		NULL, // startElement
+		NULL, // endElement
+		NULL, // reference
+		NULL, // characters
+		NULL, // ignorableWhitespace
+		NULL, // processingInstruction
+		NULL, // comment
+		NULL, // warning
+		NULL, // error
+		NULL, // fatalError (won't be called)
+		NULL, // getParameterEntity
+		NULL, // cdataBlock
+		NULL, // externalSubset
+		0, // initialized
+		NULL, // _private
+		NULL, // startElementNs
+		NULL, // endElementNs
+		NULL  // serror
+	};
+
+	xmlSAXParseFileWithData (&sax,
+				 path,
+				 0,
+				 self);
 }
 
 static gboolean
