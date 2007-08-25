@@ -23,3 +23,9 @@
 
 #include "task-list-io-xml.h"
 
+void
+task_list_io_xml_save (CTaskList  * self,
+		       gchar const* path)
+{
+}
+

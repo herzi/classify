@@ -24,5 +24,13 @@
 #ifndef TASK_LIST_IO_XML_H
 #define TASK_LIST_IO_XML_H
 
+#include "task-list.h"
+
+G_BEGIN_DECLS
+
+void task_list_io_xml_save (CTaskList  * self,
+			    gchar const* path);
+
+G_END_DECLS
 
 #endif /* !TASK_LIST_IO_XML_H */
