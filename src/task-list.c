@@ -111,18 +111,26 @@ write_node_to_file (GtkTreeModel* model,
 }
 
 void
-c_task_list_save (CTaskList  * self,
-		  gchar const* path)
+task_list_io_text_save (CTaskList  * self,
+			gchar const* path)
 {
 	FILE* file;
-
-	g_return_if_fail (C_IS_TASK_LIST (self));
 
 	file = fopen (path, "w");
 	gtk_tree_model_foreach (GTK_TREE_MODEL (self),
 				write_node_to_file,
 				file);
 	fclose (file);
+}
+
+void
+c_task_list_save (CTaskList  * self,
+		  gchar const* path)
+{
+	g_return_if_fail (C_IS_TASK_LIST (self));
+
+	task_list_io_text_save (self,
+				path);
 }
 
 void
