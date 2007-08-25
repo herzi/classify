@@ -8,6 +8,8 @@ classify_SOURCES=\
 	src/task-list.h \
 	src/task-list-io-text.c \
 	src/task-list-io-text.h \
+	src/task-list-io-xml.c \
+	src/task-list-io-xml.h \
 	src/window.c \
 	src/window.h \
 	$(NULL)
