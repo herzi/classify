@@ -27,6 +27,45 @@
 #include <glib/gstdio.h>
 #include <libxml/SAX2.h>
 
+static void
+log_v (gpointer        ctx,
+       gchar const   * message,
+       va_list         argv,
+       GLogLevelFlags  flags)
+{
+	gchar* full_msg = g_strdup_vprintf (message, argv);
+	gchar* location = g_strdup_printf ("%s:%d:%d: %s",
+					   xmlSAX2GetSystemId (ctx),
+					   xmlSAX2GetLineNumber (ctx),
+					   xmlSAX2GetColumnNumber (ctx),
+					   full_msg);
+	g_log  (G_LOG_DOMAIN, flags, "%s", location);
+	g_free (location);
+	g_free (full_msg);
+}
+
+static void
+sax_warning_cb (void      * ctx,
+		const char* message,
+		...)
+{
+	va_list list;
+	va_start (list, message);
+	log_v    (ctx, message, list, G_LOG_LEVEL_WARNING);
+	va_end   (list);
+}
+
+static void
+sax_error_cb (void      * ctx,
+	      const char* message,
+	      ...)
+{
+	va_list list;
+	va_start (list, message);
+	log_v    (ctx, message, list, G_LOG_LEVEL_ERROR);
+	va_end   (list);
+}
+
 void
 task_list_io_xml_load (CTaskList  * self,
 		       gchar const* path)
@@ -53,8 +92,8 @@ task_list_io_xml_load (CTaskList  * self,
 		NULL, // ignorableWhitespace
 		NULL, // processingInstruction
 		NULL, // comment
-		NULL, // warning
-		NULL, // error
+		sax_warning_cb,
+		sax_error_cb,
 		NULL, // fatalError (won't be called)
 		NULL, // getParameterEntity
 		NULL, // cdataBlock
