@@ -76,8 +76,8 @@ c_task_list_new (void)
 }
 
 static void
-task_list_populate_from_text_file (CTaskList  * self,
-				   gchar const* path)
+task_list_io_text_load (CTaskList  * self,
+			gchar const* path)
 {
 	GMappedFile* file = g_mapped_file_new (path,
 					       FALSE,
@@ -110,7 +110,7 @@ c_task_list_new_from_file (gchar const* path)
 	if (g_file_test (path, G_FILE_TEST_IS_DIR)) {
 		// FIXME: parse XML file
 	} else {
-		task_list_populate_from_text_file (self, path);
+		task_list_io_text_load (self, path);
 	}
 
 	return self;
