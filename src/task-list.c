@@ -24,6 +24,7 @@
 #include "task-list.h"
 
 #include <glib/gstdio.h>
+#include "task-list-io-text.h"
 
 enum {
 	COL_TEXT,
