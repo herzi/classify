@@ -6,6 +6,8 @@ classify_SOURCES=\
 	src/preferences.h \
 	src/task-list.c \
 	src/task-list.h \
+	src/task-list-io-text.c \
+	src/task-list-io-text.h \
 	src/window.c \
 	src/window.h \
 	$(NULL)
