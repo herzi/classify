@@ -28,6 +28,8 @@
 
 G_BEGIN_DECLS
 
+void task_list_io_xml_load (CTaskList  * self,
+			    gchar const* path);
 void task_list_io_xml_save (CTaskList  * self,
 			    gchar const* path);
 

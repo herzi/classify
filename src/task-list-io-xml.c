@@ -26,6 +26,13 @@
 #include <errno.h>
 #include <glib/gstdio.h>
 
+void
+task_list_io_xml_load (CTaskList  * self,
+		       gchar const* path)
+{
+	// FIXME: add implementation
+}
+
 static gboolean
 write_node (GtkTreeModel* model,
 	    GtkTreePath * path,
