@@ -23,9 +23,17 @@
 
 #include "task-list-io-xml.h"
 
+#include <glib/gstdio.h>
+
 void
 task_list_io_xml_save (CTaskList  * self,
 		       gchar const* path)
 {
+	FILE* file = fopen (path, "w");
+	fprintf (file, "<?xml version=\"1.0\" encoding=\"iso-8859-15\"?>\n");
+	fprintf (file, "<tasks>\n");
+	// FIXME: save tasks
+	fprintf (file, "</tasks>\n");
+	fclose (file);
 }
 
