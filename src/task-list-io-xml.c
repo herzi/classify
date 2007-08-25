@@ -27,6 +27,10 @@
 #include <glib/gstdio.h>
 #include <libxml/SAX2.h>
 
+struct ParserData {
+	guint unknown_depth;
+};
+
 static void
 sax_start_element_cb (gpointer       ctx,
 		      xmlChar const* localname,
@@ -38,10 +42,19 @@ sax_start_element_cb (gpointer       ctx,
 		      int            n_defaulted,
 		      xmlChar const**attributes)
 {
-	if (prefix) {
-		g_print ("<%s:%s>", prefix, localname);
-	} else {
-		g_print ("<%s>", localname);
+	struct ParserData* pdata = ((xmlParserCtxt*)ctx)->_private;
+
+	if (pdata->unknown_depth) {
+		pdata->unknown_depth++;
+		return;
+	}
+
+	if (TRUE) {
+		g_warning ("unknown tag <%s%s%s> read",
+			   prefix ? (char const*)prefix : "",
+			   prefix ? ":" : "",
+			   localname);
+		pdata->unknown_depth++;
 	}
 }
 
@@ -51,10 +64,11 @@ sax_end_element_cb (gpointer       ctx,
 		    xmlChar const* prefix,
 		    xmlChar const* uri)
 {
-	if (prefix) {
-		g_print ("</%s:%s>\n", prefix, localname);
-	} else {
-		g_print ("</%s>\n", localname);
+	struct ParserData* pdata = ((xmlParserCtxt*)ctx)->_private;
+
+	if (pdata->unknown_depth) {
+		pdata->unknown_depth--;
+		return;
 	}
 }
 
@@ -135,11 +149,14 @@ task_list_io_xml_load (CTaskList  * self,
 		sax_end_element_cb,
 		NULL  // serror
 	};
+	struct ParserData pdata = {
+		0
+	};
 
 	xmlSAXParseFileWithData (&sax,
 				 path,
 				 0,
-				 self);
+				 &pdata);
 }
 
 static gboolean
