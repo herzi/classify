@@ -75,7 +75,7 @@ c_task_list_new (void)
 				   G_TYPE_STRING);
 }
 
-static void
+void
 task_list_io_text_load (CTaskList  * self,
 			gchar const* path)
 {
