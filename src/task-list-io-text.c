@@ -23,6 +23,7 @@
 
 #include "task-list-io-text.h"
 
+#include <errno.h>
 #include <glib/gstdio.h>
 
 void
@@ -47,6 +48,11 @@ task_list_io_text_load (CTaskList  * self,
 		}
 		g_strfreev (lines);
 		g_mapped_file_free (file);
+
+		if (0 != g_remove (path)) {
+			g_warning ("couldn't delete the old file: %s",
+				   g_strerror (errno));
+		}
 	}
 }
 
