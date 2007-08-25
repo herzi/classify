@@ -23,7 +23,22 @@
 
 #include "task-list-io-xml.h"
 
+#include <errno.h>
 #include <glib/gstdio.h>
+
+static gboolean
+write_node (GtkTreeModel* model,
+	    GtkTreePath * path,
+	    GtkTreeIter * iter,
+	    gpointer      data)
+{
+	FILE* file = data;
+
+	fprintf (file, "<task>");
+	fprintf (file, "</task>\n");
+
+	return FALSE;
+}
 
 void
 task_list_io_xml_save (CTaskList  * self,
@@ -32,8 +47,14 @@ task_list_io_xml_save (CTaskList  * self,
 	FILE* file = fopen (path, "w");
 	fprintf (file, "<?xml version=\"1.0\" encoding=\"iso-8859-15\"?>\n");
 	fprintf (file, "<tasks>\n");
-	// FIXME: save tasks
-	fprintf (file, "</tasks>\n");
-	fclose (file);
+	gtk_tree_model_foreach (GTK_TREE_MODEL (self),
+				write_node,
+                                file);
+        fprintf (file, "</tasks>\n");
+        if (fclose (file) != 0)
+          {
+            /* FIXME: come up with a proper fallback solution */
+            g_warning ("error closing file: %s", strerror (errno));
+          }
 }
 
