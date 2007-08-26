@@ -24,5 +24,36 @@
 #ifndef TASK_H
 #define TASK_H
 
+#include <glib-object.h>
+
+G_BEGIN_DECLS
+
+typedef struct _CTask        CTask;
+typedef struct _CTaskPrivate CTaskPrivate;
+typedef struct _CTaskClass   CTaskClass;
+
+#define C_TYPE_TASK         (c_task_get_type ())
+#define C_TASK(i)           (G_TYPE_CHECK_INSTANCE_CAST ((i), C_TYPE_TASK, CTask))
+#define C_TASK_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), C_TYPE_TASK, CTaskClass))
+#define C_IS_TASK(i)        (G_TYPE_CHECK_INSTANCE_TYPE ((i), C_TYPE_TASK))
+#define C_IS_TASK_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), C_TYPE_TASK))
+#define C_TASK_GET_CLASS(i) (G_TYPE_INSTANCE_GET_CLASS ((i), C_TYPE_TASK, CTaskClass))
+
+GType        c_task_get_type (void);
+CTask*       c_task_new      (gchar const* text);
+gchar const* c_task_get_text (CTask const* self);
+void         c_task_set_text (CTask      * self,
+			      gchar const* text);
+
+struct _CTask {
+	GObject       base_instance;
+	CTaskPrivate* _private;
+};
+
+struct _CTaskClass {
+	GObjectClass  base_class;
+};
+
+G_END_DECLS
 
 #endif /* !TASK_H */
