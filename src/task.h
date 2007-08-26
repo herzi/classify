@@ -39,12 +39,13 @@ typedef struct _CTaskClass   CTaskClass;
 #define C_IS_TASK_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), C_TYPE_TASK))
 #define C_TASK_GET_CLASS(i) (G_TYPE_INSTANCE_GET_CLASS ((i), C_TYPE_TASK, CTaskClass))
 
-GType        c_task_get_type (void);
-CTask*       c_task_new      (gchar const* text);
-gchar const* c_task_get_text (CTask const* self);
-gchar const* c_task_get_uuid (CTask const* self);
-void         c_task_set_text (CTask      * self,
-			      gchar const* text);
+GType        c_task_get_type      (void);
+CTask*       c_task_new           (gchar const* text);
+CTask*       c_task_new_with_uuid (gchar const* uuid);
+gchar const* c_task_get_text      (CTask const* self);
+gchar const* c_task_get_uuid      (CTask const* self);
+void         c_task_set_text      (CTask      * self,
+				   gchar const* text);
 
 struct _CTask {
 	GObject       base_instance;

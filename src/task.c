@@ -162,6 +162,14 @@ c_task_new (gchar const* text)
 			     NULL);
 }
 
+CTask*
+c_task_new_with_uuid (gchar const* uuid)
+{
+	return g_object_new (C_TYPE_TASK,
+			     "uuid", uuid,
+			     NULL);
+}
+
 gchar const*
 c_task_get_text (CTask const* self)
 {
