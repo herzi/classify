@@ -60,7 +60,10 @@ c_task_class_init (CTaskClass* self_class)
 CTask*
 c_task_new (gchar const* text)
 {
-	return g_object_new (C_TYPE_TASK, NULL);
+	CTask* result = g_object_new (C_TYPE_TASK, NULL);
+#warning "FIXME: use a GObject property"
+	c_task_set_text (result, text);
+	return result;
 }
 
 gchar const*
