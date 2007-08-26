@@ -75,7 +75,17 @@ sax_start_element_cb (gpointer       ctx,
 		// toplevel tasks item
 	} else if (!strcmp (localname, "task")) {
 		// task item
-		data = c_task_new ("");
+		gchar* uuid = NULL;
+		gint   i;
+		for (i = 0; i < n_attributes; i++) {
+			if (!strcmp (attributes[5*i], "uuid") && !uuid) {
+				uuid = g_strndup (attributes[5*i+3], attributes[5*i+4] - attributes[5*i+3]);
+			}
+		}
+
+		data = c_task_new_with_uuid (uuid);
+
+		g_free (uuid);
 	} else {
 		g_warning ("unknown tag <%s%s%s> read",
 			   prefix ? (char const*)prefix : "",
