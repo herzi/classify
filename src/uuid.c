@@ -28,10 +28,12 @@
 char*
 uuid_new (void)
 {
+	gchar buf[37] = {'\0'}; // 128 bits (16 bytes) in hex (32 digits) plus 4 dashes plus '\0'
 	uuid_t out;
 	uuid_clear         (out);
 	uuid_generate_time (out);
+	uuid_unparse       (out, buf);
 
-	return g_strndup (out, G_N_ELEMENTS (out));
+	return g_strdup (buf);
 }
 
