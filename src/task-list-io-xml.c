@@ -33,6 +33,10 @@ struct ParserData {
 	GList    * stack;
 };
 
+struct StackLevel {
+	GString* string;
+};
+
 static void
 sax_characters_cb (gpointer       ctx,
 		   xmlChar const* text,
@@ -41,7 +45,7 @@ sax_characters_cb (gpointer       ctx,
 	struct ParserData* pdata = ((xmlParserCtxt*)ctx)->_private;
 
 	if (pdata->stack) {
-		g_string_append_len (pdata->stack->data,
+		g_string_append_len (((struct StackLevel*)pdata->stack->data)->string,
 				     text,
 				     length);
 	}
@@ -78,7 +82,8 @@ sax_start_element_cb (gpointer       ctx,
 		return;
 	}
 
-	pdata->stack = g_list_prepend (pdata->stack, g_string_new (""));
+	pdata->stack = g_list_prepend (pdata->stack, g_slice_new0 (struct StackLevel));
+	((struct StackLevel*)pdata->stack->data)->string = g_string_new ("");
 }
 
 static void
@@ -97,10 +102,11 @@ sax_end_element_cb (gpointer       ctx,
 	if (!strcmp (localname, "task")) {
 		c_task_list_append (pdata->task_list,
 				    NULL, NULL,
-				    ((GString*)pdata->stack->data)->str);
+				    ((struct StackLevel*)pdata->stack->data)->string->str);
 	}
 
-	g_string_free (pdata->stack->data, TRUE);
+	g_string_free (((struct StackLevel*)pdata->stack->data)->string, TRUE);
+	g_slice_free  (struct StackLevel, pdata->stack->data);
 	pdata->stack = g_list_delete_link (pdata->stack, pdata->stack);
 }
 
