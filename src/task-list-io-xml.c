@@ -267,7 +267,7 @@ write_node (GtkTreeModel* model,
 			}
 		}
 	}
-	fprintf (file, "</task>\n");
+	fprintf (file, "</task>");
 
 	return FALSE;
 }
@@ -288,6 +288,7 @@ dump_nodes (CTaskList  * self,
 			    NULL,
 			    &iter2,
 			    file);
+		fprintf    (file, "\n");
 	}
 }
 
