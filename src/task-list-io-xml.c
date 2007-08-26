@@ -215,18 +215,16 @@ task_list_io_xml_load (CTaskList  * self,
 				 &pdata);
 }
 
-static gboolean
+static void
 write_node (GtkTreeModel* model,
-	    GtkTreePath * path,
 	    GtkTreeIter * iter,
-	    gpointer      data)
+	    FILE        * file)
 {
 	gchar const* text;
 	CTask      * task = c_task_list_get_task (C_TASK_LIST (model), iter);
-	FILE       * file = data;
 
 	text = c_task_get_text (task);
-	g_return_val_if_fail (g_utf8_validate (text, -1, NULL), FALSE);
+	g_return_if_fail (g_utf8_validate (text, -1, NULL));
 
 	fprintf (file, "<task uuid=\"%s\">", c_task_get_uuid (task));
 	for (; text && *text; text = g_utf8_next_char (text)) {
@@ -268,8 +266,6 @@ write_node (GtkTreeModel* model,
 		}
 	}
 	fprintf (file, "</task>");
-
-	return FALSE;
 }
 
 static void
@@ -285,7 +281,6 @@ dump_nodes (CTaskList  * self,
 	     result = gtk_tree_model_iter_next (GTK_TREE_MODEL (self), &iter2))
 	{
 		write_node (GTK_TREE_MODEL (self),
-			    NULL,
 			    &iter2,
 			    file);
 		fprintf    (file, "\n");
