@@ -272,16 +272,33 @@ write_node (GtkTreeModel* model,
 	return FALSE;
 }
 
+static void
+dump_nodes (CTaskList  * self,
+	    FILE       * file,
+	    GtkTreeIter* iter)
+{
+	GtkTreeIter  iter2;
+	gboolean     result;
+
+	for (result = gtk_tree_model_iter_nth_child (GTK_TREE_MODEL (self), &iter2, iter, 0);
+	     result;
+	     result = gtk_tree_model_iter_next (GTK_TREE_MODEL (self), &iter2))
+	{
+		write_node (GTK_TREE_MODEL (self),
+			    NULL,
+			    &iter2,
+			    file);
+	}
+}
+
 void
 task_list_io_xml_save (CTaskList  * self,
-		       gchar const* path)
+                       gchar const* path)
 {
-	FILE* file = fopen (path, "w");
-	fprintf (file, "<?xml version=\"1.0\" encoding=\"iso-8859-15\"?>\n");
-	fprintf (file, "<tasks>\n");
-	gtk_tree_model_foreach (GTK_TREE_MODEL (self),
-				write_node,
-                                file);
+        FILE* file = fopen (path, "w");
+        fprintf (file, "<?xml version=\"1.0\" encoding=\"iso-8859-15\"?>\n");
+        fprintf (file, "<tasks>\n");
+        dump_nodes (self, file, NULL);
         fprintf (file, "</tasks>\n");
         if (fclose (file) != 0)
           {
