@@ -339,7 +339,9 @@ tree_size_allocate_after (GtkWidget    * tree_widget,
 	GtkTreeView      * view;
 	GList            * renderers;
 	gint               wrap_width;
+	gint               focus;
 	gint               hspace;
+	gint               target_width;
 
 	view      = GTK_TREE_VIEW (tree_widget);
 	column    = gtk_tree_view_get_column (view, 0);
@@ -348,10 +350,19 @@ tree_size_allocate_after (GtkWidget    * tree_widget,
 	g_object_get (renderers->data, "wrap-width", &wrap_width, NULL);
 
 	gtk_widget_style_get (tree_widget,
+			      "focus-padding", &focus,
 			      "horizontal-separator", &hspace,
 			      NULL);
 
-	if (allocation->width - 2*hspace != wrap_width) {
+	target_width = allocation->width - 2 * hspace - 2 * focus;
+
+	if ((gtk_tree_model_get_flags (gtk_tree_view_get_model (view)) & GTK_TREE_MODEL_LIST_ONLY) == 0) {
+		if (column == gtk_tree_view_get_expander_column (view)) {
+			target_width -= 15;
+		}
+	}
+
+	if (target_width != wrap_width) {
 		GtkTreeModel* model;
 		GtkTreeIter   iter;
 
@@ -359,7 +370,7 @@ tree_size_allocate_after (GtkWidget    * tree_widget,
 		gtk_tree_view_column_set_fixed_width (column, allocation->width);
 
 		g_object_set (renderers->data,
-			      "wrap-width", allocation->width - 2 * hspace,
+			      "wrap-width", target_width,
 			      NULL);
 
 		model = gtk_tree_view_get_model (view);
