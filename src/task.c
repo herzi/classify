@@ -56,10 +56,6 @@ task_constructor (GType                  type,
 									    params);
 	CTask  * self   = C_TASK (result);
 
-	if (!self->_private->uuid) {
-		self->_private->uuid = uuid_new ();
-	}
-
 	return result;
 }
 
@@ -115,7 +111,11 @@ task_set_property (GObject     * object,
 		break;
 	case PROP_UUID:
 		g_free (self->_private->uuid);
-		self->_private->uuid = g_value_dup_string (value);
+		if (g_value_get_string (value)) {
+			self->_private->uuid = g_value_dup_string (value);
+		} else {
+			self->_private->uuid = uuid_new ();
+		}
 		g_object_notify (object, "uuid");
 		break;
 	default:
