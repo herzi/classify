@@ -25,11 +25,13 @@
 
 struct _CTaskPrivate {
 	gchar* text;
+	gchar* uuid;
 };
 
 enum {
 	PROP_0,
-	PROP_TEXT
+	PROP_TEXT,
+	PROP_UUID
 };
 
 G_DEFINE_TYPE(CTask, c_task, G_TYPE_OBJECT);
@@ -48,6 +50,8 @@ task_finalize (GObject* object)
 	CTask* self = C_TASK (object);
 
 	c_task_set_text (self, NULL);
+	g_free (self->_private->uuid);
+	self->_private->uuid = NULL;
 
 	G_OBJECT_CLASS (c_task_parent_class)->finalize (object);
 }
@@ -64,6 +68,10 @@ task_get_property (GObject   * object,
 	case PROP_TEXT:
 		g_value_set_string (value,
 				    c_task_get_text (self));
+		break;
+	case PROP_UUID:
+		g_value_set_string (value,
+				    self->_private->uuid);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
@@ -85,6 +93,11 @@ task_set_property (GObject     * object,
 	case PROP_TEXT:
 		c_task_set_text (self,
 				 g_value_get_string (value));
+		break;
+	case PROP_UUID:
+		g_free (self->_private->uuid);
+		self->_private->uuid = g_value_dup_string (value);
+		g_object_notify (object, "uuid");
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
@@ -110,6 +123,13 @@ c_task_class_init (CTaskClass* self_class)
 							      "text",
 							      NULL,
 							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_UUID,
+					 g_param_spec_string ("uuid",
+							      "uuid",
+							      "uuid",
+							      NULL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (self_class, sizeof (CTaskPrivate));
 }
