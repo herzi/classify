@@ -25,6 +25,7 @@
 #define TASK_LIST_H
 
 #include <gtk/gtkliststore.h>
+#include <gtk/gtktreestore.h>
 #include "task.h"
 
 G_BEGIN_DECLS
@@ -61,12 +62,18 @@ void         c_task_list_set_text      (CTaskList   * self,
 					gchar const * text);
 
 struct _CTaskList {
-	GtkListStore      base_instance;
+	union {
+		GtkListStore list_instance;
+		GtkTreeStore tree_instance;
+	} base_instance;
 	CTaskListPrivate* _private;
 };
 
 struct _CTaskListClass {
-	GtkListStoreClass base_class;
+	union {
+		GtkListStoreClass list_class;
+		GtkTreeStoreClass tree_class;
+	} base_class;
 };
 
 G_END_DECLS
