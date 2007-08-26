@@ -32,32 +32,57 @@ enum {
 	N_COLUMNS
 };
 
+static void
+task_list_append_task (CTaskList  * self,
+		       GtkTreeIter* iter,
+		       GtkTreeIter* before,
+		       CTask      * task)
+{
+	GtkTreeIter  iter2;
+
+	if (before) {
+		gtk_list_store_insert_after (GTK_LIST_STORE (self),
+					     &iter2,
+					     before);
+	} else {
+		gtk_list_store_append (GTK_LIST_STORE (self), &iter2);
+	}
+
+	gtk_list_store_set (GTK_LIST_STORE (self), &iter2,
+			    COL_TASK, task,
+			    -1);
+
+	if (iter) {
+		*iter = iter2;
+	}
+}
+
 void
 c_task_list_append (CTaskList   * store,
 		    GtkTreeIter * iter,
 		    GtkTreeIter * before,
 		    gchar const * text)
 {
-	GtkTreeIter  iter2;
 	CTask      * task;
 
-	if (before) {
-		gtk_list_store_insert_after (store,
-					     &iter2,
-					     before);
-	} else {
-		gtk_list_store_append (store, &iter2);
-	}
+	g_return_if_fail (C_IS_TASK_LIST (store));
 
-	task = c_task_new  (text);
-	gtk_list_store_set (GTK_LIST_STORE (store), &iter2,
-			    COL_TASK, task,
-			    -1);
-	g_object_unref     (task);
+	task = c_task_new     (text);
+	task_list_append_task (store,
+			       iter,
+			       before,
+			       task);
+	g_object_unref        (task);
+}
 
-	if (iter) {
-		*iter = iter2;
-	}
+void
+c_task_list_append_task (CTaskList   * self,
+			 CTask       * task)
+{
+	g_return_if_fail (C_IS_TASK_LIST (self));
+	g_return_if_fail (C_IS_TASK (task));
+
+	task_list_append_task (self, NULL, NULL, task);
 }
 
 CTask*
