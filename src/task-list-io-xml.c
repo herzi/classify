@@ -69,14 +69,16 @@ sax_start_element_cb (gpointer       ctx,
 		// toplevel tasks item
 	} else if (!strcmp (localname, "task")) {
 		// task item
-		pdata->stack = g_list_prepend (pdata->stack, g_string_new (""));
 	} else {
 		g_warning ("unknown tag <%s%s%s> read",
 			   prefix ? (char const*)prefix : "",
 			   prefix ? ":" : "",
 			   localname);
 		pdata->unknown_depth++;
+		return;
 	}
+
+	pdata->stack = g_list_prepend (pdata->stack, g_string_new (""));
 }
 
 static void
@@ -96,10 +98,10 @@ sax_end_element_cb (gpointer       ctx,
 		c_task_list_append (pdata->task_list,
 				    NULL, NULL,
 				    ((GString*)pdata->stack->data)->str);
-
-		g_string_free (pdata->stack->data, TRUE);
-		pdata->stack = g_list_delete_link (pdata->stack, pdata->stack);
 	}
+
+	g_string_free (pdata->stack->data, TRUE);
+	pdata->stack = g_list_delete_link (pdata->stack, pdata->stack);
 }
 
 static void
