@@ -23,9 +23,15 @@
 
 #include "uuid.h"
 
+#include <uuid/uuid.h>
+
 char*
 uuid_new (void)
 {
-	return NULL;
+	uuid_t out;
+	uuid_clear         (out);
+	uuid_generate_time (out);
+
+	return g_strndup (out, G_N_ELEMENTS (out));
 }
 
