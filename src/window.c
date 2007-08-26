@@ -107,7 +107,7 @@ task_new_activated (GtkAction* action,
 {
 	GtkTreeSelection* selection;
 	GtkTreeView * tree  = GTK_TREE_VIEW  (c_window_get_tree (self));
-	GtkListStore* store = GTK_LIST_STORE (gtk_tree_view_get_model (tree));
+	CTaskList   * store = C_TASK_LIST (gtk_tree_view_get_model (tree));
 	GtkTreePath * path;
 	GtkTreeIter   iter;
 
