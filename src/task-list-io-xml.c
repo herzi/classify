@@ -75,6 +75,7 @@ sax_start_element_cb (gpointer       ctx,
 		// toplevel tasks item
 	} else if (!strcmp (localname, "task")) {
 		// task item
+		data = c_task_new ("");
 	} else {
 		g_warning ("unknown tag <%s%s%s> read",
 			   prefix ? (char const*)prefix : "",
@@ -103,9 +104,11 @@ sax_end_element_cb (gpointer       ctx,
 	}
 
 	if (!strcmp (localname, "task")) {
-		c_task_list_append (pdata->task_list,
-				    NULL, NULL,
+		c_task_set_text    (((struct StackLevel*)pdata->stack->data)->data,
 				    ((struct StackLevel*)pdata->stack->data)->string->str);
+
+		c_task_list_append_task (pdata->task_list,
+					 ((struct StackLevel*)pdata->stack->data)->data);
 	}
 
 	g_string_free (((struct StackLevel*)pdata->stack->data)->string, TRUE);
