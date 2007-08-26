@@ -27,6 +27,11 @@ struct _CTaskPrivate {
 	gchar* text;
 };
 
+enum {
+	PROP_0,
+	PROP_TEXT
+};
+
 G_DEFINE_TYPE(CTask, c_task, G_TYPE_OBJECT);
 
 static void
@@ -48,11 +53,63 @@ task_finalize (GObject* object)
 }
 
 static void
+task_get_property (GObject   * object,
+		   guint       prop_id,
+		   GValue    * value,
+		   GParamSpec* pspec)
+{
+	CTask* self = C_TASK (object);
+
+	switch (prop_id) {
+	case PROP_TEXT:
+		g_value_set_string (value,
+				    c_task_get_text (self));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
+						   prop_id,
+						   pspec);
+		break;
+	}
+}
+
+static void
+task_set_property (GObject     * object,
+		   guint         prop_id,
+		   GValue const* value,
+		   GParamSpec  * pspec)
+{
+	CTask* self = C_TASK (object);
+
+	switch (prop_id) {
+	case PROP_TEXT:
+		c_task_set_text (self,
+				 g_value_get_string (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
+						   prop_id,
+						   pspec);
+		break;
+	}
+}
+
+static void
 c_task_class_init (CTaskClass* self_class)
 {
 	GObjectClass* object_class = G_OBJECT_CLASS (self_class);
 
-	object_class->finalize = task_finalize;
+	object_class->finalize     = task_finalize;
+	object_class->get_property = task_get_property;
+	object_class->set_property = task_set_property;
+
+	g_object_class_install_property (object_class,
+					 PROP_TEXT,
+					 g_param_spec_string ("text",
+							      "text",
+							      "text",
+							      NULL,
+							      G_PARAM_READWRITE));
 
 	g_type_class_add_private (self_class, sizeof (CTaskPrivate));
 }
@@ -60,10 +117,9 @@ c_task_class_init (CTaskClass* self_class)
 CTask*
 c_task_new (gchar const* text)
 {
-	CTask* result = g_object_new (C_TYPE_TASK, NULL);
-#warning "FIXME: use a GObject property"
-	c_task_set_text (result, text);
-	return result;
+	return g_object_new (C_TYPE_TASK,
+			     "text", text,
+			     NULL);
 }
 
 gchar const*
