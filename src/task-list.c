@@ -32,6 +32,12 @@ enum {
 	N_COLUMNS
 };
 
+#define NATIVE(i) GTK_LIST_STORE(i)
+#define set_column_types(a,b,c) gtk_list_store_set_column_types(a,b,c)
+#define insert_after(a,b,c) gtk_list_store_insert_after(a,b,c)
+#define append(a,b) gtk_list_store_append(a,b)
+#define set(a,b,...) gtk_list_store_set(a,b,__VA_ARGS__)
+
 G_DEFINE_TYPE (CTaskList, c_task_list, GTK_TYPE_LIST_STORE);
 
 static void
@@ -41,9 +47,9 @@ c_task_list_init (CTaskList* self)
 		G_TYPE_OBJECT
 	};
 
-	gtk_list_store_set_column_types (GTK_LIST_STORE (self),
-					 N_COLUMNS,
-					 types);
+	set_column_types (NATIVE (self),
+			  N_COLUMNS,
+			  types);
 }
 
 static void
@@ -59,16 +65,16 @@ task_list_append_task (CTaskList  * self,
 	GtkTreeIter  iter2;
 
 	if (before) {
-		gtk_list_store_insert_after (GTK_LIST_STORE (self),
-					     &iter2,
-					     before);
+		insert_after (NATIVE (self),
+			      &iter2,
+			      before);
 	} else {
-		gtk_list_store_append (GTK_LIST_STORE (self), &iter2);
+		append (NATIVE (self), &iter2);
 	}
 
-	gtk_list_store_set (GTK_LIST_STORE (self), &iter2,
-			    COL_TASK, task,
-			    -1);
+	set (NATIVE (self), &iter2,
+	     COL_TASK, task,
+	     -1);
 
 	if (iter) {
 		*iter = iter2;
