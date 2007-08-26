@@ -6,6 +6,8 @@ classify_SOURCES=\
 	src/parser.h \
 	src/preferences.c \
 	src/preferences.h \
+	src/task.c \
+	src/task.h \
 	src/task-list.c \
 	src/task-list.h \
 	src/task-list-io-text.c \
