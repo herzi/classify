@@ -34,7 +34,8 @@ struct ParserData {
 };
 
 struct StackLevel {
-	GString* string;
+	gpointer  data;
+	GString * string;
 };
 
 static void
@@ -63,6 +64,7 @@ sax_start_element_cb (gpointer       ctx,
 		      xmlChar const**attributes)
 {
 	struct ParserData* pdata = ((xmlParserCtxt*)ctx)->_private;
+	gpointer           data  = NULL;
 
 	if (pdata->unknown_depth) {
 		pdata->unknown_depth++;
@@ -83,6 +85,7 @@ sax_start_element_cb (gpointer       ctx,
 	}
 
 	pdata->stack = g_list_prepend (pdata->stack, g_slice_new0 (struct StackLevel));
+	((struct StackLevel*)pdata->stack->data)->data   = data;
 	((struct StackLevel*)pdata->stack->data)->string = g_string_new ("");
 }
 
