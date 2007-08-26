@@ -197,15 +197,16 @@ write_node (GtkTreeModel* model,
 	    GtkTreeIter * iter,
 	    gpointer      data)
 {
-	gchar const* task = c_task_list_get_text (C_TASK_LIST (model), iter);
-	gchar const* line;
+	gchar const* text;
+	CTask      * task = c_task_list_get_task (C_TASK_LIST (model), iter);
 	FILE       * file = data;
 
-	g_return_val_if_fail (g_utf8_validate (task, -1, NULL), FALSE);
+	text = c_task_get_text (task);
+	g_return_val_if_fail (g_utf8_validate (text, -1, NULL), FALSE);
 
 	fprintf (file, "<task>");
-	for (line = task; line && *line; line = g_utf8_next_char (line)) {
-		gunichar c = g_utf8_get_char (line);
+	for (; text && *text; text = g_utf8_next_char (text)) {
+		gunichar c = g_utf8_get_char (text);
 
 		if (c < 32) {
 			// ASCII control chars
