@@ -60,11 +60,10 @@ c_task_list_append (CTaskList   * store,
 	}
 }
 
-gchar*
+gchar const*
 c_task_list_get_text (CTaskList  * self,
 		      GtkTreeIter* iter)
 {
-#warning "FIXME: make const gchar* the return type"
 	CTask* task = NULL;
 
 	g_return_val_if_fail (C_IS_TASK_LIST (self), NULL);
@@ -73,7 +72,7 @@ c_task_list_get_text (CTaskList  * self,
 			    COL_TASK, &task,
 			    -1);
 
-	return g_strdup (c_task_get_text (task));
+	return c_task_get_text (task);
 }
 
 CTaskList*

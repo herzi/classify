@@ -269,9 +269,9 @@ task_list_data_func (GtkTreeViewColumn* column,
 		     GtkTreeIter      * iter,
 		     gpointer           data)
 {
-	gchar* text = c_task_list_get_text (C_TASK_LIST (model), iter);
-	g_object_set (renderer, "text", text, NULL);
-	g_free (text);
+	g_object_set (renderer,
+		      "text", c_task_list_get_text (C_TASK_LIST (model), iter),
+		      NULL);
 }
 
 GtkWidget*

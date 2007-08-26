@@ -32,19 +32,19 @@ G_BEGIN_DECLS
 #define C_TASK_LIST(i)    GTK_LIST_STORE(i)
 #define C_IS_TASK_LIST(i) GTK_IS_LIST_STORE(i)
 
-CTaskList* c_task_list_new           (void);
-CTaskList* c_task_list_new_from_file (gchar const* path);
-void       c_task_list_append        (CTaskList   * self,
-				      GtkTreeIter * iter,
-				      GtkTreeIter * before,
-				      gchar const * text);
-gchar*     c_task_list_get_text      (CTaskList   * self,
-				      GtkTreeIter * iter);
-void       c_task_list_save          (CTaskList   * self,
-				      gchar const * path);
-void       c_task_list_set_text      (CTaskList   * self,
-				      GtkTreeIter * iter,
-				      gchar const * text);
+CTaskList*   c_task_list_new           (void);
+CTaskList*   c_task_list_new_from_file (gchar const* path);
+void         c_task_list_append        (CTaskList   * self,
+					GtkTreeIter * iter,
+					GtkTreeIter * before,
+					gchar const * text);
+gchar const* c_task_list_get_text      (CTaskList   * self,
+					GtkTreeIter * iter);
+void         c_task_list_save          (CTaskList   * self,
+					gchar const * path);
+void         c_task_list_set_text      (CTaskList   * self,
+					GtkTreeIter * iter,
+					gchar const * text);
 
 G_END_DECLS
 

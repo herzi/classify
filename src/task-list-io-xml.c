@@ -197,55 +197,53 @@ write_node (GtkTreeModel* model,
 	    GtkTreeIter * iter,
 	    gpointer      data)
 {
-	FILE* file = data;
-	gchar* task;
+	gchar const* task = c_task_list_get_text (C_TASK_LIST (model), iter);
+	gchar const* line;
+	FILE       * file = data;
 
-	task = c_task_list_get_text (C_TASK_LIST (model), iter);
-	if (G_LIKELY (g_utf8_validate (task, -1, NULL))) {
-		gchar const* line;
-		fprintf (file, "<task>");
-		for (line = task; line && *line; line = g_utf8_next_char (line)) {
-			gunichar c = g_utf8_get_char (line);
+	g_return_val_if_fail (g_utf8_validate (task, -1, NULL), FALSE);
 
-			if (c < 32) {
-				// ASCII control chars
-				g_warning ("FIXME: ascii control char %d encountered, ignoring.",
-					   c);
-			} else if (c > 127) {
-				// UTF-8 multibyte chars
-				fprintf (file, "&#%d;", c);
+	fprintf (file, "<task>");
+	for (line = task; line && *line; line = g_utf8_next_char (line)) {
+		gunichar c = g_utf8_get_char (line);
+
+		if (c < 32) {
+			// ASCII control chars
+			g_warning ("FIXME: ascii control char %d encountered, ignoring.",
+				   c);
+		} else if (c > 127) {
+			// UTF-8 multibyte chars
+			fprintf (file, "&#%d;", c);
+		} else {
+			gchar const* entity = NULL;
+
+			switch (c) {
+			case '"':
+				entity = "quot";
+				break;
+			case '\'':
+				entity = "apos";
+				break;
+			case '&':
+				entity = "amp";
+				break;
+			case '<':
+				entity = "lt";
+				break;
+			case '>':
+				entity = "gt";
+				break;
+			}
+
+			if (G_UNLIKELY (entity)) {
+				fprintf (file, "&%s;", entity);
 			} else {
-				gchar const* entity = NULL;
-
-				switch (c) {
-				case '"':
-					entity = "quot";
-					break;
-				case '\'':
-					entity = "apos";
-					break;
-				case '&':
-					entity = "amp";
-					break;
-				case '<':
-					entity = "lt";
-					break;
-				case '>':
-					entity = "gt";
-					break;
-				}
-
-				if (G_UNLIKELY (entity)) {
-					fprintf (file, "&%s;", entity);
-				} else {
-					fprintf (file, "%c", c);
-				}
+				fprintf (file, "%c", c);
 			}
 		}
-		fprintf (file, "</task>\n");
 	}
+	fprintf (file, "</task>\n");
 
-	g_free (task);
 	return FALSE;
 }
 
