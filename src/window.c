@@ -360,7 +360,7 @@ tree_size_allocate_after (GtkWidget    * tree_widget,
 			      "horizontal-separator", &hspace,
 			      NULL);
 
-	target_width = allocation->width - 2 * hspace - 2 * focus - 2 * text_pad;
+	target_width = allocation->width - 2 * (hspace + focus + text_pad);
 
 	if ((gtk_tree_model_get_flags (gtk_tree_view_get_model (view)) & GTK_TREE_MODEL_LIST_ONLY) == 0) {
 		if (column == gtk_tree_view_get_expander_column (view)) {
