@@ -30,8 +30,6 @@ G_BEGIN_DECLS
 
 void task_list_io_text_load (CTaskList  * self,
 			     gchar const* path);
-void task_list_io_text_save (CTaskList  * self,
-			     gchar const* path);
 
 G_END_DECLS
 
