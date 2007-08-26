@@ -23,6 +23,8 @@
 
 #include "task-list.h"
 
+#include <gtk/gtktreednd.h>
+
 #include "task.h"
 #include "task-list-io-text.h"
 #include "task-list-io-xml.h"
@@ -32,13 +34,25 @@ enum {
 	N_COLUMNS
 };
 
-#define NATIVE(i) GTK_LIST_STORE(i)
+#if 1
+#define NATIVE(i)               GTK_LIST_STORE(i)
+#define NATIVE_TYPE             GTK_TYPE_LIST_STORE
 #define set_column_types(a,b,c) gtk_list_store_set_column_types(a,b,c)
-#define insert_after(a,b,c) gtk_list_store_insert_after(a,b,c)
-#define append(a,b) gtk_list_store_append(a,b)
-#define set(a,b,...) gtk_list_store_set(a,b,__VA_ARGS__)
+#define insert_after(a,b,c)     gtk_list_store_insert_after(a,b,c)
+#define append(a,b)             gtk_list_store_append(a,b)
+#define set(a,b,...)            gtk_list_store_set(a,b,__VA_ARGS__)
+#else
+#define NATIVE(i)               GTK_TREE_STORE(i)
+#define NATIVE_TYPE             GTK_TYPE_TREE_STORE
+#define set_column_types(a,b,c) gtk_tree_store_set_column_types(a,b,c)
+#define insert_after(a,b,c)     gtk_tree_store_insert_after(a,b,NULL,c)
+#define append(a,b)             gtk_tree_store_append(a,b,NULL)
+#define set(a,b,...)            gtk_tree_store_set(a,b,__VA_ARGS__)
+#endif
 
-G_DEFINE_TYPE (CTaskList, c_task_list, GTK_TYPE_LIST_STORE);
+static void implement_drag_dest (GtkTreeDragDestIface* iface);
+G_DEFINE_TYPE_WITH_CODE (CTaskList, c_task_list, NATIVE_TYPE,
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_TREE_DRAG_DEST, implement_drag_dest));
 
 static void
 c_task_list_init (CTaskList* self)
@@ -193,5 +207,27 @@ c_task_list_set_text (CTaskList   * store,
 					path,
 					iter);
 	gtk_tree_path_free             (path);
+}
+
+/* GtkTreeDragDest */
+static GtkTreeDragDestIface* c_task_list_parent_drag_dest = NULL;
+
+static gboolean
+task_list_row_drop_possible (GtkTreeDragDest * drag_dest,
+			     GtkTreePath     * path,
+			     GtkSelectionData* data)
+{
+	return gtk_tree_path_get_depth (path) == 1 &&
+	       c_task_list_parent_drag_dest->row_drop_possible (drag_dest,
+								path,
+								data);
+}
+
+static void
+implement_drag_dest (GtkTreeDragDestIface* iface)
+{
+	c_task_list_parent_drag_dest = g_type_interface_peek_parent (iface);
+
+	iface->row_drop_possible = task_list_row_drop_possible;
 }
 
