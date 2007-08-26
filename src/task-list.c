@@ -60,19 +60,29 @@ c_task_list_append (CTaskList   * store,
 	}
 }
 
-gchar const*
-c_task_list_get_text (CTaskList  * self,
-		      GtkTreeIter* iter)
+CTask*
+c_task_list_get_task (CTaskList   * self,
+		      GtkTreeIter * iter)
 {
-	CTask* task = NULL;
+	CTask* result = NULL;
 
 	g_return_val_if_fail (C_IS_TASK_LIST (self), NULL);
 
 	gtk_tree_model_get (GTK_TREE_MODEL (self), iter,
-			    COL_TASK, &task,
+			    COL_TASK, &result,
 			    -1);
+	g_object_unref (result); // remove the reference created by GtkTreeModel::get()
 
-	return c_task_get_text (task);
+	return result;
+}
+
+gchar const*
+c_task_list_get_text (CTaskList  * self,
+		      GtkTreeIter* iter)
+{
+	g_return_val_if_fail (C_IS_TASK_LIST (self), NULL);
+
+	return c_task_get_text (c_task_list_get_task (self, iter));
 }
 
 CTaskList*

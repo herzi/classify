@@ -25,6 +25,7 @@
 #define TASK_LIST_H
 
 #include <gtk/gtkliststore.h>
+#include "task.h"
 
 G_BEGIN_DECLS
 
@@ -38,6 +39,8 @@ void         c_task_list_append        (CTaskList   * self,
 					GtkTreeIter * iter,
 					GtkTreeIter * before,
 					gchar const * text);
+CTask*       c_task_list_get_task      (CTaskList   * self,
+					GtkTreeIter * iter);
 gchar const* c_task_list_get_text      (CTaskList   * self,
 					GtkTreeIter * iter);
 void         c_task_list_save          (CTaskList   * self,
