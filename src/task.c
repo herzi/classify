@@ -90,7 +90,7 @@ task_get_property (GObject   * object,
 		break;
 	case PROP_UUID:
 		g_value_set_string (value,
-				    self->_private->uuid);
+				    c_task_get_uuid (self));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
@@ -168,6 +168,14 @@ c_task_get_text (CTask const* self)
 	g_return_val_if_fail (C_IS_TASK (self), NULL);
 
 	return self->_private->text;
+}
+
+gchar const*
+c_task_get_uuid (CTask const* self)
+{
+	g_return_val_if_fail (C_IS_TASK (self), NULL);
+
+	return self->_private->uuid;
 }
 
 void

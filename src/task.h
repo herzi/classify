@@ -42,6 +42,7 @@ typedef struct _CTaskClass   CTaskClass;
 GType        c_task_get_type (void);
 CTask*       c_task_new      (gchar const* text);
 gchar const* c_task_get_text (CTask const* self);
+gchar const* c_task_get_uuid (CTask const* self);
 void         c_task_set_text (CTask      * self,
 			      gchar const* text);
 
