@@ -44,6 +44,18 @@ c_task_init (CTask* self)
 						      CTaskPrivate);
 }
 
+static GObject*
+task_constructor (GType                  type,
+		  guint                  n_params,
+		  GObjectConstructParam* params)
+{
+	GObject* result = G_OBJECT_CLASS(c_task_parent_class)->constructor (type,
+									    n_params,
+									    params);
+
+	return result;
+}
+
 static void
 task_finalize (GObject* object)
 {
@@ -112,6 +124,7 @@ c_task_class_init (CTaskClass* self_class)
 {
 	GObjectClass* object_class = G_OBJECT_CLASS (self_class);
 
+	object_class->constructor  = task_constructor;
 	object_class->finalize     = task_finalize;
 	object_class->get_property = task_get_property;
 	object_class->set_property = task_set_property;
