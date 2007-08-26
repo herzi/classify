@@ -23,6 +23,8 @@
 
 #include "task.h"
 
+#include "uuid.h"
+
 struct _CTaskPrivate {
 	gchar* text;
 	gchar* uuid;
@@ -52,6 +54,11 @@ task_constructor (GType                  type,
 	GObject* result = G_OBJECT_CLASS(c_task_parent_class)->constructor (type,
 									    n_params,
 									    params);
+	CTask  * self   = C_TASK (result);
+
+	if (!self->_private->uuid) {
+		self->_private->uuid = uuid_new ();
+	}
 
 	return result;
 }
