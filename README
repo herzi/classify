@@ -1,0 +1,16 @@
+ README for Classify
+=====================
+
+Classify is a simple but yet powerful task or todo list manager.
+
+Dependencies:
+-------------
+
+To be able to install you need the following software packages (Debian package
+names in parentheses):
+
+ * GTK+, the graphical toolkit from http://www.gtk.org/ (libgtk2.0-dev)
+ * libxml, the XML library from http://www.xmlsoft.org/ (libxml2-dev)
+ * libuuid, the e2fsprogs UUID library from
+   http://sourceforge.net/projects/e2fsprogs (uuid-dev)
+
