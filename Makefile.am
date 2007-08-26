@@ -14,6 +14,8 @@ classify_SOURCES=\
 	src/task-list-io-text.h \
 	src/task-list-io-xml.c \
 	src/task-list-io-xml.h \
+	src/uuid.c \
+	src/uuid.h \
 	src/window.c \
 	src/window.h \
 	$(NULL)
