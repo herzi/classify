@@ -29,9 +29,18 @@
 
 G_BEGIN_DECLS
 
-#define CTaskList         GtkListStore
-#define C_TASK_LIST(i)    GTK_LIST_STORE(i)
-#define C_IS_TASK_LIST(i) GTK_IS_LIST_STORE(i)
+typedef struct _CTaskList        CTaskList;
+typedef struct _CTaskListPrivate CTaskListPrivate;
+typedef struct _CTaskListClass   CTaskListClass;
+
+#define C_TYPE_TASK_LIST         (c_task_list_get_type ())
+#define C_TASK_LIST(i)           (G_TYPE_CHECK_INSTANCE_CAST ((i), C_TYPE_TASK_LIST, CTaskList))
+#define C_TASK_LIST_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), C_TYPE_TASK_LIST, CTaskListClass))
+#define C_IS_TASK_LIST(i)        (G_TYPE_CHECK_INSTANCE_TYPE ((i), C_TYPE_TASK_LIST))
+#define C_IS_TASK_LIST_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), C_TYPE_TASK_LIST))
+#define C_TASK_LIST_GET_CLASS(i) (G_TYPE_INSTANCE_GET_CLASS ((i), C_TYPE_TASK_LIST, CTaskListClass))
+
+GType        c_task_list_get_type      (void);
 
 CTaskList*   c_task_list_new           (void);
 CTaskList*   c_task_list_new_from_file (gchar const* path);
@@ -50,6 +59,15 @@ void         c_task_list_save          (CTaskList   * self,
 void         c_task_list_set_text      (CTaskList   * self,
 					GtkTreeIter * iter,
 					gchar const * text);
+
+struct _CTaskList {
+	GtkListStore      base_instance;
+	CTaskListPrivate* _private;
+};
+
+struct _CTaskListClass {
+	GtkListStoreClass base_class;
+};
 
 G_END_DECLS
 

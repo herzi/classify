@@ -32,6 +32,24 @@ enum {
 	N_COLUMNS
 };
 
+G_DEFINE_TYPE (CTaskList, c_task_list, GTK_TYPE_LIST_STORE);
+
+static void
+c_task_list_init (CTaskList* self)
+{
+	GType types[N_COLUMNS] = {
+		G_TYPE_OBJECT
+	};
+
+	gtk_list_store_set_column_types (GTK_LIST_STORE (self),
+					 N_COLUMNS,
+					 types);
+}
+
+static void
+c_task_list_class_init (CTaskListClass* self_class)
+{}
+
 static void
 task_list_append_task (CTaskList  * self,
 		       GtkTreeIter* iter,
@@ -113,8 +131,7 @@ c_task_list_get_text (CTaskList  * self,
 CTaskList*
 c_task_list_new (void)
 {
-	return gtk_list_store_new (N_COLUMNS,
-				   G_TYPE_OBJECT);
+	return g_object_new (C_TYPE_TASK_LIST, NULL);
 }
 
 CTaskList*
