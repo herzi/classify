@@ -23,11 +23,12 @@
 
 #include "task-list.h"
 
+#include "task.h"
 #include "task-list-io-text.h"
 #include "task-list-io-xml.h"
 
 enum {
-	COL_TEXT,
+	COL_TASK,
 	N_COLUMNS
 };
 
@@ -35,9 +36,10 @@ void
 c_task_list_append (CTaskList   * store,
 		    GtkTreeIter * iter,
 		    GtkTreeIter * before,
-		    gchar const * task)
+		    gchar const * text)
 {
-	GtkTreeIter iter2;
+	GtkTreeIter  iter2;
+	CTask      * task;
 
 	if (before) {
 		gtk_list_store_insert_after (store,
@@ -46,7 +48,12 @@ c_task_list_append (CTaskList   * store,
 	} else {
 		gtk_list_store_append (store, &iter2);
 	}
-	c_task_list_set_text  (store, &iter2, task);
+
+	task = c_task_new  (text);
+	gtk_list_store_set (GTK_LIST_STORE (store), &iter2,
+			    COL_TASK, task,
+			    -1);
+	g_object_unref     (task);
 
 	if (iter) {
 		*iter = iter2;
@@ -57,22 +64,23 @@ gchar*
 c_task_list_get_text (CTaskList  * self,
 		      GtkTreeIter* iter)
 {
-	gchar* result = NULL;
+#warning "FIXME: make const gchar* the return type"
+	CTask* task = NULL;
 
 	g_return_val_if_fail (C_IS_TASK_LIST (self), NULL);
 
 	gtk_tree_model_get (GTK_TREE_MODEL (self), iter,
-			    COL_TEXT, &result,
+			    COL_TASK, &task,
 			    -1);
 
-	return result;
+	return g_strdup (c_task_get_text (task));
 }
 
 CTaskList*
 c_task_list_new (void)
 {
 	return gtk_list_store_new (N_COLUMNS,
-				   G_TYPE_STRING);
+				   G_TYPE_OBJECT);
 }
 
 CTaskList*
@@ -113,7 +121,20 @@ c_task_list_set_text (CTaskList   * store,
 		      GtkTreeIter * iter,
 		      gchar const * text)
 {
-	gtk_list_store_set (store, iter,
-			    COL_TEXT, text,
+	GtkTreePath* path;
+	CTask      * task = NULL;
+
+	gtk_tree_model_get (GTK_TREE_MODEL (store), iter,
+			    COL_TASK, &task,
 			    -1);
+
+	c_task_set_text (task, text);
+
+	path = gtk_tree_model_get_path (GTK_TREE_MODEL (store),
+					iter);
+	gtk_tree_model_row_changed     (GTK_TREE_MODEL (store),
+					path,
+					iter);
+	gtk_tree_path_free             (path);
 }
+
