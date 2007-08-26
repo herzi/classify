@@ -204,7 +204,7 @@ write_node (GtkTreeModel* model,
 	text = c_task_get_text (task);
 	g_return_val_if_fail (g_utf8_validate (text, -1, NULL), FALSE);
 
-	fprintf (file, "<task>");
+	fprintf (file, "<task uuid=\"%s\">", c_task_get_uuid (task));
 	for (; text && *text; text = g_utf8_next_char (text)) {
 		gunichar c = g_utf8_get_char (text);
 
