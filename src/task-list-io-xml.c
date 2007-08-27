@@ -215,6 +215,11 @@ task_list_io_xml_load (CTaskList  * self,
 				 &pdata);
 }
 
+// FIXME: merge dump_nodes() and write_node()
+static void dump_nodes (CTaskList  * self,
+			FILE       * file,
+			GtkTreeIter* iter);
+
 static void
 write_node (GtkTreeModel* model,
 	    GtkTreeIter * iter,
@@ -265,6 +270,9 @@ write_node (GtkTreeModel* model,
 			}
 		}
 	}
+
+	dump_nodes (C_TASK_LIST (model), file, iter);
+
 	fprintf (file, "</task>");
 }
 
@@ -283,8 +291,6 @@ dump_nodes (CTaskList  * self,
 		write_node (GTK_TREE_MODEL (self),
 			    &iter2,
 			    file);
-
-		dump_nodes (self, file, &iter2);
 	}
 }
 
