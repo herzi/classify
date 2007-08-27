@@ -34,8 +34,10 @@ struct ParserData {
 };
 
 struct StackLevel {
-	gpointer  data;
-	GString * string;
+	gpointer     data;
+	GtkTreeIter* iter;
+	GtkTreeIter  _iter;
+	GString    * string;
 };
 
 static void
