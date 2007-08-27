@@ -254,7 +254,20 @@ entry_key_press_event (GtkWidget  * widget,
 		       GdkEventKey* event,
 		       gpointer     user_data)
 {
-	if ((event->state & GDK_SHIFT_MASK) != 0 && (event->keyval == GDK_Return || event->keyval == GDK_KP_Enter)) {
+	if ((event->state & GDK_SHIFT_MASK) != 0 &&
+	    (event->keyval == GDK_Return || event->keyval == GDK_KP_Enter))
+	{
+		gint cursor, select;
+		g_object_get (widget,
+			      "cursor-position", &cursor,
+			      "selection-bound", &select,
+			      NULL);
+
+		if (cursor != select) {
+			gtk_editable_delete_text (GTK_EDITABLE (widget),
+						  MIN (cursor, select),
+						  MAX (cursor, select));
+		}
 
 		g_signal_emit_by_name (widget, "insert-at-cursor",
 				       "\n");
