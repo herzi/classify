@@ -94,7 +94,7 @@ task_bottom_activated (GtkAction* action,
 	selected = gtk_tree_selection_get_selected_rows (selection, NULL);
 	g_return_if_fail (selected);
 	g_return_if_fail (gtk_tree_model_get_iter (gtk_tree_view_get_model (GTK_TREE_VIEW (c_window_get_tree (self))), &iter, selected->data));
-	gtk_list_store_move_before (GTK_LIST_STORE (gtk_tree_view_get_model (GTK_TREE_VIEW (c_window_get_tree (self)))),
+	gtk_tree_store_move_before (GTK_TREE_STORE (gtk_tree_view_get_model (GTK_TREE_VIEW (c_window_get_tree (self)))),
 				    &iter,
 				    NULL);
 	g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
@@ -160,7 +160,7 @@ task_top_activated (GtkAction* action,
 	selected = gtk_tree_selection_get_selected_rows (selection, NULL);
 	g_return_if_fail (selected);
 	g_return_if_fail (gtk_tree_model_get_iter (gtk_tree_view_get_model (GTK_TREE_VIEW (c_window_get_tree (self))), &iter, selected->data));
-	gtk_list_store_move_after (GTK_LIST_STORE (gtk_tree_view_get_model (GTK_TREE_VIEW (c_window_get_tree (self)))),
+	gtk_tree_store_move_after (GTK_TREE_STORE (gtk_tree_view_get_model (GTK_TREE_VIEW (c_window_get_tree (self)))),
 				   &iter,
 				   NULL);
 	g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
@@ -235,7 +235,7 @@ tree_key_press_event (GtkTreeView* tree,
 				GtkTreeIter titer;
 				gtk_tree_model_get_iter (model, &titer,
 							 gtk_tree_row_reference_get_path (iter->data));
-				gtk_list_store_remove   (GTK_LIST_STORE (model),
+				gtk_tree_store_remove   (GTK_TREE_STORE (model),
 						         &titer);
 				gtk_tree_row_reference_free (iter->data);
 			}
@@ -391,6 +391,22 @@ tree_size_allocate_after (GtkWidget    * tree_widget,
 	g_list_free (renderers);
 }
 
+static gboolean
+tree_search_equal_func (GtkTreeModel* model,
+			gint          column,
+			gchar const * key,
+			GtkTreeIter * iter,
+			gpointer      search_data)
+{
+	gchar* text = g_utf8_strdown (c_task_list_get_text (C_TASK_LIST (model), iter), -1);
+	gchar* key_ = g_utf8_strdown (key, -1);
+	gboolean result = g_str_has_prefix (text, key);
+	g_free (key_);
+	g_free (text);
+
+	return !result;
+}
+
 static void
 c_window_init (CWindow* self)
 {
@@ -492,6 +508,11 @@ c_window_init (CWindow* self)
 				       TRUE);
 	gtk_tree_view_set_rules_hint  (GTK_TREE_VIEW (tree),
 				       TRUE);
+	gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (tree),
+					     tree_search_equal_func,
+					     NULL, NULL);
+	gtk_tree_view_set_search_column     (GTK_TREE_VIEW (tree),
+					     0);
 	g_signal_connect (tree, "key-press-event",
 			  G_CALLBACK (tree_key_press_event), NULL);
 	g_signal_connect (tree, "button-press-event",
