@@ -27,6 +27,17 @@
 
 #include <glib/gi18n.h>
 
+static void
+row_has_child_toggled_cb (GtkTreeModel* model,
+			  GtkTreePath * path,
+			  GtkTreeIter * iter,
+			  GtkTreeView * view)
+{
+	gtk_tree_view_expand_row (view,
+				  path,
+				  TRUE);
+}
+
 int
 main (int   argc,
       char**argv)
@@ -48,6 +59,8 @@ main (int   argc,
 	gtk_tree_view_set_model  (GTK_TREE_VIEW (c_window_get_tree (C_WINDOW (window))),
 				  GTK_TREE_MODEL (store));
 	gtk_tree_view_expand_all (GTK_TREE_VIEW (c_window_get_tree (C_WINDOW (window))));
+	g_signal_connect_after   (store, "row-has-child-toggled",
+				  G_CALLBACK (row_has_child_toggled_cb), c_window_get_tree (C_WINDOW (window)));
 
 	gtk_widget_show (window);
 	gtk_main ();
