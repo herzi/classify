@@ -232,7 +232,7 @@ write_node (GtkTreeModel* model,
 	for (; text && *text; text = g_utf8_next_char (text)) {
 		gunichar c = g_utf8_get_char (text);
 
-		if (c < 32) {
+		if (c < 32 && c != 10) {
 			// ASCII control chars
 			g_warning ("FIXME: ascii control char %d encountered, ignoring.",
 				   c);
