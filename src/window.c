@@ -52,6 +52,13 @@ file_close_activated (GtkAction* action,
 }
 
 static void
+edit_delete_activated (GtkAction* action,
+		       CWindow  * self)
+{
+	;
+}
+
+static void
 open_prefs (GtkAction* action,
 	    CWindow  * self)
 {
@@ -443,6 +450,9 @@ c_window_init (CWindow* self)
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (file_close_activated)},
 
+		{"EditDelete", GTK_STOCK_DELETE, NULL,
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (edit_delete_activated)},
 		{"EditPreferences", GTK_STOCK_PREFERENCES, NULL,
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (open_prefs)},
