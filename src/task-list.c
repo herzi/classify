@@ -34,7 +34,7 @@ enum {
 	N_COLUMNS
 };
 
-#if 1
+#if 0
 #define NATIVE(i)               GTK_LIST_STORE(i)
 #define NATIVE_TYPE             GTK_TYPE_LIST_STORE
 #define set_column_types(a,b,c) gtk_list_store_set_column_types(a,b,c)
