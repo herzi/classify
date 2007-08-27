@@ -249,6 +249,34 @@ tree_key_press_event (GtkTreeView* tree,
 	return FALSE;
 }
 
+static gboolean
+entry_key_press_event (GtkWidget  * widget,
+		       GdkEventKey* event,
+		       gpointer     user_data)
+{
+	if ((event->state & GDK_SHIFT_MASK) != 0 && (event->keyval == GDK_Return || event->keyval == GDK_KP_Enter)) {
+
+		g_signal_emit_by_name (widget, "insert-at-cursor",
+				       "\n");
+
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+static void
+editing_started_cb (GtkCellRenderer* renderer,
+		    GtkCellEditable* editable,
+		    gchar const    * path,
+		    gpointer         user_data)
+{
+	if (GTK_IS_ENTRY (editable)) {
+		g_signal_connect (editable, "key-press-event",
+				  G_CALLBACK (entry_key_press_event), NULL);
+	}
+}
+
 static void
 edited_cb (GtkCellRendererText* renderer,
 	   gchar* path,
@@ -449,6 +477,8 @@ c_window_init (CWindow* self)
 	g_object_set     (renderer,
 			  "wrap-mode", PANGO_WRAP_WORD_CHAR,
 			  NULL);
+	g_signal_connect (renderer, "editing-started",
+			  G_CALLBACK (editing_started_cb), NULL);
 	g_signal_connect (renderer, "edited",
 			  G_CALLBACK (edited_cb), tree);
 	gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
