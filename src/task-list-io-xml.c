@@ -283,7 +283,8 @@ dump_nodes (CTaskList  * self,
 		write_node (GTK_TREE_MODEL (self),
 			    &iter2,
 			    file);
-		fprintf    (file, "\n");
+
+		dump_nodes (self, file, &iter2);
 	}
 }
 
