@@ -167,6 +167,20 @@ task_top_activated (GtkAction* action,
 	g_list_free    (selected);
 }
 
+static void
+view_expand_all_activated (GtkAction* action,
+			   CWindow  * self)
+{
+	gtk_tree_view_expand_all (GTK_TREE_VIEW (c_window_get_tree (self)));
+}
+
+static void
+view_collapse_all_activated (GtkAction* action,
+			     CWindow  * self)
+{
+	gtk_tree_view_collapse_all (GTK_TREE_VIEW (c_window_get_tree (self)));
+}
+
 static gboolean
 tree_button_press_event (GtkWidget     * tree,
 			 GdkEventButton* event,
@@ -429,7 +443,15 @@ c_window_init (CWindow* self)
 		 G_CALLBACK (task_new_activated)},
 		{"TaskTop", GTK_STOCK_GOTO_TOP, N_("To _Top"),
 		 NULL, NULL, // FIXME: add tooltip
-		 G_CALLBACK (task_top_activated)}
+		 G_CALLBACK (task_top_activated)},
+
+		{"View", NULL, N_("_View")},
+		{"ViewExpandAll", NULL, N_("_Expand All"),
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (view_expand_all_activated)},
+		{"ViewCollapseAll", NULL, N_("_Collapse All"),
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (view_collapse_all_activated)}
 	};
 	GtkCellRenderer* renderer;
 	GtkActionGroup* group;
@@ -463,6 +485,10 @@ c_window_init (CWindow* self)
 								"<menuitem action='EditPreferences' />"
 								"<separator/>"
 								"<menuitem action='FileClose' />"
+							"</menu>"
+							"<menu action='View'>"
+								"<menuitem action='ViewExpandAll'/>"
+								"<menuitem action='ViewCollapseAll'/>"
 							"</menu>"
 						"</menubar>"
 						"<toolbar name='toolbar'>"
