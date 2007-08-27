@@ -134,7 +134,11 @@ c_task_list_get_task (CTaskList   * self,
 	gtk_tree_model_get (GTK_TREE_MODEL (self), iter,
 			    COL_TASK, &result,
 			    -1);
-	g_object_unref (result); // remove the reference created by GtkTreeModel::get()
+
+	/* during DND there's not always an object */
+	if (result) {
+		g_object_unref (result); // remove the reference created by GtkTreeModel::get()
+	}
 
 	return result;
 }
@@ -143,9 +147,17 @@ gchar const*
 c_task_list_get_text (CTaskList  * self,
 		      GtkTreeIter* iter)
 {
+	CTask* task;
+
 	g_return_val_if_fail (C_IS_TASK_LIST (self), NULL);
 
-	return c_task_get_text (c_task_list_get_task (self, iter));
+	task = c_task_list_get_task (self, iter);
+
+	if (G_LIKELY (task)) {
+		return c_task_get_text (task);
+	} else {
+		return NULL;
+	}
 }
 
 CTaskList*
