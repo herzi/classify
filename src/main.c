@@ -45,8 +45,9 @@ main (int   argc,
 				 NULL);
 	store = c_task_list_new_from_file (path);
 
-	gtk_tree_view_set_model (GTK_TREE_VIEW (c_window_get_tree (C_WINDOW (window))),
-				 GTK_TREE_MODEL (store));
+	gtk_tree_view_set_model  (GTK_TREE_VIEW (c_window_get_tree (C_WINDOW (window))),
+				  GTK_TREE_MODEL (store));
+	gtk_tree_view_expand_all (GTK_TREE_VIEW (c_window_get_tree (C_WINDOW (window))));
 
 	gtk_widget_show (window);
 	gtk_main ();
