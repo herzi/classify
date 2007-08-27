@@ -62,18 +62,12 @@ void         c_task_list_set_text      (CTaskList   * self,
 					gchar const * text);
 
 struct _CTaskList {
-	union {
-		GtkListStore list_instance;
-		GtkTreeStore tree_instance;
-	} base_instance;
+	GtkTreeStore      base_instance;
 	CTaskListPrivate* _private;
 };
 
 struct _CTaskListClass {
-	union {
-		GtkListStoreClass list_class;
-		GtkTreeStoreClass tree_class;
-	} base_class;
+	GtkTreeStoreClass base_class;
 };
 
 G_END_DECLS

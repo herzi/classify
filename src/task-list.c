@@ -34,24 +34,8 @@ enum {
 	N_COLUMNS
 };
 
-#if 0
-#define NATIVE(i)               GTK_LIST_STORE(i)
-#define NATIVE_TYPE             GTK_TYPE_LIST_STORE
-#define set_column_types(a,b,c) gtk_list_store_set_column_types(a,b,c)
-#define insert_after(a,b,c)     gtk_list_store_insert_after(a,b,c)
-#define append(a,b)             gtk_list_store_append(a,b)
-#define set(a,b,...)            gtk_list_store_set(a,b,__VA_ARGS__)
-#else
-#define NATIVE(i)               GTK_TREE_STORE(i)
-#define NATIVE_TYPE             GTK_TYPE_TREE_STORE
-#define set_column_types(a,b,c) gtk_tree_store_set_column_types(a,b,c)
-#define insert_after(a,b,c)     gtk_tree_store_insert_after(a,b,NULL,c)
-#define append(a,b)             gtk_tree_store_append(a,b,NULL)
-#define set(a,b,...)            gtk_tree_store_set(a,b,__VA_ARGS__)
-#endif
-
 static void implement_drag_dest (GtkTreeDragDestIface* iface);
-G_DEFINE_TYPE_WITH_CODE (CTaskList, c_task_list, NATIVE_TYPE,
+G_DEFINE_TYPE_WITH_CODE (CTaskList, c_task_list, GTK_TYPE_TREE_STORE,
 			 G_IMPLEMENT_INTERFACE (GTK_TYPE_TREE_DRAG_DEST, implement_drag_dest));
 
 static void
@@ -61,9 +45,9 @@ c_task_list_init (CTaskList* self)
 		G_TYPE_OBJECT
 	};
 
-	set_column_types (NATIVE (self),
-			  N_COLUMNS,
-			  types);
+	gtk_tree_store_set_column_types (GTK_TREE_STORE (self),
+					 N_COLUMNS,
+					 types);
 }
 
 static void
@@ -79,16 +63,19 @@ task_list_append_task (CTaskList  * self,
 	GtkTreeIter  iter2;
 
 	if (before) {
-		insert_after (NATIVE (self),
-			      &iter2,
-			      before);
+		gtk_tree_store_insert_after (GTK_TREE_STORE (self),
+					     &iter2,
+					     NULL,
+					     before);
 	} else {
-		append (NATIVE (self), &iter2);
+		gtk_tree_store_append       (GTK_TREE_STORE (self),
+					     &iter2,
+					     NULL);
 	}
 
-	set (NATIVE (self), &iter2,
-	     COL_TASK, task,
-	     -1);
+	gtk_tree_store_set (GTK_TREE_STORE (self), &iter2,
+			    COL_TASK, task,
+			    -1);
 
 	if (iter) {
 		*iter = iter2;
