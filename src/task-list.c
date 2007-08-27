@@ -57,12 +57,13 @@ c_task_list_class_init (CTaskListClass* self_class)
 static void
 task_list_append_task (CTaskList  * self,
 		       GtkTreeIter* iter,
+		       GtkTreeIter* parent,
 		       GtkTreeIter* before,
 		       CTask      * task)
 {
 	GtkTreeIter  iter2;
 
-	if (before) {
+	if (!parent && before) {
 		gtk_tree_store_insert_after (GTK_TREE_STORE (self),
 					     &iter2,
 					     NULL,
@@ -70,7 +71,7 @@ task_list_append_task (CTaskList  * self,
 	} else {
 		gtk_tree_store_append       (GTK_TREE_STORE (self),
 					     &iter2,
-					     NULL);
+					     parent);
 	}
 
 	gtk_tree_store_set (GTK_TREE_STORE (self), &iter2,
@@ -95,6 +96,7 @@ c_task_list_append (CTaskList   * store,
 	task = c_task_new     (text);
 	task_list_append_task (store,
 			       iter,
+			       NULL,
 			       before,
 			       task);
 	g_object_unref        (task);
@@ -102,12 +104,14 @@ c_task_list_append (CTaskList   * store,
 
 void
 c_task_list_append_task (CTaskList   * self,
+			 GtkTreeIter * iter,
+			 GtkTreeIter * parent,
 			 CTask       * task)
 {
 	g_return_if_fail (C_IS_TASK_LIST (self));
 	g_return_if_fail (C_IS_TASK (task));
 
-	task_list_append_task (self, NULL, NULL, task);
+	task_list_append_task (self, iter, parent, NULL, task);
 }
 
 CTask*
@@ -227,6 +231,6 @@ implement_drag_dest (GtkTreeDragDestIface* iface)
 {
 	c_task_list_parent_drag_dest = g_type_interface_peek_parent (iface);
 
-	iface->row_drop_possible = task_list_row_drop_possible;
+	//iface->row_drop_possible = task_list_row_drop_possible;
 }
 

@@ -35,8 +35,7 @@ struct ParserData {
 
 struct StackLevel {
 	gpointer     data;
-	GtkTreeIter* iter;
-	GtkTreeIter  _iter;
+	GtkTreePath* path;
 	GString    * string;
 };
 
@@ -67,6 +66,7 @@ sax_start_element_cb (gpointer       ctx,
 {
 	struct ParserData* pdata = ((xmlParserCtxt*)ctx)->_private;
 	gpointer           data  = NULL;
+	GtkTreePath      * path  = NULL;
 
 	if (pdata->unknown_depth) {
 		pdata->unknown_depth++;
@@ -77,17 +77,32 @@ sax_start_element_cb (gpointer       ctx,
 		// toplevel tasks item
 	} else if (!strcmp (localname, "task")) {
 		// task item
-		gchar* uuid = NULL;
-		gint   i;
+		GtkTreeIter  iter;
+		GtkTreeIter  parent;
+		gboolean     has_parent = FALSE;
+		gchar      * uuid = NULL;
+		gint         i;
+
+		if (((struct StackLevel*)pdata->stack->data)->path) {
+			has_parent = gtk_tree_model_get_iter (GTK_TREE_MODEL (pdata->task_list),
+							      &parent,
+							      ((struct StackLevel*)pdata->stack->data)->path);
+		}
+
 		for (i = 0; i < n_attributes; i++) {
 			if (!strcmp (attributes[5*i], "uuid") && !uuid) {
 				uuid = g_strndup (attributes[5*i+3], attributes[5*i+4] - attributes[5*i+3]);
 			}
 		}
-
 		data = c_task_new_with_uuid (uuid);
-
 		g_free (uuid);
+
+		c_task_list_append_task (pdata->task_list,
+					 &iter,
+					 has_parent ? &parent : NULL,
+					 data);
+		path = gtk_tree_model_get_path (GTK_TREE_MODEL (pdata->task_list),
+						&iter);
 	} else {
 		g_warning ("unknown tag <%s%s%s> read",
 			   prefix ? (char const*)prefix : "",
@@ -100,6 +115,7 @@ sax_start_element_cb (gpointer       ctx,
 	pdata->stack = g_list_prepend (pdata->stack, g_slice_new0 (struct StackLevel));
 	((struct StackLevel*)pdata->stack->data)->data   = data;
 	((struct StackLevel*)pdata->stack->data)->string = g_string_new ("");
+	((struct StackLevel*)pdata->stack->data)->path   = path;
 }
 
 static void
@@ -118,11 +134,9 @@ sax_end_element_cb (gpointer       ctx,
 	if (!strcmp (localname, "task")) {
 		c_task_set_text    (((struct StackLevel*)pdata->stack->data)->data,
 				    ((struct StackLevel*)pdata->stack->data)->string->str);
-
-		c_task_list_append_task (pdata->task_list,
-					 ((struct StackLevel*)pdata->stack->data)->data);
 	}
 
+	gtk_tree_path_free (((struct StackLevel*)pdata->stack->data)->path);
 	g_string_free (((struct StackLevel*)pdata->stack->data)->string, TRUE);
 	g_slice_free  (struct StackLevel, pdata->stack->data);
 	pdata->stack = g_list_delete_link (pdata->stack, pdata->stack);

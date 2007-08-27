@@ -50,6 +50,8 @@ void         c_task_list_append        (CTaskList   * self,
 					GtkTreeIter * before,
 					gchar const * text);
 void         c_task_list_append_task   (CTaskList   * self,
+					GtkTreeIter * iter,
+					GtkTreeIter * parent,
 					CTask       * task);
 CTask*       c_task_list_get_task      (CTaskList   * self,
 					GtkTreeIter * iter);
