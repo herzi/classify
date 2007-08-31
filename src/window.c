@@ -61,6 +61,56 @@ edit_delete_activated (GtkAction* action,
 }
 
 static void
+clipboard_text_received_cb (GtkClipboard* clipboard,
+			    gchar const * text,
+			    gpointer      data)
+{
+	GtkTreeSelection* selection;
+	GtkTreeView     * view;
+	GtkTreeIter       iter;
+	GtkTreeIter       sibling;
+	CTaskList       * list;
+	CWindow         * self = data;
+	gboolean          has_sibling;
+
+	view        = GTK_TREE_VIEW (c_window_get_tree (self));
+	selection   = gtk_tree_view_get_selection (view);
+	has_sibling = 1 == gtk_tree_selection_count_selected_rows (selection);
+
+	if (has_sibling) {
+		GtkTreeModel* model = NULL;
+		GList* selected = gtk_tree_selection_get_selected_rows (selection, &model);
+		gtk_tree_model_get_iter (model, &sibling, selected->data);
+		g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
+		g_list_free    (selected);
+
+		list = C_TASK_LIST (model);
+	} else {
+		list = C_TASK_LIST (gtk_tree_view_get_model (view));
+	}
+
+	c_task_list_append (list,
+			    &iter,
+			    has_sibling ? &sibling : NULL,
+			    text);
+
+	gtk_tree_selection_select_iter (selection,
+					&iter);
+}
+
+static void
+edit_paste_activated (GtkAction* action,
+		      CWindow  * self)
+{
+	GtkClipboard* clipboard = gtk_clipboard_get_for_display (gtk_widget_get_display (GTK_WIDGET (self)),
+								 GDK_SELECTION_CLIPBOARD);
+
+	gtk_clipboard_request_text (clipboard,
+				    clipboard_text_received_cb,
+				    self);
+}
+
+static void
 open_prefs (GtkAction* action,
 	    CWindow  * self)
 {
@@ -449,9 +499,13 @@ c_window_init (CWindow* self)
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (file_close_activated)},
 
+		{"Edit", NULL, N_("_Edit")},
 		{"EditDelete", GTK_STOCK_DELETE, NULL,
 		 "Delete", NULL, // FIXME: add tooltip
 		 G_CALLBACK (edit_delete_activated)},
+		{"EditPaste", GTK_STOCK_PASTE, NULL,
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (edit_paste_activated)},
 		{"EditPreferences", GTK_STOCK_PREFERENCES, NULL,
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (open_prefs)},
@@ -515,6 +569,9 @@ c_window_init (CWindow* self)
 								"<menuitem action='EditPreferences' />"
 								"<separator/>"
 								"<menuitem action='FileClose' />"
+							"</menu>"
+							"<menu action='Edit'>"
+								"<menuitem action='EditPaste'/>"
 							"</menu>"
 							"<menu action='View'>"
 								"<menuitem action='ViewExpandAll'/>"
