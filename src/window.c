@@ -282,21 +282,6 @@ tree_delete_selected (GtkTreeView* tree)
 }
 
 static gboolean
-tree_key_press_event (GtkTreeView* tree,
-		      GdkEventKey* event)
-{
-	switch (event->keyval) {
-	case GDK_Delete:
-		if (tree_delete_selected (tree)) {
-			return TRUE;
-		}
-		break;
-	}
-
-	return FALSE;
-}
-
-static gboolean
 entry_key_press_event (GtkWidget  * widget,
 		       GdkEventKey* event,
 		       gpointer     user_data)
@@ -465,7 +450,7 @@ c_window_init (CWindow* self)
 		 G_CALLBACK (file_close_activated)},
 
 		{"EditDelete", GTK_STOCK_DELETE, NULL,
-		 NULL, NULL, // FIXME: add tooltip
+		 "Delete", NULL, // FIXME: add tooltip
 		 G_CALLBACK (edit_delete_activated)},
 		{"EditPreferences", GTK_STOCK_PREFERENCES, NULL,
 		 NULL, NULL, // FIXME: add tooltip
@@ -584,8 +569,6 @@ c_window_init (CWindow* self)
 					     NULL, NULL);
 	gtk_tree_view_set_search_column     (GTK_TREE_VIEW (tree),
 					     0);
-	g_signal_connect (tree, "key-press-event",
-			  G_CALLBACK (tree_key_press_event), NULL);
 	g_signal_connect (tree, "button-press-event",
 			  G_CALLBACK (tree_button_press_event), result);
 	g_signal_connect (tree, "size-allocate",
