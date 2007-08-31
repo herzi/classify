@@ -463,7 +463,7 @@ c_window_init (CWindow* self)
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (task_bottom_activated)},
 		{"TaskNew", GTK_STOCK_ADD, NULL,
-		 NULL, NULL, // FIXME: add tooltip
+		 "<Ctrl>n", NULL, // FIXME: add tooltip
 		 G_CALLBACK (task_new_activated)},
 		{"TaskTop", GTK_STOCK_GOTO_TOP, N_("To _Top"),
 		 NULL, NULL, // FIXME: add tooltip
