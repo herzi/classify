@@ -84,6 +84,23 @@ tree_edit_path (GtkTreeView* tree,
 	g_list_free (renderers);
 }
 
+static gboolean
+tree_rename_selected (GtkTreeView* view)
+{
+	GList* list;
+
+	if (gtk_tree_selection_count_selected_rows (gtk_tree_view_get_selection (view)) != 1) {
+		return FALSE;
+	}
+
+	list = gtk_tree_selection_get_selected_rows (gtk_tree_view_get_selection (view), NULL);
+	tree_edit_path (view, list->data);
+	g_list_foreach (list, (GFunc)gtk_tree_path_free, NULL);
+	g_list_free    (list);
+
+	return TRUE;
+}
+
 static void
 task_bottom_activated (GtkAction* action,
 		       CWindow  * self)
@@ -263,14 +280,7 @@ tree_key_press_event (GtkTreeView* tree,
 {
 	switch (event->keyval) {
 	case GDK_F2:
-		if (gtk_tree_selection_count_selected_rows (gtk_tree_view_get_selection (tree)) == 1) {
-			GList* list;
-
-			list = gtk_tree_selection_get_selected_rows (gtk_tree_view_get_selection (tree), NULL);
-			tree_edit_path (tree, list->data);
-			g_list_foreach (list, (GFunc)gtk_tree_path_free, NULL);
-			g_list_free    (list);
-
+		if (tree_rename_selected (tree)) {
 			return TRUE;
 		}
 		break;
