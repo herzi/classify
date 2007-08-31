@@ -102,6 +102,13 @@ tree_rename_selected (GtkTreeView* view)
 }
 
 static void
+edit_rename (GtkAction* action,
+	     CWindow  * self)
+{
+	tree_rename_selected (GTK_TREE_VIEW (c_window_get_tree (self)));
+}
+
+static void
 task_bottom_activated (GtkAction* action,
 		       CWindow  * self)
 {
@@ -279,11 +286,6 @@ tree_key_press_event (GtkTreeView* tree,
 		      GdkEventKey* event)
 {
 	switch (event->keyval) {
-	case GDK_F2:
-		if (tree_rename_selected (tree)) {
-			return TRUE;
-		}
-		break;
 	case GDK_Delete:
 		if (tree_delete_selected (tree)) {
 			return TRUE;
@@ -468,6 +470,9 @@ c_window_init (CWindow* self)
 		{"EditPreferences", GTK_STOCK_PREFERENCES, NULL,
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (open_prefs)},
+		{"EditRename", NULL, N_("_Rename"),
+		 "F2", NULL, // FIXME: add tooltip
+		 G_CALLBACK (edit_rename)},
 
 		{"TaskBottom", GTK_STOCK_GOTO_BOTTOM, N_("To _Bottom"),
 		 NULL, NULL, // FIXME: add tooltip
@@ -519,6 +524,8 @@ c_window_init (CWindow* self)
 								"<menuitem action='TaskNew'/>"
 								"<separator/>"
 								"<menuitem action='EditDelete'/>"
+								"<separator/>"
+								"<menuitem action='EditRename'/>"
 								"<separator/>"
 								"<menuitem action='EditPreferences' />"
 								"<separator/>"
