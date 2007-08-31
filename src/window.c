@@ -96,10 +96,10 @@ clipboard_text_received_cb (GtkClipboard* clipboard,
 			    gpointer      data)
 {
 	GtkTreeSelection* selection;
+	GtkTreeModel    * model = NULL;
 	GtkTreeView     * view;
 	GtkTreeIter       iter;
 	GtkTreeIter       sibling;
-	CTaskList       * list;
 	CWindow         * self = data;
 	gboolean          has_sibling;
 
@@ -108,18 +108,15 @@ clipboard_text_received_cb (GtkClipboard* clipboard,
 	has_sibling = 1 == gtk_tree_selection_count_selected_rows (selection);
 
 	if (has_sibling) {
-		GtkTreeModel* model = NULL;
 		GList* selected = gtk_tree_selection_get_selected_rows (selection, &model);
 		gtk_tree_model_get_iter (model, &sibling, selected->data);
 		g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
 		g_list_free    (selected);
-
-		list = C_TASK_LIST (model);
 	} else {
-		list = C_TASK_LIST (gtk_tree_view_get_model (view));
+		model = gtk_tree_view_get_model (view);
 	}
 
-	c_task_list_append (list,
+	c_task_list_append (C_TASK_LIST (model),
 			    &iter,
 			    has_sibling ? &sibling : NULL,
 			    text);
