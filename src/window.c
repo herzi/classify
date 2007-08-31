@@ -218,6 +218,37 @@ tree_button_press_event (GtkWidget     * tree,
 }
 
 static gboolean
+tree_delete_selected (GtkTreeView* tree)
+{
+	GtkTreeModel* model = NULL;
+	GList       * selected;
+	GList       * iter;
+
+	if (gtk_tree_selection_count_selected_rows (gtk_tree_view_get_selection (tree)) == 0) {
+		return FALSE;
+	}
+
+	selected = gtk_tree_selection_get_selected_rows (gtk_tree_view_get_selection (tree), &model);
+
+	for (iter = selected; iter; iter = iter->next) {
+		GtkTreePath* path = iter->data;
+		iter->data = gtk_tree_row_reference_new (model, path);
+		gtk_tree_path_free (path);
+	}
+	for (iter = selected; iter; iter = iter->next) {
+		GtkTreeIter titer;
+		gtk_tree_model_get_iter (model, &titer,
+					 gtk_tree_row_reference_get_path (iter->data));
+		gtk_tree_store_remove   (GTK_TREE_STORE (model),
+					 &titer);
+		gtk_tree_row_reference_free (iter->data);
+	}
+
+	g_list_free (selected);
+	return TRUE;
+}
+
+static gboolean
 tree_key_press_event (GtkTreeView* tree,
 		      GdkEventKey* event)
 {
@@ -235,26 +266,7 @@ tree_key_press_event (GtkTreeView* tree,
 		}
 		break;
 	case GDK_Delete:
-		if (gtk_tree_selection_count_selected_rows (gtk_tree_view_get_selection (tree)) > 0) {
-			GtkTreeModel* model = NULL;
-			GList       * selected = gtk_tree_selection_get_selected_rows (gtk_tree_view_get_selection (tree), &model);
-			GList       * iter;
-
-			for (iter = selected; iter; iter = iter->next) {
-				GtkTreePath* path = iter->data;
-				iter->data = gtk_tree_row_reference_new (model, path);
-				gtk_tree_path_free (path);
-			}
-			for (iter = selected; iter; iter = iter->next) {
-				GtkTreeIter titer;
-				gtk_tree_model_get_iter (model, &titer,
-							 gtk_tree_row_reference_get_path (iter->data));
-				gtk_tree_store_remove   (GTK_TREE_STORE (model),
-						         &titer);
-				gtk_tree_row_reference_free (iter->data);
-			}
-
-			g_list_free (selected);
+		if (tree_delete_selected (tree)) {
 			return TRUE;
 		}
 		break;
