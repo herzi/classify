@@ -98,6 +98,7 @@ clipboard_text_received_cb (GtkClipboard* clipboard,
 	GtkTreeSelection* selection;
 	GtkTreeModel    * model = NULL;
 	GtkTreeView     * view;
+	GtkTreePath     * path;
 	GtkTreeIter       iter;
 	GtkTreeIter       sibling;
 	CWindow         * self = data;
@@ -121,8 +122,9 @@ clipboard_text_received_cb (GtkClipboard* clipboard,
 			    has_sibling ? &sibling : NULL,
 			    text);
 
-	gtk_tree_selection_select_iter (selection,
-					&iter);
+	path = gtk_tree_model_get_path (model, &iter);
+	gtk_tree_view_set_cursor (view, path, NULL, FALSE);
+	gtk_tree_path_free (path);
 }
 
 static void
