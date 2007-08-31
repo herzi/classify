@@ -30,6 +30,8 @@
 
 #include <glib/gi18n.h>
 
+static gboolean tree_delete_selected (GtkTreeView* tree);
+
 G_DEFINE_TYPE (CWindow, c_window, GTK_TYPE_WINDOW);
 
 GtkWidget*
@@ -55,7 +57,7 @@ static void
 edit_delete_activated (GtkAction* action,
 		       CWindow  * self)
 {
-	;
+	tree_delete_selected (GTK_TREE_VIEW (c_window_get_tree (self)));
 }
 
 static void
@@ -504,6 +506,10 @@ c_window_init (CWindow* self)
 					    "<ui>"
 						"<menubar name='menubar'>"
 							"<menu action='File'>"
+								"<menuitem action='TaskNew'/>"
+								"<separator/>"
+								"<menuitem action='EditDelete'/>"
+								"<separator/>"
 								"<menuitem action='EditPreferences' />"
 								"<separator/>"
 								"<menuitem action='FileClose' />"
