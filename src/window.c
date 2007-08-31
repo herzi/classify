@@ -54,6 +54,36 @@ file_close_activated (GtkAction* action,
 }
 
 static void
+edit_copy_activated (GtkAction* action,
+		     CWindow  * self)
+{
+	GtkTreeSelection* selection;
+	GtkTreeModel    * model;
+	GtkTreeView     * view;
+	GtkTreeIter       iter;
+	GList           * selected;
+
+	view      = GTK_TREE_VIEW (c_window_get_tree (self));
+	selection = gtk_tree_view_get_selection (view);
+
+	if (1 != gtk_tree_selection_count_selected_rows (selection)) {
+		return;
+	}
+
+	selected = gtk_tree_selection_get_selected_rows (selection, &model);
+	gtk_tree_model_get_iter (model, &iter, selected->data);
+
+	gtk_clipboard_set_text (gtk_clipboard_get_for_display (gtk_widget_get_display (GTK_WIDGET (self)),
+							       GDK_SELECTION_CLIPBOARD),
+				c_task_list_get_text (C_TASK_LIST (gtk_tree_view_get_model (view)),
+						      &iter),
+				-1);
+
+	g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
+	g_list_free    (selected);
+}
+
+static void
 edit_delete_activated (GtkAction* action,
 		       CWindow  * self)
 {
@@ -500,6 +530,9 @@ c_window_init (CWindow* self)
 		 G_CALLBACK (file_close_activated)},
 
 		{"Edit", NULL, N_("_Edit")},
+		{"EditCopy", GTK_STOCK_COPY, NULL,
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (edit_copy_activated)},
 		{"EditDelete", GTK_STOCK_DELETE, NULL,
 		 "Delete", NULL, // FIXME: add tooltip
 		 G_CALLBACK (edit_delete_activated)},
@@ -565,6 +598,7 @@ c_window_init (CWindow* self)
 								"<menuitem action='FileClose' />"
 							"</menu>"
 							"<menu action='Edit'>"
+								"<menuitem action='EditCopy'/>"
 								"<menuitem action='EditPaste'/>"
 								"<menuitem action='EditDelete'/>"
 								"<separator/>"
