@@ -210,7 +210,8 @@ c_task_list_new_default (void)
 				 "share",
 				 "classify",
 				 NULL);
-	self = c_task_list_new_from_file (NULL, path);
+	self = c_task_list_new ();
+	c_task_list_new_from_file (self, path);
 	g_free (path);
 	return self;
 }
