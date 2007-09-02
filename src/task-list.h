@@ -44,6 +44,7 @@ typedef struct _CTaskListClass   CTaskListClass;
 GType        c_task_list_get_type      (void);
 
 CTaskList*   c_task_list_new           (void);
+CTaskList*   c_task_list_new_default   (void);
 CTaskList*   c_task_list_new_from_file (gchar const* path);
 void         c_task_list_append        (CTaskList   * self,
 					GtkTreeIter * iter,

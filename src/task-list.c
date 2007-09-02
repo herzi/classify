@@ -171,6 +171,20 @@ c_task_list_get_text (CTaskList  * self,
 }
 
 CTaskList*
+c_task_list_new_default (void)
+{
+	CTaskList* self;
+	gchar* path = g_build_filename (g_get_home_dir (),
+				 ".local",
+				 "share",
+				 "classify",
+				 NULL);
+	self = c_task_list_new_from_file (path);
+	g_free (path);
+	return self;
+}
+
+CTaskList*
 c_task_list_new (void)
 {
 	return g_object_new (C_TYPE_TASK_LIST, NULL);
