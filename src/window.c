@@ -527,6 +527,17 @@ tree_search_equal_func (GtkTreeModel* model,
 }
 
 static void
+row_has_child_toggled_cb (GtkTreeModel* model,
+			  GtkTreePath * path,
+			  GtkTreeIter * iter,
+			  GtkTreeView * view)
+{
+	gtk_tree_view_expand_row (view,
+				  path,
+				  TRUE);
+}
+
+static void
 c_window_init (CWindow* self)
 {
 	GtkActionEntry  entries[] = {
@@ -574,6 +585,7 @@ c_window_init (CWindow* self)
 	GtkCellRenderer* renderer;
 	GtkActionGroup* group;
 	GtkUIManager* ui_manager = gtk_ui_manager_new ();
+	CTaskList   * store;
 	GtkWidget   * result = GTK_WIDGET (self); // FIXME: remove this line
 	GtkWidget   * swin;
 	GtkWidget   * tree;
@@ -674,6 +686,13 @@ c_window_init (CWindow* self)
 				"CWindow::TreeView",
 				g_object_ref_sink (tree),
 				g_object_unref);
+	store = c_task_list_new_default ();
+	gtk_tree_view_set_model  (GTK_TREE_VIEW (tree),
+				  GTK_TREE_MODEL (store));
+	g_signal_connect_after   (store, "row-has-child-toggled",
+				  G_CALLBACK (row_has_child_toggled_cb), tree);
+	g_object_unref (store);
+	gtk_tree_view_expand_all (GTK_TREE_VIEW (tree));
 	gtk_widget_show (tree);
 	gtk_container_add (GTK_CONTAINER (swin), tree);
 
