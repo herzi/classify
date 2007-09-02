@@ -31,13 +31,8 @@ int
 main (int   argc,
       char**argv)
 {
-	GtkWidget* window;
-	gchar    * path;
-
 	gtk_init (&argc, &argv);
-	window = c_window_new ();
-
-	gtk_widget_show (window);
+	gtk_widget_show (c_window_new ());
 	gtk_main ();
 
 	return 0;
