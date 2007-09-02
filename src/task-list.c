@@ -185,21 +185,16 @@ c_task_list_new_default (void)
 				 "share",
 				 "classify",
 				 NULL);
-	self = c_task_list_new ();
-	CTaskList* _self;
-	gchar    * xml_path = g_strdup_printf ("%s.xml", path);
+	gchar* xml_path = g_strdup_printf ("%s.xml", path);
 
-	if (!self) {
-		_self = c_task_list_new ();
-	} else {
-		_self = self;
-	}
+	self = c_task_list_new ();
+
 	// FIXME: detect the file type and act accordingly
 
 	if (g_file_test (xml_path, G_FILE_TEST_IS_REGULAR)) {
-		task_list_io_xml_load  (_self, xml_path);
+		task_list_io_xml_load  (self, xml_path);
 	} else if (g_file_test (path, G_FILE_TEST_IS_REGULAR)) {
-		task_list_io_text_load (_self, path);
+		task_list_io_text_load (self, path);
 	}
 
 	g_free (xml_path);
