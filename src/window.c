@@ -57,30 +57,34 @@ static void
 edit_copy_activated (GtkAction* action,
 		     CWindow  * self)
 {
-	GtkTreeSelection* selection;
-	GtkTreeModel    * model;
-	GtkTreeView     * view;
-	GtkTreeIter       iter;
-	GList           * selected;
+	if (GTK_IS_EDITABLE (gtk_window_get_focus (GTK_WINDOW (self)))) {
+		gtk_editable_copy_clipboard (GTK_EDITABLE (gtk_window_get_focus (GTK_WINDOW (self))));
+	} else {
+		GtkTreeSelection* selection;
+		GtkTreeModel    * model;
+		GtkTreeView     * view;
+		GtkTreeIter       iter;
+		GList           * selected;
 
-	view      = GTK_TREE_VIEW (c_window_get_tree (self));
-	selection = gtk_tree_view_get_selection (view);
+		view      = GTK_TREE_VIEW (c_window_get_tree (self));
+		selection = gtk_tree_view_get_selection (view);
 
-	if (1 != gtk_tree_selection_count_selected_rows (selection)) {
-		return;
+		if (1 != gtk_tree_selection_count_selected_rows (selection)) {
+			return;
+		}
+
+		selected = gtk_tree_selection_get_selected_rows (selection, &model);
+		gtk_tree_model_get_iter (model, &iter, selected->data);
+
+		gtk_clipboard_set_text (gtk_clipboard_get_for_display (gtk_widget_get_display (GTK_WIDGET (self)),
+								       GDK_SELECTION_CLIPBOARD),
+					c_task_list_get_text (C_TASK_LIST (gtk_tree_view_get_model (view)),
+							      &iter),
+					-1);
+
+		g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
+		g_list_free    (selected);
 	}
-
-	selected = gtk_tree_selection_get_selected_rows (selection, &model);
-	gtk_tree_model_get_iter (model, &iter, selected->data);
-
-	gtk_clipboard_set_text (gtk_clipboard_get_for_display (gtk_widget_get_display (GTK_WIDGET (self)),
-							       GDK_SELECTION_CLIPBOARD),
-				c_task_list_get_text (C_TASK_LIST (gtk_tree_view_get_model (view)),
-						      &iter),
-				-1);
-
-	g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
-	g_list_free    (selected);
 }
 
 static void
@@ -131,12 +135,16 @@ static void
 edit_paste_activated (GtkAction* action,
 		      CWindow  * self)
 {
-	GtkClipboard* clipboard = gtk_clipboard_get_for_display (gtk_widget_get_display (GTK_WIDGET (self)),
-								 GDK_SELECTION_CLIPBOARD);
+	if (GTK_IS_EDITABLE (gtk_window_get_focus(GTK_WINDOW (self)))) {
+		gtk_editable_paste_clipboard (GTK_EDITABLE (gtk_window_get_focus(GTK_WINDOW (self))));
+	} else {
+		GtkClipboard* clipboard = gtk_clipboard_get_for_display (gtk_widget_get_display (GTK_WIDGET (self)),
+									 GDK_SELECTION_CLIPBOARD);
 
-	gtk_clipboard_request_text (clipboard,
-				    clipboard_text_received_cb,
-				    self);
+		gtk_clipboard_request_text (clipboard,
+					    clipboard_text_received_cb,
+					    self);
+	}
 }
 
 static void
