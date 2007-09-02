@@ -177,7 +177,8 @@ c_task_list_new (void)
 }
 
 static CTaskList*
-c_task_list_new_from_file (gchar const* path)
+c_task_list_new_from_file (CTaskList  * self,
+			   gchar const* path)
 {
 	CTaskList* _self = c_task_list_new ();
 	gchar    * xml_path = g_strdup_printf ("%s.xml", path);
@@ -204,7 +205,7 @@ c_task_list_new_default (void)
 				 "share",
 				 "classify",
 				 NULL);
-	self = c_task_list_new_from_file (path);
+	self = c_task_list_new_from_file (NULL, path);
 	g_free (path);
 	return self;
 }
