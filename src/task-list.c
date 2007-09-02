@@ -176,10 +176,16 @@ c_task_list_new (void)
 	return g_object_new (C_TYPE_TASK_LIST, NULL);
 }
 
-static void
-c_task_list_new_from_file (CTaskList  * self,
-			   gchar const* path)
+CTaskList*
+c_task_list_new_default (void)
 {
+	CTaskList* self;
+	gchar* path = g_build_filename (g_get_home_dir (),
+				 ".local",
+				 "share",
+				 "classify",
+				 NULL);
+	self = c_task_list_new ();
 	CTaskList* _self;
 	gchar    * xml_path = g_strdup_printf ("%s.xml", path);
 
@@ -197,19 +203,6 @@ c_task_list_new_from_file (CTaskList  * self,
 	}
 
 	g_free (xml_path);
-}
-
-CTaskList*
-c_task_list_new_default (void)
-{
-	CTaskList* self;
-	gchar* path = g_build_filename (g_get_home_dir (),
-				 ".local",
-				 "share",
-				 "classify",
-				 NULL);
-	self = c_task_list_new ();
-	c_task_list_new_from_file (self, path);
 	g_free (path);
 	return self;
 }
