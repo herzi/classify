@@ -176,7 +176,7 @@ c_task_list_new (void)
 	return g_object_new (C_TYPE_TASK_LIST, NULL);
 }
 
-static CTaskList*
+static void
 c_task_list_new_from_file (CTaskList  * self,
 			   gchar const* path)
 {
@@ -197,8 +197,6 @@ c_task_list_new_from_file (CTaskList  * self,
 	}
 
 	g_free (xml_path);
-
-	return _self;
 }
 
 CTaskList*
