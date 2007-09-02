@@ -51,8 +51,27 @@ c_task_list_init (CTaskList* self)
 }
 
 static void
+task_list_finalize (GObject* object)
+{
+	CTaskList* self = C_TASK_LIST (object);
+	gchar    * path = g_build_filename (g_get_home_dir (),
+					    ".local",
+					    "share",
+					    "classify",
+					    NULL);
+	c_task_list_save (self, path);
+	g_free (path);
+
+	G_OBJECT_CLASS (c_task_list_parent_class)->finalize (object);
+}
+
+static void
 c_task_list_class_init (CTaskListClass* self_class)
-{}
+{
+	GObjectClass* object_class = G_OBJECT_CLASS (self_class);
+
+	object_class->finalize = task_list_finalize;
+}
 
 static void
 task_list_append_task (CTaskList  * self,

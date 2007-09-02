@@ -55,6 +55,7 @@ main (int   argc,
 				 "classify",
 				 NULL);
 	store = c_task_list_new_from_file (path);
+	g_free (path);
 
 	gtk_tree_view_set_model  (GTK_TREE_VIEW (c_window_get_tree (C_WINDOW (window))),
 				  GTK_TREE_MODEL (store));
@@ -64,9 +65,6 @@ main (int   argc,
 
 	gtk_widget_show (window);
 	gtk_main ();
-
-	c_task_list_save (store, path);
-	g_free (path);
 
 	g_object_unref (store);
 	return 0;
