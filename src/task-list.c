@@ -183,7 +183,11 @@ c_task_list_new_from_file (CTaskList  * self,
 	CTaskList* _self;
 	gchar    * xml_path = g_strdup_printf ("%s.xml", path);
 
-	_self = c_task_list_new ();
+	if (!self) {
+		_self = c_task_list_new ();
+	} else {
+		_self = self;
+	}
 	// FIXME: detect the file type and act accordingly
 
 	if (g_file_test (xml_path, G_FILE_TEST_IS_REGULAR)) {
