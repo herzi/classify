@@ -38,12 +38,12 @@ typedef struct _CTaskListIOClass   CTaskListIOClass;
 GType c_task_list_io_get_type (void);
 
 struct _CTaskListIO {
-	GObject           * object;
+	GObject             object;
 	CTaskListIOPrivate* _private;
 };
 
 struct _CTaskListIOClass {
-	GObjectClass      * object_class;
+	GObjectClass        object_class;
 
 	/* vtable */
 	void (*load) (CTaskList  * task_list,
