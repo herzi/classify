@@ -195,6 +195,7 @@ c_task_list_new_default (void)
 		task_list_io_xml_load  (self, xml_path);
 	} else if (g_file_test (path, G_FILE_TEST_IS_REGULAR)) {
 		task_list_io_text_load (self, path);
+		task_list_io_xml_save (self, xml_path);
 	}
 
 	if (g_file_test (path, G_FILE_TEST_IS_REGULAR)) {
