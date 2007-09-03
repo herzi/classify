@@ -36,9 +36,6 @@ typedef struct _CTaskListIOTextClass   CTaskListIOTextClass;
 
 GType c_task_list_io_text_get_type (void);
 
-void task_list_io_text_load (CTaskList  * self,
-			     gchar const* path);
-
 struct _CTaskListIOText {
 	CTaskListIO             base_instance;
 	CTaskListIOTextPrivate* _private;

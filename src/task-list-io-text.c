@@ -32,7 +32,7 @@ static void
 c_task_list_io_text_init (CTaskListIOText* self)
 {}
 
-void
+static void
 task_list_io_text_load (CTaskList  * self,
 			gchar const* path)
 {
