@@ -45,6 +45,12 @@ static void
 c_task_list_io_xml_init (CTaskListIOXML* self)
 {}
 
+gboolean
+task_list_io_xml_test (gchar const* path)
+{
+	return g_file_test (path, G_FILE_TEST_IS_REGULAR);
+}
+
 static void
 sax_characters_cb (gpointer       ctx,
 		   xmlChar const* text,
