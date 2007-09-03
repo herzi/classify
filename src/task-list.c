@@ -195,7 +195,7 @@ c_task_list_new_default (void)
 		c_task_list_io_load (C_TYPE_TASK_LIST_IO_XML,
 				     self,
 				     xml_path);
-	} else if (task_list_io_text_test (path)) {
+	} else if (c_task_list_io_test (C_TYPE_TASK_LIST_IO_TEXT, path)) {
 		c_task_list_io_load (C_TYPE_TASK_LIST_IO_TEXT,
 				     self,
 				     path);
