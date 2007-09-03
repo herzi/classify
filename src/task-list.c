@@ -192,13 +192,13 @@ c_task_list_new_default (void)
 	// FIXME: detect the file type and act accordingly
 
 	if (g_file_test (xml_path, G_FILE_TEST_IS_REGULAR)) {
-		CTaskListIOClass* io_class = g_type_class_ref (C_TYPE_TASK_LIST_IO_XML);
-		io_class->load (self, xml_path);
-		g_type_class_unref (io_class);
+		c_task_list_io_load (C_TYPE_TASK_LIST_IO_XML,
+				     self,
+				     xml_path);
 	} else if (g_file_test (path, G_FILE_TEST_IS_REGULAR)) {
-		CTaskListIOClass* io_class = g_type_class_ref (C_TYPE_TASK_LIST_IO_TEXT);
-		io_class->load (self, path);
-		g_type_class_unref (io_class);
+		c_task_list_io_load (C_TYPE_TASK_LIST_IO_TEXT,
+				     self,
+				     path);
 
 		c_task_list_save (self, path);
 	}
