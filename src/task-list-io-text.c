@@ -62,6 +62,14 @@ task_list_io_text_load (CTaskList  * self,
 	}
 }
 
+static void
+task_list_io_text_remove (gchar const* path)
+{
+	if (0 != g_remove (path)) {
+		g_warning ("error removing file", g_strerror (errno));
+	}
+}
+
 static gboolean
 task_list_io_text_test (gchar const* path)
 {
@@ -73,7 +81,8 @@ c_task_list_io_text_class_init (CTaskListIOTextClass* self_class)
 {
 	CTaskListIOClass* io_class = C_TASK_LIST_IO_CLASS (self_class);
 
-	io_class->load = task_list_io_text_load;
-	io_class->test = task_list_io_text_test;
+	io_class->load   = task_list_io_text_load;
+	io_class->remove = task_list_io_text_remove;
+	io_class->test   = task_list_io_text_test;
 }
 
