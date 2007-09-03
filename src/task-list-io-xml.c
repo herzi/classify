@@ -39,6 +39,12 @@ struct StackLevel {
 	GString    * string;
 };
 
+G_DEFINE_TYPE (CTaskListIOXML, c_task_list_io_xml, C_TYPE_TASK_LIST_IO);
+
+static void
+c_task_list_io_xml_init (CTaskListIOXML* self)
+{}
+
 static void
 sax_characters_cb (gpointer       ctx,
 		   xmlChar const* text,
@@ -325,4 +331,8 @@ task_list_io_xml_save (CTaskList  * self,
             g_warning ("error closing file: %s", strerror (errno));
           }
 }
+
+static void
+c_task_list_io_xml_class_init (CTaskListIOXMLClass* self_class)
+{}
 
