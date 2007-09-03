@@ -62,6 +62,12 @@ task_list_io_text_load (CTaskList  * self,
 	}
 }
 
+gboolean
+task_list_io_text_test (gchar const* path)
+{
+	return g_file_test (path, G_FILE_TEST_IS_REGULAR);
+}
+
 static void
 c_task_list_io_text_class_init (CTaskListIOTextClass* self_class)
 {
