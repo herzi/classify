@@ -24,7 +24,7 @@
 #ifndef TASK_LIST_IO_TEXT_H
 #define TASK_LIST_IO_TEXT_H
 
-#include "task-list.h"
+#include "task-list-io.h"
 
 G_BEGIN_DECLS
 
