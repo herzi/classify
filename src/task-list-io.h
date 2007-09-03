@@ -37,6 +37,10 @@ typedef struct _CTaskListIOClass   CTaskListIOClass;
 
 GType c_task_list_io_get_type (void);
 
+void c_task_list_io_load (GType        loader,
+			  CTaskList  * task_list,
+			  gchar const* path);
+
 struct _CTaskListIO {
 	GObject             object;
 	CTaskListIOPrivate* _private;

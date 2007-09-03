@@ -33,3 +33,22 @@ static void
 c_task_list_io_class_init (CTaskListIOClass* self)
 {}
 
+void
+c_task_list_io_load (GType        loader,
+		     CTaskList  * task_list,
+		     gchar const* path)
+{
+	CTaskListIOClass* io_class;
+
+	g_return_if_fail (g_type_is_a (loader, C_TYPE_TASK_LIST_IO));
+
+	io_class = g_type_class_ref (loader);
+	if (!io_class || !io_class->load) {
+		g_warning ("%s cannot load files",
+			   g_type_name (loader));
+	} else {
+		io_class->load (task_list, path);
+	}
+	g_type_class_unref (io_class);
+}
+
