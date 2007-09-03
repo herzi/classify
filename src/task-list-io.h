@@ -33,6 +33,7 @@ typedef struct _CTaskListIOPrivate CTaskListIOPrivate;
 typedef struct _CTaskListIOClass   CTaskListIOClass;
 
 #define C_TYPE_TASK_LIST_IO         (c_task_list_io_get_type ())
+#define C_TASK_LIST_IO_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), C_TYPE_TASK_LIST_IO, CTaskListIOClass))
 
 GType c_task_list_io_get_type (void);
 
@@ -43,6 +44,12 @@ struct _CTaskListIO {
 
 struct _CTaskListIOClass {
 	GObjectClass      * object_class;
+
+	/* vtable */
+	void (*load) (CTaskList  * task_list,
+		      gchar const* path);
+	void (*save) (CTaskList  * task_list,
+		      gchar const* path);
 };
 
 G_END_DECLS
