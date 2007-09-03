@@ -45,10 +45,23 @@ static void
 c_task_list_io_xml_init (CTaskListIOXML* self)
 {}
 
+static gchar*
+task_list_io_xml_path (gchar const* path)
+{
+	if (g_str_has_suffix (path, ".xml")) {
+		return g_strdup (path);
+	} else {
+		return g_strdup_printf ("%s.xml", path);
+	}
+}
+
 static gboolean
 task_list_io_xml_test (gchar const* path)
 {
-	return g_file_test (path, G_FILE_TEST_IS_REGULAR);
+	gchar* xml_path = task_list_io_xml_path (path);
+	gboolean result = g_file_test (xml_path, G_FILE_TEST_IS_REGULAR);
+	g_free (xml_path);
+	return result;
 }
 
 static void
@@ -237,10 +250,12 @@ task_list_io_xml_load (CTaskList  * self,
 		NULL
 	};
 
+	gchar* xml_path = task_list_io_xml_path (path);
 	xmlSAXParseFileWithData (&sax,
-				 path,
+				 xml_path,
 				 0,
 				 &pdata);
+	g_free (xml_path);
 }
 
 // FIXME: merge dump_nodes() and write_node()
@@ -326,7 +341,8 @@ static void
 task_list_io_xml_save (CTaskList  * self,
                        gchar const* path)
 {
-        FILE* file = fopen (path, "w");
+        gchar* xml_path = task_list_io_xml_path (path);
+        FILE* file = fopen (xml_path, "w");
         fprintf (file, "<?xml version=\"1.0\" encoding=\"iso-8859-15\"?>\n");
         fprintf (file, "<tasks>\n");
         dump_nodes (self, file, NULL);
@@ -336,6 +352,7 @@ task_list_io_xml_save (CTaskList  * self,
             /* FIXME: come up with a proper fallback solution */
             g_warning ("error closing file: %s", strerror (errno));
           }
+        g_free (xml_path);
 }
 
 static void
