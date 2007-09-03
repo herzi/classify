@@ -26,6 +26,12 @@
 #include <errno.h>
 #include <glib/gstdio.h>
 
+G_DEFINE_TYPE (CTaskListIOText, c_task_list_io_text, C_TYPE_TASK_LIST_IO);
+
+static void
+c_task_list_io_text_init (CTaskListIOText* self)
+{}
+
 void
 task_list_io_text_load (CTaskList  * self,
 			gchar const* path)
@@ -54,5 +60,13 @@ task_list_io_text_load (CTaskList  * self,
 				   g_strerror (errno));
 		}
 	}
+}
+
+static void
+c_task_list_io_text_class_init (CTaskListIOTextClass* self_class)
+{
+	CTaskListIOClass* io_class = C_TASK_LIST_IO_CLASS (self_class);
+
+	io_class->load = task_list_io_text_load;
 }
 

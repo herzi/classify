@@ -28,8 +28,25 @@
 
 G_BEGIN_DECLS
 
+typedef struct _CTaskListIOText        CTaskListIOText;
+typedef struct _CTaskListIOTextPrivate CTaskListIOTextPrivate;
+typedef struct _CTaskListIOTextClass   CTaskListIOTextClass;
+
+#define C_TYPE_TASK_LIST_IO_TEXT         (c_task_list_io_text_get_type ())
+
+GType c_task_list_io_text_get_type (void);
+
 void task_list_io_text_load (CTaskList  * self,
 			     gchar const* path);
+
+struct _CTaskListIOText {
+	CTaskListIO             base_instance;
+	CTaskListIOTextPrivate* _private;
+};
+
+struct _CTaskListIOTextClass {
+	CTaskListIOClass        base_class;
+};
 
 G_END_DECLS
 
