@@ -180,29 +180,33 @@ CTaskList*
 c_task_list_new_default (void)
 {
 	CTaskList* self;
+	GType      loaders[] = {
+		C_TYPE_TASK_LIST_IO_XML,
+		C_TYPE_TASK_LIST_IO_TEXT
+	};
 	gchar* path = g_build_filename (g_get_home_dir (),
 				 ".local",
 				 "share",
 				 "classify",
 				 NULL);
+	guint i;
 
 	self = c_task_list_new ();
 
-	// FIXME: detect the file type and act accordingly
+	for (i = 0; i < G_N_ELEMENTS (loaders); i++) {
+		if (c_task_list_io_test (loaders[i], path)) {
+			c_task_list_io_load (loaders[i], self, path);
 
-	if (c_task_list_io_test (C_TYPE_TASK_LIST_IO_XML, path)) {
-		c_task_list_io_load (C_TYPE_TASK_LIST_IO_XML,
-				     self,
-				     path);
-	} else if (c_task_list_io_test (C_TYPE_TASK_LIST_IO_TEXT, path)) {
-		c_task_list_io_load (C_TYPE_TASK_LIST_IO_TEXT,
-				     self,
-				     path);
-
-		c_task_list_save (self, path);
+			if (i != 0) {
+				c_task_list_save (self, path);
+			}
+			break;
+		}
 	}
 
-	if (g_file_test (path, G_FILE_TEST_IS_REGULAR)) {
+	/* Special-case the text loader, there have been public revisions that
+	 * leave a text file there */
+	if (c_task_list_io_test (C_TYPE_TASK_LIST_IO_TEXT, path)) {
 		g_remove (path);
 	}
 
