@@ -36,11 +36,6 @@ typedef struct _CTaskListIOXMLClass   CTaskListIOXMLClass;
 
 GType c_task_list_io_xml_get_type (void);
 
-void task_list_io_xml_load (CTaskList  * self,
-			    gchar const* path);
-void task_list_io_xml_save (CTaskList  * self,
-			    gchar const* path);
-
 struct _CTaskListIOXML {
 	CTaskListIO            base_instance;
 	CTaskListIOXMLPrivate* _private;

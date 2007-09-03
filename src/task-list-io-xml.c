@@ -187,7 +187,7 @@ sax_error_cb (void      * ctx,
 	va_end   (list);
 }
 
-void
+static void
 task_list_io_xml_load (CTaskList  * self,
 		       gchar const* path)
 {
@@ -316,7 +316,7 @@ dump_nodes (CTaskList  * self,
 	}
 }
 
-void
+static void
 task_list_io_xml_save (CTaskList  * self,
                        gchar const* path)
 {
