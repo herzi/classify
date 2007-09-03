@@ -37,9 +37,13 @@ typedef struct _CTaskListIOClass   CTaskListIOClass;
 
 GType c_task_list_io_get_type (void);
 
-void c_task_list_io_load (GType        loader,
-			  CTaskList  * task_list,
-			  gchar const* path);
+void     c_task_list_io_remove (GType        loader,
+				gchar const* path);
+void     c_task_list_io_load   (GType        loader,
+				CTaskList  * task_list,
+				gchar const* path);
+gboolean c_task_list_io_test   (GType        loader,
+				gchar const* path);
 
 struct _CTaskListIO {
 	GObject             object;
@@ -50,11 +54,12 @@ struct _CTaskListIOClass {
 	GObjectClass        object_class;
 
 	/* vtable */
-	gboolean (*test) (gchar const* path);
-	void     (*load) (CTaskList  * task_list,
-			  gchar const* path);
-	void     (*save) (CTaskList  * task_list,
-			  gchar const* path);
+	void     (*remove) (gchar const* path);
+	void     (*load)   (CTaskList  * task_list,
+			    gchar const* path);
+	void     (*save)   (CTaskList  * task_list,
+			    gchar const* path);
+	gboolean (*test)   (gchar const* path);
 };
 
 G_END_DECLS
