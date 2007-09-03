@@ -345,5 +345,6 @@ c_task_list_io_xml_class_init (CTaskListIOXMLClass* self_class)
 
 	io_class->load = task_list_io_xml_load;
 	io_class->save = task_list_io_xml_save;
+	io_class->test = task_list_io_xml_test;
 }
 
