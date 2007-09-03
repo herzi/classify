@@ -185,16 +185,15 @@ c_task_list_new_default (void)
 				 "share",
 				 "classify",
 				 NULL);
-	gchar* xml_path = g_strdup_printf ("%s.xml", path);
 
 	self = c_task_list_new ();
 
 	// FIXME: detect the file type and act accordingly
 
-	if (c_task_list_io_test (C_TYPE_TASK_LIST_IO_XML, xml_path)) {
+	if (c_task_list_io_test (C_TYPE_TASK_LIST_IO_XML, path)) {
 		c_task_list_io_load (C_TYPE_TASK_LIST_IO_XML,
 				     self,
-				     xml_path);
+				     path);
 	} else if (c_task_list_io_test (C_TYPE_TASK_LIST_IO_TEXT, path)) {
 		c_task_list_io_load (C_TYPE_TASK_LIST_IO_TEXT,
 				     self,
@@ -207,7 +206,6 @@ c_task_list_new_default (void)
 		g_remove (path);
 	}
 
-	g_free (xml_path);
 	g_free (path);
 	return self;
 }
