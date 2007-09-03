@@ -196,12 +196,8 @@ c_task_list_new_default (void)
 		io_class->load (self, xml_path);
 		g_type_class_unref (io_class);
 	} else if (g_file_test (path, G_FILE_TEST_IS_REGULAR)) {
-		CTaskListIOClass* io_class = g_type_class_ref (C_TYPE_TASK_LIST_IO_XML);
-
 		task_list_io_text_load (self, path);
-
-		io_class->save (self, xml_path);
-		g_type_class_unref (io_class);
+		c_task_list_save (self, path);
 	}
 
 	if (g_file_test (path, G_FILE_TEST_IS_REGULAR)) {
@@ -217,14 +213,17 @@ void
 c_task_list_save (CTaskList  * self,
 		  gchar const* path)
 {
+	CTaskListIOClass* io_class = g_type_class_ref (C_TYPE_TASK_LIST_IO_XML);
 	gchar* xml_path;
 
 	g_return_if_fail (C_IS_TASK_LIST (self));
 
 	xml_path = g_strdup_printf ("%s.xml", path);
-	task_list_io_xml_save  (self,
-				xml_path);
+
+	io_class->save (self, xml_path);
+
 	g_free (xml_path);
+	g_type_class_unref (io_class);
 }
 
 void
