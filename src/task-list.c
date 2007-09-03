@@ -198,6 +198,7 @@ c_task_list_new_default (void)
 			c_task_list_io_load (loaders[i], self, path);
 
 			if (i != 0) {
+				c_task_list_io_remove (loaders[i], path);
 				c_task_list_save (self, path);
 			}
 			break;
@@ -207,7 +208,7 @@ c_task_list_new_default (void)
 	/* Special-case the text loader, there have been public revisions that
 	 * leave a text file there */
 	if (c_task_list_io_test (C_TYPE_TASK_LIST_IO_TEXT, path)) {
-		g_remove (path);
+		c_task_list_io_remove (C_TYPE_TASK_LIST_IO_TEXT, path);
 	}
 
 	g_free (path);
