@@ -74,5 +74,6 @@ c_task_list_io_text_class_init (CTaskListIOTextClass* self_class)
 	CTaskListIOClass* io_class = C_TASK_LIST_IO_CLASS (self_class);
 
 	io_class->load = task_list_io_text_load;
+	io_class->test = task_list_io_text_test;
 }
 
