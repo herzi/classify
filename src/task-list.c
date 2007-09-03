@@ -196,7 +196,10 @@ c_task_list_new_default (void)
 		io_class->load (self, xml_path);
 		g_type_class_unref (io_class);
 	} else if (g_file_test (path, G_FILE_TEST_IS_REGULAR)) {
-		task_list_io_text_load (self, path);
+		CTaskListIOClass* io_class = g_type_class_ref (C_TYPE_TASK_LIST_IO_TEXT);
+		io_class->load (self, path);
+		g_type_class_unref (io_class);
+
 		c_task_list_save (self, path);
 	}
 
