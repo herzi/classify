@@ -32,6 +32,8 @@ typedef struct _CTaskListIO        CTaskListIO;
 typedef struct _CTaskListIOPrivate CTaskListIOPrivate;
 typedef struct _CTaskListIOClass   CTaskListIOClass;
 
+#define C_TYPE_TASK_LIST_IO         (c_task_list_io_get_type ())
+
 GType c_task_list_io_get_type (void);
 
 struct _CTaskListIO {
