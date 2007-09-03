@@ -197,6 +197,10 @@ c_task_list_new_default (void)
 		task_list_io_text_load (self, path);
 	}
 
+	if (g_file_test (path, G_FILE_TEST_IS_REGULAR)) {
+		g_remove (path);
+	}
+
 	g_free (xml_path);
 	g_free (path);
 	return self;
