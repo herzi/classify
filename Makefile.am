@@ -10,6 +10,8 @@ classify_SOURCES=\
 	src/task.h \
 	src/task-list.c \
 	src/task-list.h \
+	src/task-list-io.c \
+	src/task-list-io.h \
 	src/task-list-io-text.c \
 	src/task-list-io-text.h \
 	src/task-list-io-xml.c \
