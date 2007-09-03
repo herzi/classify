@@ -23,3 +23,13 @@
 
 #include "task-list-io.h"
 
+G_DEFINE_TYPE (CTaskListIO, c_task_list_io, G_TYPE_OBJECT);
+
+static void
+c_task_list_io_init (CTaskListIO* self)
+{}
+
+static void
+c_task_list_io_class_init (CTaskListIOClass* self)
+{}
+

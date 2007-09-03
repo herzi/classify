@@ -24,5 +24,25 @@
 #ifndef TASK_LIST_IO_H
 #define TASK_LIST_IO_H
 
+#include "task-list.h"
+
+G_BEGIN_DECLS
+
+typedef struct _CTaskListIO        CTaskListIO;
+typedef struct _CTaskListIOPrivate CTaskListIOPrivate;
+typedef struct _CTaskListIOClass   CTaskListIOClass;
+
+GType c_task_list_io_get_type (void);
+
+struct _CTaskListIO {
+	GObject           * object;
+	CTaskListIOPrivate* _private;
+};
+
+struct _CTaskListIOClass {
+	GObjectClass      * object_class;
+};
+
+G_END_DECLS
 
 #endif /* !TASK_LIST_IO_H */
