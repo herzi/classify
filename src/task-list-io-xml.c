@@ -334,5 +334,10 @@ task_list_io_xml_save (CTaskList  * self,
 
 static void
 c_task_list_io_xml_class_init (CTaskListIOXMLClass* self_class)
-{}
+{
+	CTaskListIOClass* io_class = C_TASK_LIST_IO_CLASS (self_class);
+
+	io_class->load = task_list_io_xml_load;
+	io_class->save = task_list_io_xml_save;
+}
 
