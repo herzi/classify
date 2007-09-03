@@ -50,10 +50,11 @@ struct _CTaskListIOClass {
 	GObjectClass        object_class;
 
 	/* vtable */
-	void (*load) (CTaskList  * task_list,
-		      gchar const* path);
-	void (*save) (CTaskList  * task_list,
-		      gchar const* path);
+	gboolean (*test) (gchar const* path);
+	void     (*load) (CTaskList  * task_list,
+			  gchar const* path);
+	void     (*save) (CTaskList  * task_list,
+			  gchar const* path);
 };
 
 G_END_DECLS

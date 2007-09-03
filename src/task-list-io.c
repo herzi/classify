@@ -52,3 +52,25 @@ c_task_list_io_load (GType        loader,
 	g_type_class_unref (io_class);
 }
 
+gboolean
+c_task_list_io_test (GType        loader,
+		     gchar const* path)
+{
+	CTaskListIOClass* io_class;
+	gboolean          result;
+
+	g_return_val_if_fail (g_type_is_a (loader, C_TYPE_TASK_LIST_IO), FALSE);
+
+	io_class = g_type_class_ref (loader);
+	if (!io_class || !io_class->test) {
+		g_warning ("%s cannot test",
+			   g_type_name (loader));
+		result = FALSE;
+	} else {
+		result = io_class->test (path);
+	}
+	g_type_class_unref (io_class);
+
+	return result;
+}
+
