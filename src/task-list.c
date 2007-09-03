@@ -38,7 +38,7 @@ static void implement_drag_dest (GtkTreeDragDestIface* iface);
 G_DEFINE_TYPE_WITH_CODE (CTaskList, c_task_list, GTK_TYPE_TREE_STORE,
 			 G_IMPLEMENT_INTERFACE (GTK_TYPE_TREE_DRAG_DEST, implement_drag_dest));
 
-static void
+void
 c_task_list_init (CTaskList* self)
 {
 	GType types[N_COLUMNS] = {
@@ -191,7 +191,7 @@ c_task_list_new_default (void)
 
 	// FIXME: detect the file type and act accordingly
 
-	if (task_list_io_xml_test (xml_path)) {
+	if (c_task_list_io_test (C_TYPE_TASK_LIST_IO_XML, xml_path)) {
 		c_task_list_io_load (C_TYPE_TASK_LIST_IO_XML,
 				     self,
 				     xml_path);
