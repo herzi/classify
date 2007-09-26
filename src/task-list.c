@@ -230,6 +230,10 @@ c_task_list_new_default (void)
 		c_task_list_io_remove (C_TYPE_TASK_LIST_IO_TEXT, path);
 	}
 
+	/* don't request save after loading a file */
+	g_source_remove (self->_private->save_timeout);
+	self->_private->save_timeout = 0;
+
 	g_free (path);
 	return self;
 }
