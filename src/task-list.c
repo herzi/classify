@@ -68,6 +68,11 @@ task_list_finalize (GObject* object)
 	c_task_list_save (self, path);
 	g_free (path);
 
+	if (self->_private->save_timeout) {
+		g_source_remove (self->_private->save_timeout);
+		self->_private->save_timeout = 0;
+	}
+
 	G_OBJECT_CLASS (c_task_list_parent_class)->finalize (object);
 }
 
@@ -264,6 +269,29 @@ c_task_list_set_text (CTaskList   * store,
 
 /* GtkTreeModelIface */
 static GtkTreeModelIface* c_task_list_parent_model = NULL;
+
+static gboolean
+task_list_save_timeout (gpointer data)
+{
+	CTaskList* self = C_TASK_LIST (data);
+
+	; // FIXME: trigger saving
+
+	self->_private->save_timeout = 0;
+	return FALSE;
+}
+
+static void
+task_list_queue_save (CTaskList* self)
+{
+	if (G_LIKELY (self->_private->save_timeout)) {
+		g_source_remove (self->_private->save_timeout);
+	}
+
+	self->_private->save_timeout = g_timeout_add_seconds (30, // seconds
+							      task_list_save_timeout,
+							      self);
+}
 
 static void
 task_list_row_changed (GtkTreeModel* model,
