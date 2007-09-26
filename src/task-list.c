@@ -278,11 +278,22 @@ task_list_row_inserted (GtkTreeModel* model,
 }
 
 static void
+task_list_row_has_child_toggled (GtkTreeModel* model,
+				 GtkTreePath * path,
+				 GtkTreeIter * iter)
+{
+	if (c_task_list_parent_model->row_has_child_toggled) {
+		c_task_list_parent_model->row_has_child_toggled (model, path, iter);
+	}
+}
+
+static void
 implement_tree_model (GtkTreeModelIface* iface)
 {
 	c_task_list_parent_model = g_type_interface_peek_parent (iface);
 
-	iface->row_changed  = task_list_row_changed;
-	iface->row_inserted = task_list_row_inserted;
+	iface->row_changed           = task_list_row_changed;
+	iface->row_inserted          = task_list_row_inserted;
+	iface->row_has_child_toggled = task_list_row_has_child_toggled;
 }
 
