@@ -57,9 +57,8 @@ c_task_list_init (CTaskList* self)
 }
 
 static void
-task_list_finalize (GObject* object)
+task_list_save (CTaskList* self)
 {
-	CTaskList* self = C_TASK_LIST (object);
 	gchar    * path = g_build_filename (g_get_home_dir (),
 					    ".local",
 					    "share",
@@ -67,8 +66,15 @@ task_list_finalize (GObject* object)
 					    NULL);
 	c_task_list_save (self, path);
 	g_free (path);
+}
+
+static void
+task_list_finalize (GObject* object)
+{
+	CTaskList* self = C_TASK_LIST (object);
 
 	if (self->_private->save_timeout) {
+		task_list_save (self);
 		g_source_remove (self->_private->save_timeout);
 		self->_private->save_timeout = 0;
 	}
@@ -275,7 +281,7 @@ task_list_save_timeout (gpointer data)
 {
 	CTaskList* self = C_TASK_LIST (data);
 
-	; // FIXME: trigger saving
+	task_list_save (self);
 
 	self->_private->save_timeout = 0;
 	return FALSE;
@@ -301,6 +307,8 @@ task_list_row_changed (GtkTreeModel* model,
 	if (c_task_list_parent_model->row_changed) {
 		c_task_list_parent_model->row_changed (model, path, iter);
 	}
+
+	task_list_queue_save (C_TASK_LIST (model));
 }
 
 static void
@@ -311,6 +319,8 @@ task_list_row_inserted (GtkTreeModel* model,
 	if (c_task_list_parent_model->row_inserted) {
 		c_task_list_parent_model->row_inserted (model, path, iter);
 	}
+
+	task_list_queue_save (C_TASK_LIST (model));
 }
 
 static void
@@ -321,6 +331,8 @@ task_list_row_has_child_toggled (GtkTreeModel* model,
 	if (c_task_list_parent_model->row_has_child_toggled) {
 		c_task_list_parent_model->row_has_child_toggled (model, path, iter);
 	}
+
+	task_list_queue_save (C_TASK_LIST (model));
 }
 
 static void
@@ -330,6 +342,8 @@ task_list_row_deleted (GtkTreeModel* model,
 	if (c_task_list_parent_model->row_deleted) {
 		c_task_list_parent_model->row_deleted (model, path);
 	}
+
+	task_list_queue_save (C_TASK_LIST (model));
 }
 
 static void
@@ -341,6 +355,8 @@ task_list_rows_reordered (GtkTreeModel* model,
 	if (c_task_list_parent_model->rows_reordered) {
 		c_task_list_parent_model->rows_reordered (model, path, iter, new_order);
 	}
+
+	task_list_queue_save (C_TASK_LIST (model));
 }
 
 static void
