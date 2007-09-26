@@ -258,8 +258,20 @@ c_task_list_set_text (CTaskList   * store,
 static GtkTreeModelIface* c_task_list_parent_model = NULL;
 
 static void
+task_list_row_changed (GtkTreeModel* model,
+		       GtkTreePath * path,
+		       GtkTreeIter * iter)
+{
+	if (c_task_list_parent_model->row_changed) {
+		c_task_list_parent_model->row_changed (model, path, iter);
+	}
+}
+
+static void
 implement_tree_model (GtkTreeModelIface* iface)
 {
 	c_task_list_parent_model = g_type_interface_peek_parent (iface);
+
+	iface->row_changed = task_list_row_changed;
 }
 
