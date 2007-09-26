@@ -29,6 +29,10 @@
 #include "task-list-io-text.h"
 #include "task-list-io-xml.h"
 
+struct _CTaskListPrivate {
+	guint save_timeout;
+};
+
 enum {
 	COL_TASK,
 	N_COLUMNS
@@ -48,6 +52,8 @@ c_task_list_init (CTaskList* self)
 	gtk_tree_store_set_column_types (GTK_TREE_STORE (self),
 					 N_COLUMNS,
 					 types);
+
+	self->_private = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_TASK_LIST, CTaskListPrivate);
 }
 
 static void
@@ -71,6 +77,8 @@ c_task_list_class_init (CTaskListClass* self_class)
 	GObjectClass* object_class = G_OBJECT_CLASS (self_class);
 
 	object_class->finalize = task_list_finalize;
+
+	g_type_class_add_private (self_class, sizeof (CTaskListPrivate));
 }
 
 static void
