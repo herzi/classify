@@ -288,6 +288,15 @@ task_list_row_has_child_toggled (GtkTreeModel* model,
 }
 
 static void
+task_list_row_deleted (GtkTreeModel* model,
+		       GtkTreePath * path)
+{
+	if (c_task_list_parent_model->row_deleted) {
+		c_task_list_parent_model->row_deleted (model, path);
+	}
+}
+
+static void
 implement_tree_model (GtkTreeModelIface* iface)
 {
 	c_task_list_parent_model = g_type_interface_peek_parent (iface);
@@ -295,5 +304,6 @@ implement_tree_model (GtkTreeModelIface* iface)
 	iface->row_changed           = task_list_row_changed;
 	iface->row_inserted          = task_list_row_inserted;
 	iface->row_has_child_toggled = task_list_row_has_child_toggled;
+	iface->row_deleted           = task_list_row_deleted;
 }
 
