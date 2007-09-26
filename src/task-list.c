@@ -34,9 +34,9 @@ enum {
 	N_COLUMNS
 };
 
-static void implement_drag_dest (GtkTreeDragDestIface* iface);
+static void implement_tree_model (GtkTreeModelIface* iface);
 G_DEFINE_TYPE_WITH_CODE (CTaskList, c_task_list, GTK_TYPE_TREE_STORE,
-			 G_IMPLEMENT_INTERFACE (GTK_TYPE_TREE_DRAG_DEST, implement_drag_dest));
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_TREE_MODEL, implement_tree_model));
 
 void
 c_task_list_init (CTaskList* self)
@@ -254,25 +254,12 @@ c_task_list_set_text (CTaskList   * store,
 	gtk_tree_path_free             (path);
 }
 
-/* GtkTreeDragDest */
-static GtkTreeDragDestIface* c_task_list_parent_drag_dest = NULL;
-
-static gboolean
-task_list_row_drop_possible (GtkTreeDragDest * drag_dest,
-			     GtkTreePath     * path,
-			     GtkSelectionData* data)
-{
-	return gtk_tree_path_get_depth (path) == 1 &&
-	       c_task_list_parent_drag_dest->row_drop_possible (drag_dest,
-								path,
-								data);
-}
+/* GtkTreeModelIface */
+static GtkTreeModelIface* c_task_list_parent_model = NULL;
 
 static void
-implement_drag_dest (GtkTreeDragDestIface* iface)
+implement_tree_model (GtkTreeModelIface* iface)
 {
-	c_task_list_parent_drag_dest = g_type_interface_peek_parent (iface);
-
-	//iface->row_drop_possible = task_list_row_drop_possible;
+	c_task_list_parent_model = g_type_interface_peek_parent (iface);
 }
 
