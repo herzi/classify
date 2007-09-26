@@ -297,6 +297,17 @@ task_list_row_deleted (GtkTreeModel* model,
 }
 
 static void
+task_list_rows_reordered (GtkTreeModel* model,
+		          GtkTreePath * path,
+			  GtkTreeIter * iter,
+			  gint        * new_order)
+{
+	if (c_task_list_parent_model->rows_reordered) {
+		c_task_list_parent_model->rows_reordered (model, path, iter, new_order);
+	}
+}
+
+static void
 implement_tree_model (GtkTreeModelIface* iface)
 {
 	c_task_list_parent_model = g_type_interface_peek_parent (iface);
@@ -305,5 +316,6 @@ implement_tree_model (GtkTreeModelIface* iface)
 	iface->row_inserted          = task_list_row_inserted;
 	iface->row_has_child_toggled = task_list_row_has_child_toggled;
 	iface->row_deleted           = task_list_row_deleted;
+	iface->rows_reordered        = task_list_rows_reordered;
 }
 
