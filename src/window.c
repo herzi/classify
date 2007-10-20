@@ -586,24 +586,23 @@ c_window_init (CWindow* self)
 	GtkActionGroup* group;
 	GtkUIManager* ui_manager = gtk_ui_manager_new ();
 	CTaskList   * store;
-	GtkWidget   * result = GTK_WIDGET (self); // FIXME: remove this line
 	GtkWidget   * swin;
 	GtkWidget   * tree;
-	GtkWidget   * vbox   = gtk_vbox_new   (FALSE, 0);
+	GtkWidget   * vbox  = gtk_vbox_new (FALSE, 0);
 	GError      * error = NULL;
 
 	gtk_window_add_accel_group  (GTK_WINDOW (self),
 				     gtk_ui_manager_get_accel_group (ui_manager));
 
-	gtk_window_set_default_size (GTK_WINDOW (result),
+	gtk_window_set_default_size (GTK_WINDOW (self),
 				     400, 300);
-	gtk_window_set_title        (GTK_WINDOW (result),
+	gtk_window_set_title        (GTK_WINDOW (self),
 				     _("Classify"));
-	g_signal_connect (result, "destroy",
+	g_signal_connect (self, "destroy",
 			  G_CALLBACK (gtk_main_quit), NULL);
 
 	group = gtk_action_group_new ("main-group");
-	gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), result);
+	gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), self);
 
 	gtk_ui_manager_insert_action_group (ui_manager,
 					    group,
@@ -679,10 +678,10 @@ c_window_init (CWindow* self)
 	gtk_tree_view_set_search_column     (GTK_TREE_VIEW (tree),
 					     0);
 	g_signal_connect (tree, "button-press-event",
-			  G_CALLBACK (tree_button_press_event), result);
+			  G_CALLBACK (tree_button_press_event), self);
 	g_signal_connect (tree, "size-allocate",
 			        G_CALLBACK (tree_size_allocate_after), NULL);
-	g_object_set_data_full (G_OBJECT (result),
+	g_object_set_data_full (G_OBJECT (self),
 				"CWindow::TreeView",
 				g_object_ref_sink (tree),
 				g_object_unref);
@@ -711,13 +710,13 @@ c_window_init (CWindow* self)
 						    task_list_data_func,
 						    NULL, NULL);
 
-	g_object_set_data_full (G_OBJECT (result),
+	g_object_set_data_full (G_OBJECT (self),
 				"CWindow::UIManager",
 				ui_manager,
 				g_object_unref);
 
 	gtk_widget_show    (vbox);
-	gtk_container_add  (GTK_CONTAINER (result),
+	gtk_container_add  (GTK_CONTAINER (self),
 			    vbox);
 }
 
