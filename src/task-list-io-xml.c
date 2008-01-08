@@ -341,8 +341,23 @@ static void
 task_list_io_xml_save (CTaskList  * self,
                        gchar const* path)
 {
+        GMappedFile* old_version;
         gchar* xml_path = task_list_io_xml_path (path);
-        FILE* file = fopen (xml_path, "w");
+        FILE* file;
+
+	/* we don't care if this fails */
+	old_version = g_mapped_file_new (xml_path, FALSE, NULL);
+	if (old_version) {
+		gchar* backup_path = g_strdup_printf ("%s.%d", xml_path, time (NULL));
+		g_file_set_contents (backup_path,
+				     g_mapped_file_get_contents (old_version),
+				     g_mapped_file_get_length (old_version),
+				     NULL);
+		g_free (backup_path);
+		g_mapped_file_free (old_version);
+	}
+
+        file = fopen (xml_path, "w");
         fprintf (file, "<?xml version=\"1.0\" encoding=\"iso-8859-15\"?>\n");
         fprintf (file, "<tasks>\n");
         dump_nodes (self, file, NULL);
