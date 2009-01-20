@@ -253,15 +253,12 @@ c_task_list_new_from_file (gchar const* path,
 		}
 	}
 
-	/* Special-case the text loader, there have been public revisions that
-	 * leave a text file there */
-	if (c_task_list_io_test (C_TYPE_TASK_LIST_IO_TEXT, path)) {
-		c_task_list_io_remove (C_TYPE_TASK_LIST_IO_TEXT, path);
-	}
-
-	/* don't request save after loading a file */
-	g_source_remove (self->_private->save_timeout);
-	self->_private->save_timeout = 0;
+        /* don't request save after loading a file */
+        if (PRIV (self)->save_timeout)
+          {
+            g_source_remove (self->_private->save_timeout);
+            self->_private->save_timeout = 0;
+          }
 
         return self;
 }
@@ -275,6 +272,7 @@ c_task_list_save (CTaskList  * self,
 
 	g_return_if_fail (C_IS_TASK_LIST (self));
 
+        /* FIXME: enforce suffix somehow */
         if (!g_str_has_suffix (path, ".xml"))
           {
             xml_path = g_strdup_printf ("%s.xml", path);
