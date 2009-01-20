@@ -1,4 +1,5 @@
 bin_PROGRAMS=classify
+lib_LTLIBRARIES=libclassify.la
 noinst_PROGRAMS=debugify
 
 classify_SOURCES=\
@@ -24,6 +25,7 @@ classify_SOURCES=\
 	$(NULL)
 LDADD=\
 	$(CLASSIFY_LIBS) \
+	libclassify.la \
 	$(NULL)
 AM_CPPFLAGS=\
 	$(CLASSIFY_CFLAGS) \
@@ -32,6 +34,9 @@ AM_CPPFLAGS=\
 
 debugify_SOURCES=\
 	tests/debugify.c \
+	$(NULL)
+
+libclassify_la_SOURCES=\
 	$(NULL)
 
 applications_DATA=classify.desktop
