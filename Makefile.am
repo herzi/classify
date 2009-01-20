@@ -23,6 +23,10 @@ AM_CPPFLAGS=\
 debugify_SOURCES=\
 	tests/debugify.c \
 	$(NULL)
+debugify_CPPFLAGS=\
+	-I$(top_srcdir)/src \
+	$(AM_CPPFLAGS) \
+	$(NULL)
 
 libclassify_la_SOURCES=\
 	src/task.c \
