@@ -1,4 +1,5 @@
 bin_PROGRAMS=classify
+noinst_PROGRAMS=debugify
 
 classify_SOURCES=\
 	src/main.c \
@@ -27,6 +28,10 @@ classify_LDADD=\
 AM_CPPFLAGS=\
 	$(CLASSIFY_CFLAGS) \
 	-DBIN_DIR=\""$(bindir)"\"
+	$(NULL)
+
+debugify_SOURCES=\
+	tests/debugify.c \
 	$(NULL)
 
 applications_DATA=classify.desktop
