@@ -22,10 +22,26 @@
  * USA
  */
 
+#include <glib.h>
+
 int
 main (int   argc,
       char**argv)
 {
+  GOptionContext* options;
+  GError        * error = NULL;
+
+  options = g_option_context_new ("");
+  if (!g_option_context_parse (options, &argc, &argv, &error))
+    {
+      gchar* help = g_option_context_get_help (options, TRUE, NULL);
+      g_printerr ("%s%s\n", help, error ? error->message : "");
+      g_option_context_free (options);
+      g_clear_error (&error);
+      g_free (help);
+      return 1;
+    }
+
   return 0;
 }
 

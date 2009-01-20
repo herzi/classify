@@ -22,7 +22,7 @@ classify_SOURCES=\
 	src/window.c \
 	src/window.h \
 	$(NULL)
-classify_LDADD=\
+LDADD=\
 	$(CLASSIFY_LIBS) \
 	$(NULL)
 AM_CPPFLAGS=\
