@@ -29,9 +29,15 @@
 #include "task-list-io-text.h"
 #include "task-list-io-xml.h"
 
+#define GETTEXT_PACKAGE "classify"
+#include <glib/gi18n-lib.h>
+
 struct _CTaskListPrivate {
-	guint save_timeout;
+        gchar* path;
+        guint  save_timeout;
 };
+
+#define PRIV(i) (((CTaskList*)i)->_private)
 
 enum {
 	COL_TASK,
@@ -56,30 +62,29 @@ c_task_list_init (CTaskList* self)
 	self->_private = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_TASK_LIST, CTaskListPrivate);
 }
 
-static void
+static inline void
 task_list_save (CTaskList* self)
 {
-	gchar    * path = g_build_filename (g_get_home_dir (),
-					    ".local",
-					    "share",
-					    "classify",
-					    NULL);
-	c_task_list_save (self, path);
-	g_free (path);
+        if (PRIV (self)->path)
+          {
+            c_task_list_save (self, PRIV (self)->path);
+          }
 }
 
 static void
 task_list_finalize (GObject* object)
 {
-	CTaskList* self = C_TASK_LIST (object);
+        CTaskList* self = C_TASK_LIST (object);
 
-	if (self->_private->save_timeout) {
-		task_list_save (self);
-		g_source_remove (self->_private->save_timeout);
-		self->_private->save_timeout = 0;
-	}
+        if (PRIV (self)->save_timeout) {
+                task_list_save (self);
+                g_source_remove (PRIV (self)->save_timeout);
+                PRIV (self)->save_timeout = 0;
+        }
 
-	G_OBJECT_CLASS (c_task_list_parent_class)->finalize (object);
+        g_free (PRIV (self)->path);
+
+        G_OBJECT_CLASS (c_task_list_parent_class)->finalize (object);
 }
 
 static void
@@ -198,21 +203,45 @@ c_task_list_new (void)
 CTaskList*
 c_task_list_new_default (void)
 {
-	CTaskList* self;
-	GType      loaders[] = {
-		C_TYPE_TASK_LIST_IO_XML,
-		C_TYPE_TASK_LIST_IO_TEXT
-	};
+        CTaskList* self;
+        GError   * error = NULL;
 	gchar* path = g_build_filename (g_get_home_dir (),
 				 ".local",
 				 "share",
 				 "classify",
-				 NULL);
-	guint i;
+                                 NULL);
 
-	self = c_task_list_new ();
+        self = c_task_list_new_from_file (path, &error);
+        /* FIXME: forward the error */
+        if (error)
+          {
+            g_warning (_("error opening file %s: %s"),
+                       path, error->message);
+            g_error_free (error);
+          }
 
-	for (i = 0; i < G_N_ELEMENTS (loaders); i++) {
+        g_free (path);
+	return self;
+}
+
+CTaskList*
+c_task_list_new_from_file (gchar const* path,
+                           GError     **error)
+{
+        CTaskList* self;
+        guint      i;
+        GType      loaders[] = {
+                C_TYPE_TASK_LIST_IO_XML,
+                C_TYPE_TASK_LIST_IO_TEXT
+        };
+
+        g_return_val_if_fail (path && *path, NULL);
+        g_return_val_if_fail (!error || !*error, NULL);
+
+        self = c_task_list_new ();
+        PRIV (self)->path = g_strdup (path);
+
+        for (i = 0; i < G_N_ELEMENTS (loaders); i++) {
 		if (c_task_list_io_test (loaders[i], path)) {
 			c_task_list_io_load (loaders[i], self, path);
 
@@ -234,8 +263,7 @@ c_task_list_new_default (void)
 	g_source_remove (self->_private->save_timeout);
 	self->_private->save_timeout = 0;
 
-	g_free (path);
-	return self;
+        return self;
 }
 
 void
@@ -247,7 +275,14 @@ c_task_list_save (CTaskList  * self,
 
 	g_return_if_fail (C_IS_TASK_LIST (self));
 
-	xml_path = g_strdup_printf ("%s.xml", path);
+        if (!g_str_has_suffix (path, ".xml"))
+          {
+            xml_path = g_strdup_printf ("%s.xml", path);
+          }
+        else
+          {
+            xml_path = g_strdup (path);
+          }
 
 	io_class->save (self, xml_path);
 
