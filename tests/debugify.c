@@ -24,14 +24,22 @@
 
 #include <glib.h>
 
+#include <glib/gi18n.h>
+
 int
 main (int   argc,
       char**argv)
 {
   GOptionContext* options;
   GError        * error = NULL;
+  gchar         **files = NULL;
+  GOptionEntry    entries[] = {
+    {G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &files, NULL, NULL},
+    {NULL}
+  };
 
-  options = g_option_context_new ("");
+  options = g_option_context_new (_("FILE [FILES]"));
+  g_option_context_add_main_entries (options, entries, NULL);
   if (!g_option_context_parse (options, &argc, &argv, &error))
     {
       gchar* help = g_option_context_get_help (options, TRUE, NULL);
@@ -42,6 +50,17 @@ main (int   argc,
       return 1;
     }
 
+  if (!files)
+    {
+      gchar* help = g_option_context_get_help (options, TRUE, NULL);
+      g_printerr ("%s%s\n", help, _("Missing filename argument"));
+      g_option_context_free (options);
+      g_free (help);
+      return 2;
+    }
+
+  g_option_context_free (options);
+  g_strfreev (files);
   return 0;
 }
 
