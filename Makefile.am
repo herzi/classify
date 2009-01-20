@@ -8,18 +8,6 @@ classify_SOURCES=\
 	src/parser.h \
 	src/preferences.c \
 	src/preferences.h \
-	src/task.c \
-	src/task.h \
-	src/task-list.c \
-	src/task-list.h \
-	src/task-list-io.c \
-	src/task-list-io.h \
-	src/task-list-io-text.c \
-	src/task-list-io-text.h \
-	src/task-list-io-xml.c \
-	src/task-list-io-xml.h \
-	src/uuid.c \
-	src/uuid.h \
 	src/window.c \
 	src/window.h \
 	$(NULL)
@@ -37,6 +25,18 @@ debugify_SOURCES=\
 	$(NULL)
 
 libclassify_la_SOURCES=\
+	src/task.c \
+	src/task.h \
+	src/task-list.c \
+	src/task-list.h \
+	src/task-list-io.c \
+	src/task-list-io.h \
+	src/task-list-io-text.c \
+	src/task-list-io-text.h \
+	src/task-list-io-xml.c \
+	src/task-list-io-xml.h \
+	src/uuid.c \
+	src/uuid.h \
 	$(NULL)
 
 applications_DATA=classify.desktop
