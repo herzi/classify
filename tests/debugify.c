@@ -25,6 +25,8 @@
 #include <glib.h>
 #include <gio/gio.h>
 
+#include "task-list.h"
+
 #include <glib/gi18n.h>
 
 int
@@ -66,8 +68,10 @@ main (int   argc,
 
   for (file = files; *file; file++)
     {
-      GFile* gfile = g_file_new_for_commandline_arg (*file);
-      gchar* path = g_file_get_path (gfile);
+      CTaskList* list;
+      GError   * error = NULL;
+      GFile    * gfile = g_file_new_for_commandline_arg (*file);
+      gchar    * path = g_file_get_path (gfile);
 
       if (!path)
         {
@@ -78,8 +82,28 @@ main (int   argc,
           g_object_unref (gfile);
           continue;
         }
-      g_printf ("%s\n", path);
+
+      g_print ("%s: ", *file);
+
+      list = c_task_list_new_from_file (path, &error);
+
+      g_print ("(%d) ", gtk_tree_model_iter_n_children (GTK_TREE_MODEL (list), NULL));
+
+      if (error)
+        {
+          g_print ("failed.\n");
+          g_warning (_("Cannot load list file: %s"),
+                     error->message);
+          g_error_free (error);
+          g_free (path);
+          continue;
+        }
+
+      c_task_list_save (list, path);
+      g_object_unref (list);
       g_free (path);
+
+      g_print ("done.\n");
     }
 
   g_strfreev (files);
