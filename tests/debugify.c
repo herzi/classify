@@ -23,6 +23,7 @@
  */
 
 #include <glib.h>
+#include <gio/gio.h>
 
 #include <glib/gi18n.h>
 
@@ -33,6 +34,7 @@ main (int   argc,
   GOptionContext* options;
   GError        * error = NULL;
   gchar         **files = NULL;
+  gchar         * const * file;
   GOptionEntry    entries[] = {
     {G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &files, NULL, NULL},
     {NULL}
@@ -60,6 +62,26 @@ main (int   argc,
     }
 
   g_option_context_free (options);
+  g_type_init ();
+
+  for (file = files; *file; file++)
+    {
+      GFile* gfile = g_file_new_for_commandline_arg (*file);
+      gchar* path = g_file_get_path (gfile);
+
+      if (!path)
+        {
+          gchar* uri = g_file_get_uri (gfile);
+          g_warning (_("Cannot handle non-local file: %s"),
+                     uri);
+          g_free (uri);
+          g_object_unref (gfile);
+          continue;
+        }
+      g_printf ("%s\n", path);
+      g_free (path);
+    }
+
   g_strfreev (files);
   return 0;
 }
