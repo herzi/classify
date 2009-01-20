@@ -29,6 +29,30 @@
 
 #include <glib/gi18n.h>
 
+static const char characters[] = "abcdefghijklmnopqrstuvwxyz"
+                                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                 "0123456789";
+
+static gboolean
+foreach_task (GtkTreeModel* model,
+              GtkTreePath * path,
+              GtkTreeIter * iter,
+              gpointer      user_data)
+{
+  CTaskList* list = C_TASK_LIST (model);
+  CTask    * task = c_task_list_get_task (list, iter);
+  gchar    * text = g_strdup (c_task_get_text (task));
+  size_t   * i = user_data;
+  memset (text, characters[(*i)++], strlen (text));
+  c_task_set_text (task, text);
+  g_free (text);
+
+  if (G_UNLIKELY (*i >= G_N_ELEMENTS (characters)))
+    *i = 0;
+
+  return FALSE;
+}
+
 int
 main (int   argc,
       char**argv)
@@ -72,6 +96,9 @@ main (int   argc,
       GError   * error = NULL;
       GFile    * gfile = g_file_new_for_commandline_arg (*file);
       gchar    * path = g_file_get_path (gfile);
+      gchar    * dbg_path;
+      gchar    * dbg_base;
+      size_t     i = 0;
 
       if (!path)
         {
@@ -87,8 +114,6 @@ main (int   argc,
 
       list = c_task_list_new_from_file (path, &error);
 
-      g_print ("(%d) ", gtk_tree_model_iter_n_children (GTK_TREE_MODEL (list), NULL));
-
       if (error)
         {
           g_print ("failed.\n");
@@ -99,11 +124,19 @@ main (int   argc,
           continue;
         }
 
-      c_task_list_save (list, path);
+      gtk_tree_model_foreach (GTK_TREE_MODEL (list),
+                              foreach_task,
+                              &i);
+
+      dbg_path = g_strdup_printf ("%s%s", path, "-debug");
+      c_task_list_save (list, dbg_path);
+      dbg_base = g_path_get_basename (dbg_path);
+      g_print ("done (%s).\n", dbg_base);
+      g_free (dbg_base);
+      g_free (dbg_path);
+
       g_object_unref (list);
       g_free (path);
-
-      g_print ("done.\n");
     }
 
   g_strfreev (files);
