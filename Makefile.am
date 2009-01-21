@@ -46,3 +46,7 @@ libclassify_la_SOURCES=\
 applications_DATA=classify.desktop
 applicationsdir=$(datarootdir)/applications
 
+EXTRA_DIST=\
+	$(applications_DATA) \
+	$(NULL)
+
