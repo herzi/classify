@@ -45,10 +45,18 @@ libclassify_la_SOURCES=\
 	src/uuid.h \
 	$(NULL)
 
-applications_DATA=classify.desktop
+applications_in_files=classify.desktop.in
+applications_DATA=$(applications_in_files:.desktop.in=.desktop)
+if WITH_MAEMO
+applicationsdir=$(datarootdir)/applications/hildon
+else
 applicationsdir=$(datarootdir)/applications
+endif
+
+$(applications_DATA): $(applications_in_files) Makefile
+	sed 's#@BINDIR@#$(bindir)/#;' $< > $@
 
 EXTRA_DIST=\
-	$(applications_DATA) \
+	$(applications_in_files) \
 	$(NULL)
 

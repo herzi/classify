@@ -3,6 +3,6 @@ Version=1.0
 Type=Application
 Name=Tasks Application
 Comment=Manage your daily tasks
-Exec=/home/herzi/.local/bin/classify
+Exec=@BINDIR@classify
 Icon=classify
 Categories=GTK;GNOME;Office;Calendar;Database;ProjectManagement;

@@ -23,6 +23,8 @@ if test "${with_platform}" == "auto"; then
         AC_MSG_RESULT([$maemo])
 fi
 
+AM_CONDITIONAL(WITH_MAEMO,[test "${with_platform}" == "maemo"])
+
 AC_MSG_CHECKING([for platform dependencies])
 case "${with_platform}" in
 maemo)
