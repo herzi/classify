@@ -331,6 +331,9 @@ task_list_queue_save (CTaskList* self)
 		g_source_remove (self->_private->save_timeout);
 	}
 
+#if !GLIB_CHECK_VERSION(2,14,0)
+#define g_timeout_add_seconds(sec,callback,data) g_timeout_add(sec*1000,callback,data)
+#endif
 	self->_private->save_timeout = g_timeout_add_seconds (30, // seconds
 							      task_list_save_timeout,
 							      self);
