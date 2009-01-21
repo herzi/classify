@@ -1,6 +1,8 @@
 bin_PROGRAMS=classify
 lib_LTLIBRARIES=libclassify.la
+if WITH_GIO
 noinst_PROGRAMS=debugify
+endif
 
 classify_SOURCES=\
 	src/main.c \
