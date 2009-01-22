@@ -110,9 +110,10 @@ clipboard_text_received_cb (GtkClipboard* clipboard,
 	GtkTreeIter       iter;
 	GtkTreeIter       sibling;
 	CWindow         * self = data;
-	gboolean          has_sibling;
+        gboolean          has_sibling;
+        GList           * columns;
 
-	view        = GTK_TREE_VIEW (c_window_get_tree (self));
+        view        = GTK_TREE_VIEW (c_window_get_tree (self));
 	selection   = gtk_tree_view_get_selection (view);
 	has_sibling = 1 == gtk_tree_selection_count_selected_rows (selection);
 
@@ -130,9 +131,14 @@ clipboard_text_received_cb (GtkClipboard* clipboard,
 			    has_sibling ? &sibling : NULL,
 			    text);
 
-	path = gtk_tree_model_get_path (model, &iter);
-	gtk_tree_view_set_cursor (view, path, NULL, FALSE);
-	gtk_tree_path_free (path);
+        path = gtk_tree_model_get_path (model, &iter);
+        columns = gtk_tree_view_get_columns (view);
+        gtk_tree_view_set_cursor (view,
+                                  path,
+                                  g_list_last (columns)->data,
+                                  FALSE);
+        g_list_free (columns);
+        gtk_tree_path_free (path);
 }
 
 static void
@@ -162,17 +168,18 @@ open_prefs (GtkAction* action,
 
 static void
 tree_edit_path (GtkTreeView* tree,
-		GtkTreePath* path)
+                GtkTreePath* path)
 {
-	GList       * renderers;
-	renderers = gtk_tree_view_column_get_cell_renderers (gtk_tree_view_get_column (tree, 0));
-	g_object_set (renderers->data, "editable", TRUE, NULL);
-	gtk_tree_view_set_cursor (tree,
-				  path,
-				  gtk_tree_view_get_column (tree, 0),
-				  TRUE);
-	g_object_set (renderers->data, "editable", FALSE, NULL);
-	g_list_free (renderers);
+        GList       * columns   = gtk_tree_view_get_columns (tree);
+        GList       * renderers = gtk_tree_view_column_get_cell_renderers (g_list_last (columns)->data);
+        g_object_set (renderers->data, "editable", TRUE, NULL);
+        gtk_tree_view_set_cursor (tree,
+                                  path,
+                                  g_list_last (columns)->data,
+                                  TRUE);
+        g_object_set (renderers->data, "editable", FALSE, NULL);
+        g_list_free (renderers);
+        g_list_free (columns);
 }
 
 static gboolean
@@ -313,28 +320,28 @@ tree_button_press_event (GtkWidget     * tree,
 	gboolean result = FALSE;
 
 	if (event->button == 1 && event->type == GDK_2BUTTON_PRESS) {
-		GtkTreeSelection* selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
-		if (gtk_tree_selection_count_selected_rows (selection) == 1) {
-			GtkTreeViewColumn* column;
-			GtkTreeModel* model = NULL;
-			GList       * selected = gtk_tree_selection_get_selected_rows (selection, &model);
-			GList       * renderers;
+                GtkTreeSelection* selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+                if (gtk_tree_selection_count_selected_rows (selection) == 1) {
+                        GtkTreeModel* model = NULL;
+                        GList       * selected = gtk_tree_selection_get_selected_rows (selection, &model);
+                        GList       * columns  = gtk_tree_view_get_columns (GTK_TREE_VIEW (tree));
+                        GList       * renderers;
 
-			column    = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 0);
-			renderers = gtk_tree_view_column_get_cell_renderers (column);
+                        renderers = gtk_tree_view_column_get_cell_renderers (g_list_last (columns)->data);
 
-			g_object_set (renderers->data, "editable", TRUE, NULL);
+                        g_object_set (renderers->data, "editable", TRUE, NULL);
 			gtk_tree_view_set_cursor (GTK_TREE_VIEW (tree),
-						  selected->data,
-						  column,
-						  TRUE);
+                                                  selected->data,
+                                                  g_list_last (columns)->data,
+                                                  TRUE);
 			g_object_set (renderers->data, "editable", FALSE, NULL);
 			g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
 			g_list_free    (selected);
 
-			g_list_free    (renderers);
+                        g_list_free    (renderers);
+                        g_list_free    (columns);
 
-			result = TRUE;
+                        result = TRUE;
 		}
 	}
 
