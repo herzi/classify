@@ -24,7 +24,11 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#ifdef HAVE_HILDON
+#include <hildon/hildon.h>
+#else
 #include <gtk/gtkwindow.h>
+#endif
 
 G_BEGIN_DECLS
 
@@ -45,12 +49,20 @@ GtkWidget* c_window_get_button (CWindow* self);
 GtkWidget* c_window_get_tree   (CWindow* self);
 
 struct _CWindow {
-	GtkWindow       base_instance;
-	CWindowPrivate* _private;
+#ifdef HAVE_HILDON
+	HildonWindow       base_instance;
+#else
+	GtkWindow          base_instance;
+#endif
+	CWindowPrivate   * _private;
 };
 
 struct _CWindowClass {
-	GtkWindowClass  base_class;
+#ifdef HAVE_HILDON
+	HildonWindowClass  base_class;
+#else
+	GtkWindowClass     base_class;
+#endif
 };
 
 G_END_DECLS

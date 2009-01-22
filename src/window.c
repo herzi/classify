@@ -32,7 +32,11 @@
 
 static gboolean tree_delete_selected (GtkTreeView* tree);
 
+#ifdef HAVE_HILDON
+G_DEFINE_TYPE (CWindow, c_window, HILDON_TYPE_WINDOW);
+#else
 G_DEFINE_TYPE (CWindow, c_window, GTK_TYPE_WINDOW);
+#endif
 
 GtkWidget*
 c_window_get_button (CWindow* self)
@@ -607,6 +611,36 @@ c_window_init (CWindow* self)
 	gtk_ui_manager_insert_action_group (ui_manager,
 					    group,
 					    0);
+	g_object_unref (group);
+
+#ifdef HAVE_HILDON
+	gtk_ui_manager_add_ui_from_string  (ui_manager,
+					    "<ui>"
+					      "<popup name='menupopup'>"
+						"<menuitem action='TaskNew'/>"
+						"<separator/>"
+						"<menu action='Edit'>"
+						  "<menuitem action='EditCopy'/>"
+						  "<menuitem action='EditPaste'/>"
+						  "<menuitem action='EditDelete'/>"
+						  "<separator/>"
+						  "<menuitem action='EditRename'/>"
+						  "<separator/>"
+						  "<menuitem action='EditPreferences' />"
+						"</menu>"
+						"<separator/>"
+						"<menuitem action='ViewExpandAll'/>"
+						"<menuitem action='ViewCollapseAll'/>"
+						"<separator/>"
+						"<menuitem action='FileClose' />"
+					      "</popup>"
+					    "</ui>",
+					    -1,
+					    &error);
+
+	hildon_window_set_menu (HILDON_WINDOW (self),
+				GTK_MENU (gtk_ui_manager_get_widget (ui_manager, "/menupopup")));
+#else
 	gtk_ui_manager_add_ui_from_string  (ui_manager,
 					    "<ui>"
 						"<menubar name='menubar'>"
@@ -629,6 +663,18 @@ c_window_init (CWindow* self)
 								"<menuitem action='ViewCollapseAll'/>"
 							"</menu>"
 						"</menubar>"
+					    "</ui>",
+					    -1,
+					    &error);
+
+	gtk_box_pack_start (GTK_BOX (vbox),
+			    gtk_ui_manager_get_widget (ui_manager, "/menubar"),
+			    FALSE,
+			    FALSE,
+			    0);
+#endif
+	gtk_ui_manager_add_ui_from_string  (ui_manager,
+					    "<ui>"
 						"<toolbar name='toolbar'>"
 							"<toolitem action='TaskNew'/>"
 							"<separator/>"
@@ -638,7 +684,6 @@ c_window_init (CWindow* self)
 					    "</ui>",
 					    -1,
 					    &error);
-	g_object_unref (group);
 
 	if (error) {
 		g_warning ("Error setting up the user interface: %s",
@@ -647,16 +692,16 @@ c_window_init (CWindow* self)
 		error = NULL;
 	}
 
-	gtk_box_pack_start (GTK_BOX (vbox),
-			    gtk_ui_manager_get_widget (ui_manager, "/menubar"),
-			    FALSE,
-			    FALSE,
-			    0);
+#ifdef HAVE_HILDON
+	hildon_window_add_toolbar (HILDON_WINDOW (self),
+				   GTK_TOOLBAR (gtk_ui_manager_get_widget (ui_manager, "/toolbar")));
+#else
 	gtk_box_pack_start (GTK_BOX (vbox),
 			    gtk_ui_manager_get_widget (ui_manager, "/toolbar"),
 			    FALSE,
 			    FALSE,
 			    0);
+#endif
 
 	swin = gtk_scrolled_window_new (NULL, NULL);
 	//gtk_scrolled_window_set_policy      (GTK_SCROLLED_WINDOW (swin),
