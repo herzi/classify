@@ -24,8 +24,13 @@
 #include "task-list-io-xml.h"
 
 #include <errno.h>
+#include <string.h>
 #include <glib/gstdio.h>
 #include <libxml/SAX2.h>
+#include <gtk/gtk.h>
+
+#define GETTEXT_PACKAGE "classify"
+#include <glib/gi18n-lib.h>
 
 struct ParserData {
 	guint      unknown_depth;
@@ -358,6 +363,46 @@ task_list_io_xml_save (CTaskList  * self,
 	}
 
         file = fopen (xml_path, "w");
+        if (!file)
+          {
+            int old_errno = errno;
+            GtkWidget* dialog;
+
+            if (old_errno == ENOENT)
+              {
+                gchar* folder = g_path_get_dirname (xml_path);
+                if (g_mkdir_with_parents (folder, 0755) == 0)
+                  {
+                    file = fopen (xml_path, "w");
+                  }
+
+                g_free (folder);
+
+                if (file)
+                  {
+                    goto cont;
+                  }
+              }
+
+            /* FIXME: the user should be able to save to a different place */
+            old_errno = errno;
+            dialog = gtk_message_dialog_new (NULL, /* FIXME: add window */
+                                             0, /* FIXME: make modal */
+                                             GTK_MESSAGE_ERROR,
+                                             GTK_BUTTONS_CLOSE,
+                                             "%s", _("Error saving to file"));
+            gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
+                                                        _("Couldn't open file \"%s\" for writing:\n\n"
+                                                          "<span style='italic'>%s</span>"),
+                                                        xml_path,
+                                                        strerror (old_errno));
+
+            gtk_dialog_run (GTK_DIALOG (dialog));
+            gtk_widget_destroy (dialog);
+
+            goto cleanup;
+          }
+cont:
         fprintf (file, "<?xml version=\"1.0\" encoding=\"iso-8859-15\"?>\n");
         fprintf (file, "<tasks>\n");
         dump_nodes (self, file, NULL);
@@ -367,6 +412,7 @@ task_list_io_xml_save (CTaskList  * self,
             /* FIXME: come up with a proper fallback solution */
             g_warning ("error closing file: %s", strerror (errno));
           }
+cleanup:
         g_free (xml_path);
 }
 
