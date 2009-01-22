@@ -166,20 +166,36 @@ open_prefs (GtkAction* action,
 	gtk_widget_destroy (dialog);
 }
 
+static int
+renderer_is_text (gconstpointer a,
+                  gconstpointer b)
+{
+  if (GTK_IS_CELL_RENDERER_TEXT (a))
+    return 0;
+
+  return 1;
+}
+
 static void
 tree_edit_path (GtkTreeView* tree,
                 GtkTreePath* path)
 {
-        GList       * columns   = gtk_tree_view_get_columns (tree);
-        GList       * renderers = gtk_tree_view_column_get_cell_renderers (g_list_last (columns)->data);
-        g_object_set (renderers->data, "editable", TRUE, NULL);
-        gtk_tree_view_set_cursor (tree,
-                                  path,
-                                  g_list_last (columns)->data,
-                                  TRUE);
-        g_object_set (renderers->data, "editable", FALSE, NULL);
-        g_list_free (renderers);
-        g_list_free (columns);
+  GtkCellRenderer* renderer;
+  GList          * columns   = gtk_tree_view_get_columns (tree);
+  GList          * renderers = gtk_tree_view_column_get_cell_renderers (g_list_last (columns)->data);
+
+  renderer = g_list_find_custom (renderers,
+                                 NULL,
+                                 renderer_is_text)->data;
+  g_object_set (renderer, "editable", TRUE, NULL);
+  gtk_tree_view_set_cursor_on_cell (tree,
+                                    path,
+                                    g_list_last (columns)->data,
+                                    renderer,
+                                    TRUE);
+  g_object_set (renderer, "editable", FALSE, NULL);
+  g_list_free (renderers);
+  g_list_free (columns);
 }
 
 static gboolean
@@ -322,21 +338,27 @@ tree_button_press_event (GtkWidget     * tree,
 	if (event->button == 1 && event->type == GDK_2BUTTON_PRESS) {
                 GtkTreeSelection* selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
                 if (gtk_tree_selection_count_selected_rows (selection) == 1) {
-                        GtkTreeModel* model = NULL;
-                        GList       * selected = gtk_tree_selection_get_selected_rows (selection, &model);
+                        GtkCellRenderer* renderer;
+                        GtkTreeModel   * model = NULL;
+                        GList          * selected = gtk_tree_selection_get_selected_rows (selection, &model);
                         GList       * columns  = gtk_tree_view_get_columns (GTK_TREE_VIEW (tree));
                         GList       * renderers;
 
                         renderers = gtk_tree_view_column_get_cell_renderers (g_list_last (columns)->data);
 
-                        g_object_set (renderers->data, "editable", TRUE, NULL);
-			gtk_tree_view_set_cursor (GTK_TREE_VIEW (tree),
-                                                  selected->data,
-                                                  g_list_last (columns)->data,
-                                                  TRUE);
-			g_object_set (renderers->data, "editable", FALSE, NULL);
-			g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
-			g_list_free    (selected);
+                        renderer = g_list_find_custom (renderers,
+                                                       NULL,
+                                                       renderer_is_text)->data;
+
+                        g_object_set (renderer, "editable", TRUE, NULL);
+                        gtk_tree_view_set_cursor_on_cell (GTK_TREE_VIEW (tree),
+                                                          selected->data,
+                                                          g_list_last (columns)->data,
+                                                          renderer,
+                                                          TRUE);
+                        g_object_set (renderer, "editable", FALSE, NULL);
+                        g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
+                        g_list_free    (selected);
 
                         g_list_free    (renderers);
                         g_list_free    (columns);
