@@ -348,7 +348,7 @@ task_list_io_xml_save (CTaskList  * self,
 	/* we don't care if this fails */
 	old_version = g_mapped_file_new (xml_path, FALSE, NULL);
 	if (old_version) {
-		gchar* backup_path = g_strdup_printf ("%s.%d", xml_path, time (NULL));
+		gchar* backup_path = g_strdup_printf ("%s.%li", xml_path, time (NULL));
 		g_file_set_contents (backup_path,
 				     g_mapped_file_get_contents (old_version),
 				     g_mapped_file_get_length (old_version),
