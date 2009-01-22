@@ -6,7 +6,7 @@ test -z "$srcdir" && srcdir=.
 
 PKG_NAME="classify"
 REQUIRED_LIBTOOL_VERSION=1.4.3
-REQUIRED_AUTOMAKE_VERSION=1.10
+REQUIRED_AUTOMAKE_VERSION=1.9
 #ACLOCAL_FLAGS="-I macros $ACLOCAL_FLAGS"
 
 (test -f $srcdir/configure.ac) || {
