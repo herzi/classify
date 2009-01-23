@@ -3,7 +3,7 @@
  * AUTHORS
  *     Sven Herzberg  <herzi@gnome-de.org>
  *
- * Copyright (C) 2007  Sven Herzberg
+ * Copyright (C) 2007,2009  Sven Herzberg
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -31,8 +31,9 @@ int
 main (int   argc,
       char**argv)
 {
-	gtk_init (&argc, &argv);
-	gtk_widget_show (c_window_new ());
+        g_set_application_name (_("Classify"));
+        gtk_init (&argc, &argv);
+        gtk_widget_show (c_window_new ());
 	gtk_main ();
 
 	return 0;
