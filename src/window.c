@@ -524,7 +524,6 @@ tree_size_allocate_after (GtkWidget    * tree_widget,
 
 	if (target_width != wrap_width) {
 		GtkTreeModel* model;
-		GtkTreeIter   iter;
 
 		gtk_tree_view_column_set_sizing      (column, GTK_TREE_VIEW_COLUMN_FIXED);
 		gtk_tree_view_column_set_fixed_width (column, allocation->width);
@@ -630,7 +629,7 @@ c_window_init (CWindow* self)
 	gtk_window_set_default_size (GTK_WINDOW (self),
 				     400, 300);
 	gtk_window_set_title        (GTK_WINDOW (self),
-				     _("Classify"));
+                                     _("List of Tasks"));
 	g_signal_connect (self, "destroy",
 			  G_CALLBACK (gtk_main_quit), NULL);
 
@@ -653,7 +652,7 @@ c_window_init (CWindow* self)
 						  "<menuitem action='EditPaste'/>"
 						  "<menuitem action='EditDelete'/>"
 						  "<separator/>"
-						  "<menuitem action='EditRename'/>"
+                                                /*  "<menuitem action='EditRename'/>" */ // FIXME: doesn't work yet
 						  "<separator/>"
 						  "<menuitem action='EditPreferences' />"
 						"</menu>"
