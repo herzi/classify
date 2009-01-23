@@ -30,6 +30,12 @@
 
 #include <glib/gi18n.h>
 
+struct _CWindowPrivate {
+  GtkUIManager* ui_manager;
+};
+
+#define PRIV(i) (((CWindow*)(i))->_private)
+
 static gboolean tree_delete_selected (GtkTreeView* tree);
 
 #ifdef HAVE_HILDON
@@ -569,6 +575,38 @@ row_has_child_toggled_cb (GtkTreeModel* model,
 				  TRUE);
 }
 
+#ifdef HAVE_HILDON
+static void
+view_fullscreen (GtkAction* action,
+                 GtkWidget* widget)
+{
+  if ((gdk_window_get_state (widget->window) & GDK_WINDOW_STATE_FULLSCREEN) == 0)
+    {
+      gtk_window_fullscreen (GTK_WINDOW (widget));
+    }
+  else
+    {
+      gtk_window_unfullscreen (GTK_WINDOW (widget));
+    }
+}
+
+static gboolean
+window_state_event (GtkWidget          * widget,
+                    GdkEventWindowState* event)
+{
+  if ((event->changed_mask & GDK_WINDOW_STATE_FULLSCREEN) != 0)
+    {
+      gboolean fullscreen = (event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN) ? TRUE : FALSE;
+
+      g_object_set (gtk_ui_manager_get_action (PRIV (widget)->ui_manager, "/menupopup/ViewToggleFullscreen"),
+                    "stock-id", fullscreen ? GTK_STOCK_LEAVE_FULLSCREEN : GTK_STOCK_FULLSCREEN,
+                    NULL);
+    }
+
+  return FALSE;
+}
+#endif
+
 static void
 c_window_init (CWindow* self)
 {
@@ -612,21 +650,28 @@ c_window_init (CWindow* self)
 		 G_CALLBACK (view_expand_all_activated)},
 		{"ViewCollapseAll", NULL, N_("_Collapse All"),
 		 NULL, NULL, // FIXME: add tooltip
-		 G_CALLBACK (view_collapse_all_activated)}
+                 G_CALLBACK (view_collapse_all_activated)}
+#ifdef HAVE_HILDON
+                ,{"ViewToggleFullscreen", GTK_STOCK_FULLSCREEN, NULL,
+                 "F6", NULL, // FIXME: add tooltip
+                 G_CALLBACK (view_fullscreen)}
+#endif
 	};
 	GtkCellRenderer* renderer;
 	GtkActionGroup* group;
-	GtkUIManager* ui_manager = gtk_ui_manager_new ();
 	CTaskList   * store;
 	GtkWidget   * swin;
 	GtkWidget   * tree;
 	GtkWidget   * vbox  = gtk_vbox_new (FALSE, 0);
-	GError      * error = NULL;
+        GError      * error = NULL;
 
-	gtk_window_add_accel_group  (GTK_WINDOW (self),
-				     gtk_ui_manager_get_accel_group (ui_manager));
+        PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_WINDOW, CWindowPrivate);
 
-	gtk_window_set_default_size (GTK_WINDOW (self),
+        PRIV (self)->ui_manager = gtk_ui_manager_new ();
+        gtk_window_add_accel_group  (GTK_WINDOW (self),
+                                     gtk_ui_manager_get_accel_group (PRIV (self)->ui_manager));
+
+        gtk_window_set_default_size (GTK_WINDOW (self),
 				     400, 300);
 	gtk_window_set_title        (GTK_WINDOW (self),
                                      _("List of Tasks"));
@@ -634,16 +679,16 @@ c_window_init (CWindow* self)
 			  G_CALLBACK (gtk_main_quit), NULL);
 
 	group = gtk_action_group_new ("main-group");
-	gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), self);
+        gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), self);
 
-	gtk_ui_manager_insert_action_group (ui_manager,
-					    group,
+        gtk_ui_manager_insert_action_group (PRIV (self)->ui_manager,
+                                            group,
 					    0);
-	g_object_unref (group);
+        g_object_unref (group);
 
 #ifdef HAVE_HILDON
-	gtk_ui_manager_add_ui_from_string  (ui_manager,
-					    "<ui>"
+        gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
+                                            "<ui>"
 					      "<popup name='menupopup'>"
 						"<menuitem action='TaskNew'/>"
 						"<separator/>"
@@ -655,10 +700,11 @@ c_window_init (CWindow* self)
                                                 /*  "<menuitem action='EditRename'/>" */ // FIXME: doesn't work yet
 						  "<separator/>"
 						  "<menuitem action='EditPreferences' />"
-						"</menu>"
-						"<separator/>"
-						"<menuitem action='ViewExpandAll'/>"
-						"<menuitem action='ViewCollapseAll'/>"
+                                                "</menu>"
+                                                "<separator/>"
+                                                "<menuitem action='ViewToggleFullscreen'/>"
+                                                "<menuitem action='ViewExpandAll'/>"
+                                                "<menuitem action='ViewCollapseAll'/>"
 						"<separator/>"
 						"<menuitem action='FileClose' />"
 					      "</popup>"
@@ -666,11 +712,11 @@ c_window_init (CWindow* self)
 					    -1,
 					    &error);
 
-	hildon_window_set_menu (HILDON_WINDOW (self),
-				GTK_MENU (gtk_ui_manager_get_widget (ui_manager, "/menupopup")));
+        hildon_window_set_menu (HILDON_WINDOW (self),
+                                GTK_MENU (gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/menupopup")));
 #else
-	gtk_ui_manager_add_ui_from_string  (ui_manager,
-					    "<ui>"
+        gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
+                                            "<ui>"
 						"<menubar name='menubar'>"
 							"<menu action='File'>"
 								"<menuitem action='TaskNew'/>"
@@ -695,14 +741,14 @@ c_window_init (CWindow* self)
 					    -1,
 					    &error);
 
-	gtk_box_pack_start (GTK_BOX (vbox),
-			    gtk_ui_manager_get_widget (ui_manager, "/menubar"),
-			    FALSE,
-			    FALSE,
-			    0);
+        gtk_box_pack_start (GTK_BOX (vbox),
+                            gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/menubar"),
+                            FALSE,
+                            FALSE,
+                            0);
 #endif
-	gtk_ui_manager_add_ui_from_string  (ui_manager,
-					    "<ui>"
+        gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
+                                            "<ui>"
 						"<toolbar name='toolbar'>"
 							"<toolitem action='TaskNew'/>"
 							"<separator/>"
@@ -721,12 +767,12 @@ c_window_init (CWindow* self)
 	}
 
 #ifdef HAVE_HILDON
-	hildon_window_add_toolbar (HILDON_WINDOW (self),
-				   GTK_TOOLBAR (gtk_ui_manager_get_widget (ui_manager, "/toolbar")));
+        hildon_window_add_toolbar (HILDON_WINDOW (self),
+                                   GTK_TOOLBAR (gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/toolbar")));
 #else
-	gtk_box_pack_start (GTK_BOX (vbox),
-			    gtk_ui_manager_get_widget (ui_manager, "/toolbar"),
-			    FALSE,
+        gtk_box_pack_start (GTK_BOX (vbox),
+                            gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/toolbar"),
+                            FALSE,
 			    FALSE,
 			    0);
 #endif
@@ -783,17 +829,25 @@ c_window_init (CWindow* self)
 						    task_list_data_func,
 						    NULL, NULL);
 
+        /* FIXME: remove this and properly use the private data */
 	g_object_set_data_full (G_OBJECT (self),
-				"CWindow::UIManager",
-				ui_manager,
-				g_object_unref);
+                                "CWindow::UIManager",
+                                PRIV (self)->ui_manager,
+                                g_object_unref);
 
 	gtk_widget_show    (vbox);
-	gtk_container_add  (GTK_CONTAINER (self),
-			    vbox);
+        gtk_container_add  (GTK_CONTAINER (self),
+                            vbox);
+
+#ifdef HAVE_HILDON
+        g_signal_connect (self, "window-state-event",
+                          G_CALLBACK (window_state_event), NULL);
+#endif
 }
 
 static void
 c_window_class_init (CWindowClass* self_class)
-{}
+{
+  g_type_class_add_private (self_class, sizeof (CWindowPrivate));
+}
 
