@@ -56,6 +56,10 @@ endif
 $(applications_DATA): $(applications_in_files) Makefile
 	sed 's#@BINDIR@#$(bindir)/#;' $< > $@
 
+CLEANFILES=\
+	$(applications_DATA) \
+	$(NULL)
+
 EXTRA_DIST=\
 	$(applications_in_files) \
 	$(NULL)
