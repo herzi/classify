@@ -66,7 +66,7 @@ static void
 task_list_io_text_remove (gchar const* path)
 {
 	if (0 != g_remove (path)) {
-		g_warning ("error removing file", g_strerror (errno));
+		g_warning ("error removing file: %s", g_strerror (errno));
 	}
 }
 
