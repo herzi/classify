@@ -56,11 +56,17 @@ endif
 $(applications_DATA): $(applications_in_files) Makefile
 	sed 's#@BINDIR@#$(bindir)/#;' $< > $@
 
+if WITH_MAEMO
+osso_backup_DATA=classify.conf
+osso_backupdir=$(sysconfdir)/osso-backup/applications
+endif
+
 CLEANFILES=\
 	$(applications_DATA) \
 	$(NULL)
 
 EXTRA_DIST=\
+	$(osso_backup_DATA) \
 	$(applications_in_files) \
 	$(NULL)
 
