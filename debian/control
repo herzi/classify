@@ -1,0 +1,22 @@
+Source: classify
+Section: gnome
+Priority: extra
+Maintainer: Sven Herzberg <herzi@gnome-de.org>
+Build-Depends: cdbs, debhelper (>= 5), autotools-dev, gnome-common, libgtk2.0-dev, uuid-dev, libxml2-dev
+Standards-Version: 3.7.2
+
+Package: classify
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: todo list application
+ Classify is a simple todo list tool that allows users to manage their lists
+ on multiple computers.
+
+Package: classify-dbg
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: todo list application (debugging symbols)
+ Classify is a simple todo list tool that allows users to manage their lists
+ on multiple computers.
+ .
+ This package contains debugging symbols for this application.
