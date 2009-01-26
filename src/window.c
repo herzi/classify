@@ -25,7 +25,10 @@
 
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
+
+#ifndef HAVE_HILDON
 #include "preferences.h"
+#endif
 #include "task-list.h"
 
 #include <glib/gi18n.h>
@@ -163,14 +166,16 @@ edit_paste_activated (GtkAction* action,
 	}
 }
 
+#ifndef HAVE_HILDON
 static void
 open_prefs (GtkAction* action,
-	    CWindow  * self)
+            CWindow  * self)
 {
-	GtkWidget* dialog = c_preferences_new (GTK_WINDOW (self));
-	gtk_dialog_run     (GTK_DIALOG (dialog));
-	gtk_widget_destroy (dialog);
+  GtkWidget* dialog = c_preferences_new (GTK_WINDOW (self));
+  gtk_dialog_run     (GTK_DIALOG (dialog));
+  gtk_widget_destroy (dialog);
 }
+#endif
 
 static int
 renderer_is_text (gconstpointer a,
@@ -627,9 +632,11 @@ c_window_init (CWindow* self)
 		{"EditPaste", GTK_STOCK_PASTE, NULL,
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (edit_paste_activated)},
+#ifndef HAVE_HILDON
 		{"EditPreferences", GTK_STOCK_PREFERENCES, NULL,
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (open_prefs)},
+#endif
 		{"EditRename", NULL, N_("_Rename"),
 		 "F2", NULL, // FIXME: add tooltip
 		 G_CALLBACK (edit_rename)},
@@ -695,18 +702,16 @@ c_window_init (CWindow* self)
 						"<menu action='Edit'>"
 						  "<menuitem action='EditCopy'/>"
 						  "<menuitem action='EditPaste'/>"
-						  "<menuitem action='EditDelete'/>"
-						  "<separator/>"
+                                                  "<menuitem action='EditDelete'/>"
+                                                  "<separator/>"
                                                 /*  "<menuitem action='EditRename'/>" */ // FIXME: doesn't work yet
-						  "<separator/>"
-						  "<menuitem action='EditPreferences' />"
                                                 "</menu>"
                                                 "<separator/>"
                                                 "<menuitem action='ViewToggleFullscreen'/>"
                                                 "<menuitem action='ViewExpandAll'/>"
                                                 "<menuitem action='ViewCollapseAll'/>"
-						"<separator/>"
-						"<menuitem action='FileClose' />"
+                                                "<separator/>"
+                                                "<menuitem action='FileClose' />"
 					      "</popup>"
 					    "</ui>",
 					    -1,
