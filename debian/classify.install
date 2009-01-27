@@ -1,5 +1,4 @@
 debian/tmp/etc/osso-backup/applications/classify.conf
-debian/tmp/usr/lib/libclassify*.so.*
 debian/tmp/usr/bin
 #debian/tmp/usr/share/man/man1
 debian/tmp/usr/share/applications/hildon/classify.desktop
