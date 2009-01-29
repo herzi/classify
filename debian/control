@@ -7,7 +7,7 @@ Standards-Version: 3.7.3
 
 Package: classify
 Architecture: any
-Depends: ${shlibs:Depends}, libclassify0 (= ${binary:Version})
+Depends: hildon-application-manager, ${shlibs:Depends}, libclassify0 (= ${binary:Version})
 Description: todo list application
  Classify is a simple todo list tool that allows users to manage their lists
  on multiple computers.

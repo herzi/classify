@@ -1,3 +1,12 @@
+classify (0.0.1-4) diablo; urgency=low
+
+  * debian/control: depend on hildon-application-manager for the attached
+    change
+  * debian/postinst: added a postinst script for the user to let him choose
+    the location for the menu entry
+
+ -- Sven Herzberg <herzi@gnome-de.org>  Thu, 29 Jan 2009 20:03:46 +0100
+
 classify (0.0.1-3) diablo; urgency=low
 
   * debian/changelog: changed distribution to diablo
