@@ -447,10 +447,14 @@ editing_started_cb (GtkCellRenderer* renderer,
 		    gchar const    * path,
 		    gpointer         user_data)
 {
-	if (GTK_IS_ENTRY (editable)) {
-		g_signal_connect (editable, "key-press-event",
-				  G_CALLBACK (entry_key_press_event), NULL);
-	}
+  if (GTK_IS_ENTRY (editable))
+    {
+#ifdef HAVE_HILDON
+      hildon_gtk_im_context_show (GTK_ENTRY (editable)->im_context);
+#endif
+      g_signal_connect (editable, "key-press-event",
+                        G_CALLBACK (entry_key_press_event), NULL);
+    }
 }
 
 static void
