@@ -22,7 +22,6 @@
  */
 
 #include <gtk/gtk.h>
-#include "task-list.h"
 #include "window.h"
 
 #include <glib/gi18n.h>
@@ -31,11 +30,11 @@ int
 main (int   argc,
       char**argv)
 {
-        g_set_application_name (_("Classify"));
-        gtk_init (&argc, &argv);
-        gtk_widget_show (c_window_new ());
-	gtk_main ();
+  g_set_application_name (_("Classify"));
+  gtk_init (&argc, &argv);
+  gtk_widget_show (c_window_new ());
+  gtk_main ();
 
-	return 0;
+  return 0;
 }
 
