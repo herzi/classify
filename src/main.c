@@ -30,9 +30,14 @@ int
 main (int   argc,
       char**argv)
 {
+  GtkWidget     * window;
+
   g_set_application_name (_("Classify"));
   gtk_init (&argc, &argv);
-  gtk_widget_show (c_window_new ());
+
+  window = c_window_new ();
+
+  gtk_widget_show (window);
   gtk_main ();
 
   return 0;
