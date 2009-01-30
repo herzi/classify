@@ -585,6 +585,9 @@ row_has_child_toggled_cb (GtkTreeModel* model,
 }
 
 #ifdef HAVE_HILDON
+#if !GLIB_CHECK_VERSION(2,18,0)
+#define g_dgettext(dom,msg) dgettext (dom, msg)
+#endif
 static void
 view_fullscreen (GtkAction* action,
                  GtkWidget* widget)
@@ -605,11 +608,24 @@ window_state_event (GtkWidget          * widget,
 {
   if ((event->changed_mask & GDK_WINDOW_STATE_FULLSCREEN) != 0)
     {
-      gboolean fullscreen = (event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN) ? TRUE : FALSE;
+      GtkStockItem  item;
+      gchar const * stock_id = (event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN) ? GTK_STOCK_LEAVE_FULLSCREEN : GTK_STOCK_FULLSCREEN;
+      GtkAction   * action = gtk_ui_manager_get_action (PRIV (widget)->ui_manager, "/menupopup/ViewToggleFullscreen");
 
-      g_object_set (gtk_ui_manager_get_action (PRIV (widget)->ui_manager, "/menupopup/ViewToggleFullscreen"),
-                    "stock-id", fullscreen ? GTK_STOCK_LEAVE_FULLSCREEN : GTK_STOCK_FULLSCREEN,
-                    NULL);
+      if (gtk_stock_lookup (stock_id, &item))
+        {
+          g_object_set (action,
+                        "icon-name", "qgn_list_hw_button_view_toggle",
+                        "label", g_dgettext (item.translation_domain, item.label),
+                        "stock-id", NULL,
+                        NULL);
+        }
+      else
+        {
+          g_object_set (action,
+                        "stock-id", stock_id,
+                        NULL);
+        }
     }
 
   return FALSE;
@@ -687,20 +703,88 @@ c_window_init (CWindow* self)
 	gtk_window_set_title        (GTK_WINDOW (self),
                                      _("List of Tasks"));
 	g_signal_connect (self, "destroy",
-			  G_CALLBACK (gtk_main_quit), NULL);
+                          G_CALLBACK (gtk_main_quit), NULL);
 
-	group = gtk_action_group_new ("main-group");
+        group = gtk_action_group_new ("main-group");
         gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), self);
+
+#ifdef HAVE_HILDON
+        GtkStockItem  item;
+        if (gtk_stock_lookup (GTK_STOCK_ADD, &item))
+          {
+            g_object_set (gtk_action_group_get_action (group, "TaskNew"),
+                          "icon-name", "qgn_indi_gene_plus",
+                          "label", g_dgettext (item.translation_domain, item.label),
+                          "stock-id", NULL,
+                          NULL);
+          }
+        if (gtk_stock_lookup (GTK_STOCK_GOTO_BOTTOM, &item))
+          {
+            g_object_set (gtk_action_group_get_action (group, "TaskBottom"),
+                          "icon-name", "qgn_indi_arrow_down",
+                          "label", g_dgettext (item.translation_domain, item.label),
+                          "stock-id", NULL,
+                          NULL);
+          }
+        if (gtk_stock_lookup (GTK_STOCK_GOTO_TOP, &item))
+          {
+            g_object_set (gtk_action_group_get_action (group, "TaskTop"),
+                          "icon-name", "qgn_indi_arrow_up",
+                          "label", g_dgettext (item.translation_domain, item.label),
+                          "stock-id", NULL,
+                          NULL);
+          }
+        if (gtk_stock_lookup (GTK_STOCK_COPY, &item))
+          {
+            g_object_set (gtk_action_group_get_action (group, "EditCopy"),
+                          "icon-name", "qgn_list_gene_copy",
+                          "label", g_dgettext (item.translation_domain, item.label),
+                          "stock-id", NULL,
+                          NULL);
+          }
+        if (gtk_stock_lookup (GTK_STOCK_PASTE, &item))
+          {
+            g_object_set (gtk_action_group_get_action (group, "EditPaste"),
+                          "icon-name", "qgn_list_gene_paste",
+                          "label", g_dgettext (item.translation_domain, item.label),
+                          "stock-id", NULL,
+                          NULL);
+          }
+        if (gtk_stock_lookup (GTK_STOCK_DELETE, &item))
+          {
+            g_object_set (gtk_action_group_get_action (group, "EditDelete"),
+                          "icon-name", "qgn_toolb_gene_deletebutton",
+                          "label", g_dgettext (item.translation_domain, item.label),
+                          "stock-id", NULL,
+                          NULL);
+          }
+        if (gtk_stock_lookup (GTK_STOCK_CLOSE, &item))
+          {
+            g_object_set (gtk_action_group_get_action (group, "FileClose"),
+                          "icon-name", "qgn_toolb_gene_close",
+                          "label", g_dgettext (item.translation_domain, item.label),
+                          "stock-id", NULL,
+                          NULL);
+          }
+        if (gtk_stock_lookup (GTK_STOCK_FULLSCREEN, &item))
+          {
+            g_object_set (gtk_action_group_get_action (group, "ViewToggleFullscreen"),
+                          "icon-name", "qgn_list_hw_button_view_toggle",
+                          "label", g_dgettext (item.translation_domain, item.label),
+                          "stock-id", NULL,
+                          NULL);
+          }
+#endif
 
         gtk_ui_manager_insert_action_group (PRIV (self)->ui_manager,
                                             group,
-					    0);
+                                            0);
         g_object_unref (group);
 
 #ifdef HAVE_HILDON
         gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
                                             "<ui>"
-					      "<popup name='menupopup'>"
+                                              "<popup name='menupopup'>"
 						"<menuitem action='TaskNew'/>"
 						"<separator/>"
 						"<menu action='Edit'>"
