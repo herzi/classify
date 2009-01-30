@@ -14,3 +14,9 @@ names in parentheses):
  * libuuid, the e2fsprogs UUID library from
    http://sourceforge.net/projects/e2fsprogs (uuid-dev)
 
+Optionally it can depend on these libraries:
+
+ * GIO, the IO framework of glib 2.18 (libglib-dev)
+ * OSSO, the open source foundations of Maemo (libosso-dev)
+ * Hildon, the toolkit additions of Maemo (libhildon1-dev)
+
