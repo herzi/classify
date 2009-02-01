@@ -1,6 +1,27 @@
 AC_INIT(classify,0.0.1,mailto:herzi@gnome-de.org)
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 
+dnl  --------------------
+dnl | version management |----------------------------------------------------
+dnl  --------------------
+
+AC_PROG_SED
+MAJOR=$(echo AC_PACKAGE_VERSION | sed 's@^\([[0-9]]*\)\.[[0-9]]*\.[[0-9]]*$@\1@')
+MINOR=$(echo AC_PACKAGE_VERSION | sed 's@^[[0-9]]*\.\([[0-9]]*\)\.[[0-9]]*$@\1@')
+MICRO=$(echo AC_PACKAGE_VERSION | sed 's@^[[0.9]]*\.[[0.9]]*\.\([[0.9]]*\)$@\1@')
+
+AC_PROG_AWK
+
+AC_MSG_CHECKING([for milestone version])
+MILESTONE_MINOR=$(echo "${MINOR}" | awk '{x = $1; x += x%2; print x}')
+MILESTONE="${MAJOR}.${MILESTONE_MINOR}"
+AC_SUBST(MILESTONE)
+AC_MSG_RESULT([$MILESTONE])
+
+dnl  --------------
+dnl | build system |----------------------------------------------------------
+dnl  --------------
+
 AC_PROG_CC
 AM_PROG_CC_C_O
 
@@ -46,6 +67,6 @@ PKG_CHECK_EXISTS([gio-2.0],
 AM_CONDITIONAL(WITH_GIO,[echo "${extra_pkgs}" | grep -q "gio-2.0"])
 
 AM_PATH_GLIB_2_0
-PKG_CHECK_MODULES(CLASSIFY,[gtk+-2.0 libxml-2.0 uuid $extra_pkgs])
+PKG_CHECK_MODULES(CLASSIFY,[gmodule-2.0 gtk+-2.0 libxml-2.0 uuid $extra_pkgs])
 
 AC_OUTPUT(Makefile)
