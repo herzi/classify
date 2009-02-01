@@ -1,3 +1,9 @@
+classify (0.0.1-6) diablo; urgency=low
+
+  * debian/classify.install: install only the .so files of the modules
+
+ -- Sven Herzberg <herzi@gnome-de.org>  Sun, 01 Feb 2009 19:08:10 +0100
+
 classify (0.0.1-5) diablo; urgency=low
 
   * debian/classify.dirs: added the module folder
