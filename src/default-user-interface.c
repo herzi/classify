@@ -21,16 +21,13 @@
  * USA
  */
 
-#include "default-user-interface.h"
+#include "user-interface.h"
 
 #include "window.h"
 
-CUserInterface*
-c_default_user_interface_new (void)
+G_MODULE_EXPORT GtkWidget*
+c_user_interface_module_create_window (void)
 {
-  CUserInterface* result = c_user_interface_new ();
-  g_signal_connect (result, "create-main-window",
-                    G_CALLBACK (c_window_new), NULL);
-  return result;
+  return c_window_new ();
 }
 

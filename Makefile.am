@@ -1,5 +1,7 @@
 bin_PROGRAMS=classify
 lib_LTLIBRARIES=libclassify.la
+mod_LTLIBRARIES=defaultui.la
+moddir=$(libdir)/classify-@MILESTONE@
 if WITH_GIO
 noinst_PROGRAMS=debugify
 endif
@@ -11,19 +13,13 @@ BUILT_SOURCES=\
 
 classify_SOURCES=\
 	$(BUILT_SOURCES) \
-	src/default-user-interface.c \
-	src/default-user-interface.h \
 	src/main.c \
 	src/parser.c \
 	src/parser.h \
-	src/preferences.c \
-	src/preferences.h \
 	src/user-interface.c \
 	src/user-interface.h \
 	src/user-interface-factory.c \
 	src/user-interface-factory.h \
-	src/window.c \
-	src/window.h \
 	$(NULL)
 LDADD=\
 	$(CLASSIFY_LIBS) \
@@ -31,7 +27,8 @@ LDADD=\
 	$(NULL)
 AM_CPPFLAGS=\
 	$(CLASSIFY_CFLAGS) \
-	-DBIN_DIR=\""$(bindir)"\"
+	-DBIN_DIR=\""$(bindir)"\" \
+	-DMOD_DIR=\""$(moddir)"\" \
 	$(NULL)
 
 debugify_SOURCES=\
@@ -41,6 +38,16 @@ debugify_CPPFLAGS=\
 	-I$(top_srcdir)/src \
 	$(AM_CPPFLAGS) \
 	$(NULL)
+
+defaultui_la_SOURCES=\
+	src/default-user-interface.c \
+	src/preferences.c \
+	src/preferences.h \
+	src/window.c \
+	src/window.h \
+	$(NULL)
+defaultui_la_LIBADD=$(LDADD)
+defaultui_la_LDFLAGS=-avoid-version -module
 
 libclassify_la_SOURCES=\
 	src/task.c \

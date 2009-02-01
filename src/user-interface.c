@@ -27,6 +27,8 @@
 
 enum {
   CREATE_MAIN_WINDOW,
+  LOAD,
+  UNLOAD,
   N_SIGNALS
 };
 
@@ -41,12 +43,16 @@ c_user_interface_init (CUserInterface* self)
 static gboolean
 ui_load (GTypeModule* module)
 {
-  return TRUE;
+  gboolean result = FALSE;
+  g_signal_emit (module, ui_signals[LOAD], 0, &result);
+  return result;
 }
 
 static void
 ui_unload (GTypeModule* module)
-{}
+{
+  g_signal_emit (module, ui_signals[UNLOAD], 0);
+}
 
 static void
 c_user_interface_class_init (CUserInterfaceClass* self_class)
@@ -63,6 +69,19 @@ c_user_interface_class_init (CUserInterfaceClass* self_class)
                                                  classify_marshal_OBJECT__VOID,
                                                  GTK_TYPE_WIDGET,
                                                  0);
+  ui_signals[LOAD] = g_signal_new ("load",
+                                   G_OBJECT_CLASS_TYPE (self_class),
+                                   G_SIGNAL_ACTION, 0,
+                                   NULL, NULL, /* FIXME: add accumulator to stop after first success */
+                                   classify_marshal_BOOL__VOID,
+                                   G_TYPE_BOOLEAN,
+                                   0);
+  ui_signals[UNLOAD] = g_signal_new ("unload",
+                                     G_OBJECT_CLASS_TYPE (self_class),
+                                     G_SIGNAL_ACTION, 0,
+                                     NULL, NULL,
+                                     g_cclosure_marshal_VOID__VOID,
+                                     G_TYPE_NONE, 0);
 }
 
 CUserInterface*
