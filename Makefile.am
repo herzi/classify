@@ -27,6 +27,7 @@ LDADD=\
 	$(NULL)
 AM_CPPFLAGS=\
 	$(CLASSIFY_CFLAGS) \
+	$(WARN_CFLAGS) \
 	-DBIN_DIR=\""$(bindir)"\" \
 	-DMOD_DIR=\""$(moddir)"\" \
 	$(NULL)
