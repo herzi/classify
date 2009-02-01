@@ -1,9 +1,9 @@
 /* This file is part of classify
  *
  * AUTHORS
- *     Sven Herzberg  <herzi@gnome-de.org>
+ *     Sven Herzberg  <sven@imendio.com>
  *
- * Copyright (C) 2007,2009  Sven Herzberg
+ * Copyright (C) 2009  Sven Herzberg
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -21,31 +21,15 @@
  * USA
  */
 
-#include <gtk/gtk.h>
-#include "user-interface-factory.h"
+#ifndef USER_INTERFACE_FACTORY_H
+#define USER_INTERFACE_FACTORY_H
 
-#include <glib/gi18n.h>
+#include "user-interface.h"
 
-int
-main (int   argc,
-      char**argv)
-{
-  CUserInterface* user_interface;
-  GtkWidget     * window;
+G_BEGIN_DECLS
 
-  g_set_application_name (_("Classify"));
-  gtk_init (&argc, &argv);
+CUserInterface* c_user_interface_factory_get_ui (void);
 
-  user_interface = c_user_interface_factory_get_ui ();
-  g_type_module_use (G_TYPE_MODULE (user_interface));
+G_END_DECLS
 
-  window = c_user_interface_get_main_window (user_interface);
-
-  gtk_widget_show (window);
-  gtk_main ();
-
-  g_type_module_unuse (G_TYPE_MODULE (user_interface));
-
-  return 0;
-}
-
+#endif /* !USER_INTERFACE_FACTORY_H */

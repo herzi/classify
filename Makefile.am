@@ -20,6 +20,8 @@ classify_SOURCES=\
 	src/preferences.h \
 	src/user-interface.c \
 	src/user-interface.h \
+	src/user-interface-factory.c \
+	src/user-interface-factory.h \
 	src/window.c \
 	src/window.h \
 	$(NULL)
