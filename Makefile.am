@@ -11,11 +11,15 @@ BUILT_SOURCES=\
 
 classify_SOURCES=\
 	$(BUILT_SOURCES) \
+	src/default-user-interface.c \
+	src/default-user-interface.h \
 	src/main.c \
 	src/parser.c \
 	src/parser.h \
 	src/preferences.c \
 	src/preferences.h \
+	src/user-interface.c \
+	src/user-interface.h \
 	src/window.c \
 	src/window.h \
 	$(NULL)
