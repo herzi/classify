@@ -43,6 +43,7 @@ GType           c_user_interface_get_type        (void);
 CUserInterface* c_user_interface_new             (gchar const         * path);
 gboolean        c_user_interface_is_valid        (CUserInterface const* self);
 GtkWidget*      c_user_interface_get_main_window (CUserInterface      * self);
+gint            c_user_interface_get_priority    (CUserInterface const* self);
 
 struct _CUserInterface {
         GTypeModule            base_instance;

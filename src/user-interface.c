@@ -232,6 +232,14 @@ c_user_interface_get_main_window (CUserInterface* self)
   return main_window;
 }
 
+gint
+c_user_interface_get_priority (CUserInterface const* self)
+{
+  g_return_val_if_fail (C_IS_USER_INTERFACE (self), 0);
+
+  return PRIV (self)->priority;
+}
+
 gboolean
 c_user_interface_is_valid (CUserInterface const* self)
 {

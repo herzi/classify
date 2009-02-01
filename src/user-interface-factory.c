@@ -23,6 +23,14 @@
 
 #include "user-interface-factory.h"
 
+static int
+compare_uis (gconstpointer a,
+             gconstpointer b,
+             gpointer      user_data G_GNUC_UNUSED)
+{
+  return c_user_interface_get_priority (b) - c_user_interface_get_priority (a);
+}
+
 static void
 queue_fill (GQueue     * queue,
             gchar const* path)
@@ -59,7 +67,7 @@ queue_fill (GQueue     * queue,
       if (c_user_interface_is_valid (ui))
         {
           /* FIXME: introduce priorities */
-          g_queue_push_head (queue, ui);
+          g_queue_insert_sorted (queue, ui, compare_uis, NULL);
         }
       else
         {
