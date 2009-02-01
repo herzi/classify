@@ -1,13 +1,10 @@
 #!/usr/bin/make -f
 
-DEB_BUILDDIR=build-deb
-
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 
+DEB_BUILDDIR := build-deb
 DEB_INSTALL_DOCS_ALL :=
-DEB_INSTALL_DOCS_classify := -Xdebian/copyright
-DEB_INSTALL_DOCS_libclassify0 := debian/copyright README
 DEB_INSTALL_MANPAGES_classify := debian/classify.1
 
 # Add here any variable or target overrides you need.

@@ -1,7 +1,12 @@
 classify (0.0.1-5) diablo; urgency=low
 
-  * debian/rules: use a dedicated build directory
-  * 
+  * debian/classify.dirs: added the module folder
+  * debian/classify.install: added the module
+  * debian/classify.xml: added the manpage (which was missing before)
+  * debian/copyright: added copyright (was missing before)
+  * debian/libclassify0.docs: added documentation files
+  * debian/rules: use a dedicated build directory; drop the documentation
+    hacks; now everything works as desired
 
  -- Sven Herzberg <sven@imendio.com>  Sun, 01 Feb 2009 12:58:11 +0100
 
