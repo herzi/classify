@@ -1,3 +1,10 @@
+classify (0.0.1-5) diablo; urgency=low
+
+  * debian/rules: use a dedicated build directory
+  * 
+
+ -- Sven Herzberg <sven@imendio.com>  Sun, 01 Feb 2009 12:58:11 +0100
+
 classify (0.0.1-4) diablo; urgency=low
 
   * debian/control: depend on hildon-application-manager for the attached
