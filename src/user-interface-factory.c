@@ -60,10 +60,10 @@ create_main_window (CUserInterface* self)
   GModule* module = g_object_get_data (G_OBJECT (self), "CUserInterface::Module");
   GtkWidget* (*ui_new) (void);
 
-  if (!g_module_symbol (module, "c_user_interface_module_create_window", (gpointer*)&ui_new))
+  if (!g_module_symbol (module, "c_user_interface_module_create_window", (gpointer*)(gpointer)&ui_new))
     {
       g_warning ("error looking up \"c_user_interface_module_create_window()\"");
-      return;
+      return NULL;
     }
 
   g_return_val_if_fail (ui_new != NULL, NULL);

@@ -23,6 +23,8 @@
 
 #include "user-interface.h"
 
+#include <stdlib.h> /* for exit() */
+
 #include "marshal.h"
 
 enum {
