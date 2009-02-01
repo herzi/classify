@@ -28,6 +28,15 @@
 CUserInterface*
 c_user_interface_factory_get_ui (void)
 {
-  return c_default_user_interface_new ();
+  static GQueue* queue = NULL;
+
+  if (G_UNLIKELY (!queue))
+    {
+      queue = g_queue_new ();
+
+      g_queue_push_head (queue, c_default_user_interface_new ());
+    }
+
+  return queue->head->data;
 }
 
