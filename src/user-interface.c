@@ -248,3 +248,29 @@ c_user_interface_is_valid (CUserInterface const* self)
   return PRIV (self)->initialized;
 }
 
+gboolean
+c_user_interface_test (CUserInterface* self)
+{
+  gpointer   func = NULL;
+
+  g_return_val_if_fail (C_IS_USER_INTERFACE (self), FALSE);
+
+  g_type_module_use (G_TYPE_MODULE (self));
+
+  if (g_module_symbol (PRIV (self)->module, "c_ui_module_test", &func) && func != NULL)
+    {
+      gboolean (*test) (void) = func;
+      gboolean result = FALSE;
+
+      result = test();
+
+      g_type_module_unuse (G_TYPE_MODULE (self));
+
+      return result;
+    }
+
+  g_type_module_unuse (G_TYPE_MODULE (self));
+
+  return TRUE;
+}
+

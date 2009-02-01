@@ -84,6 +84,7 @@ CUserInterface*
 c_user_interface_factory_get_ui (void)
 {
   static GQueue* queue = NULL;
+  GList* module;
 
   if (G_UNLIKELY (!queue))
     {
@@ -107,6 +108,14 @@ c_user_interface_factory_get_ui (void)
       queue_fill (queue, MOD_DIR);
     }
 
-  return queue->head ? queue->head->data : NULL;
+  for (module = queue->head; module; module = module->next)
+    {
+      if (c_user_interface_test (module->data))
+        {
+          return module->data;
+        }
+    }
+
+  return NULL;
 }
 
