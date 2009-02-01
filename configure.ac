@@ -69,4 +69,15 @@ AM_CONDITIONAL(WITH_GIO,[echo "${extra_pkgs}" | grep -q "gio-2.0"])
 AM_PATH_GLIB_2_0
 PKG_CHECK_MODULES(CLASSIFY,[gmodule-2.0 gtk+-2.0 libxml-2.0 uuid $extra_pkgs])
 
+dnl  ----------------
+dnl | compiler flags |--------------------------------------------------------
+dnl  ----------------
+
+GNOME_COMPILE_WARNINGS
+
+dnl  ----------------------
+dnl | configuration output |--------------------------------------------------
+dnl  ----------------------
+
 AC_OUTPUT(Makefile)
+

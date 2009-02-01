@@ -32,6 +32,7 @@ if test -z "$gnome_autogen" ; then
   exit 1
 fi
 
-NOCONFIGURE="yes" GNOME_DATADIR="$gnome_datadir" USE_GNOME2_MACROS=1 . $gnome_autogen
-
-$srcdir/configure --enable-maintainer-mode `$(which grep) ^DISTCHECK $srcdir/configure.ac | sed 's/^DISTCHECK_CONFIGURE_FLAGS="\(.*\)"$/\1/'` $@
+GNOME_DATADIR="$gnome_datadir" USE_GNOME2_MACROS=1 . $gnome_autogen \
+        --enable-maintainer-mode \
+        --enable-compile-warnings=error \
+        $@
