@@ -45,6 +45,7 @@ PKG_CHECK_EXISTS([gio-2.0],
 		 [])
 AM_CONDITIONAL(WITH_GIO,[echo "${extra_pkgs}" | grep -q "gio-2.0"])
 
+AM_PATH_GLIB_2_0
 PKG_CHECK_MODULES(CLASSIFY,[gtk+-2.0 libxml-2.0 uuid $extra_pkgs])
 
 AC_OUTPUT(Makefile)

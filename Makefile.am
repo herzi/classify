@@ -4,7 +4,13 @@ if WITH_GIO
 noinst_PROGRAMS=debugify
 endif
 
+BUILT_SOURCES=\
+	marshal.c \
+	marshal.h \
+	$(NULL)
+
 classify_SOURCES=\
+	$(BUILT_SOURCES) \
 	src/main.c \
 	src/parser.c \
 	src/parser.h \
@@ -61,12 +67,25 @@ osso_backup_DATA=classify.conf
 osso_backupdir=$(sysconfdir)/osso-backup/applications
 endif
 
+marshaller=src/marshal.list
+marshal.h: $(marshaller) Makefile
+	@( $(GLIB_GENMARSHAL) --header --prefix=classify_marshal $< ) > xgen-$@ \
+		&& (cmp -s xgen-$@ $@ || (echo "Creating $@..."; cp xgen-$@ $@) ) \
+		&& rm -f xgen-$@
+
+marshal.c: $(marshaller) Makefile
+	@( echo "#include \"marshal.h\""; \
+		$(GLIB_GENMARSHAL) --body --prefix=classify_marshal $< ) > xgen-$@ \
+		&& (cmp -s xgen-$@ $@ || (echo "Creating $@..."; cp xgen-$@ $@) ) \
+		&& rm -f xgen-$@
+
 CLEANFILES=\
 	$(applications_DATA) \
 	$(NULL)
 
 EXTRA_DIST=\
-	$(osso_backup_DATA) \
 	$(applications_in_files) \
+	$(marshaller) \
+	$(osso_backup_DATA) \
 	$(NULL)
 
