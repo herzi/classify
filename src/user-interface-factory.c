@@ -43,15 +43,17 @@ load_module (CUserInterface* self,
 }
 
 static void
-unload_module (CUserInterface* self,
-               gchar const   * path)
+unload_module (CUserInterface* self)
 {
   GModule* module = g_object_steal_data (G_OBJECT (self), "CUserInterface::Module");
+  gchar  * name = g_module_name (module);
 
   if (!g_module_close (module))
     {
-      g_warning ("error closing module \"%s\"", path);
+      g_warning ("error closing module \"%s\"", name);
     }
+
+  g_free (name);
 }
 
 static GtkWidget*
