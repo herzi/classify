@@ -25,7 +25,9 @@
 
 #include "window.h"
 
-G_MODULE_EXPORT GtkWidget*
+G_MODULE_EXPORT GtkWidget* c_user_interface_module_create_window (void);
+
+GtkWidget*
 c_user_interface_module_create_window (void)
 {
   return c_window_new ();
