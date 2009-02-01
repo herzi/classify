@@ -100,5 +100,6 @@ EXTRA_DIST=\
 	$(applications_in_files) \
 	$(marshaller) \
 	$(osso_backup_DATA) \
+	run-classify.sh \
 	$(NULL)
 
