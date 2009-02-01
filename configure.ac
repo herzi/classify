@@ -25,6 +25,9 @@ dnl  --------------
 AC_PROG_CC
 AM_PROG_CC_C_O
 
+CXX=no
+F77=no
+
 AC_PROG_LIBTOOL
 
 AC_ARG_WITH([platform],
