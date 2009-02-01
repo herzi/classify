@@ -1,0 +1,7 @@
+tmp
+classify.1
+stamp-*
+*.substvars
+files
+*.debhelper
+libclassify0
