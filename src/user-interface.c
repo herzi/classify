@@ -27,6 +27,19 @@
 
 #include "marshal.h"
 
+struct _CUserInterfacePrivate {
+  gchar  * module_path;
+  GModule* module;
+  guint    initialized : 1;
+};
+
+#define PRIV(i) (((CUserInterface*)(i))->_private)
+
+enum {
+  PROP_0,
+  PROP_MODULE_PATH
+};
+
 enum {
   CREATE_MAIN_WINDOW,
   LOAD,
@@ -34,75 +47,168 @@ enum {
   N_SIGNALS
 };
 
-static guint ui_signals[N_SIGNALS] = {0};
-
 G_DEFINE_TYPE (CUserInterface, c_user_interface, G_TYPE_TYPE_MODULE);
 
 static void
 c_user_interface_init (CUserInterface* self)
-{}
+{
+  PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_USER_INTERFACE, CUserInterfacePrivate);
+}
+
+static gboolean
+ui_lookup_create (CUserInterface* self,
+                  GtkWidget   *(**creator) (void))
+{
+  gpointer func = NULL;
+
+  g_return_val_if_fail (creator != NULL, FALSE);
+
+  if (g_module_symbol (PRIV (self)->module, "c_user_interface_module_create_window", &func))
+    {
+      *creator = func;
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
+static void
+ui_constructed (GObject* object)
+{
+  CUserInterface* self = C_USER_INTERFACE (object);
+  gpointer        creator = NULL;
+  gpointer        ignore_creator = &creator;
+
+  if (!g_type_module_use (G_TYPE_MODULE (self)))
+    {
+      g_warning ("error loading module from \"%s\"",
+                 g_module_name (PRIV (self)->module));
+      return;
+    }
+
+  if (ui_lookup_create (self, ignore_creator))
+    {
+      PRIV (self)->initialized = TRUE;
+    }
+
+  g_type_module_unuse (G_TYPE_MODULE (self));
+}
+
+static void
+ui_finalize (GObject* object)
+{
+  g_free (PRIV (object)->module_path);
+
+  G_OBJECT_CLASS (c_user_interface_parent_class)->finalize (object);
+}
+
+static void
+ui_set_property (GObject     * object,
+                 guint         prop_id,
+                 GValue const* value,
+                 GParamSpec  * pspec)
+{
+  switch (prop_id)
+    {
+      case PROP_MODULE_PATH:
+        g_return_if_fail (!PRIV (object)->module_path);
+        PRIV (object)->module_path = g_value_dup_string (value);
+        g_object_notify (object, "module-path");
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+        break;
+    }
+}
 
 static gboolean
 ui_load (GTypeModule* module)
 {
-  gboolean result = FALSE;
-  g_signal_emit (module, ui_signals[LOAD], 0, &result);
-  return result;
+  if (PRIV (module)->module)
+    {
+      g_warning ("don't try to load the module twice");
+      return FALSE;
+    }
+
+  PRIV (module)->module = g_module_open (PRIV (module)->module_path, G_MODULE_BIND_LAZY | G_MODULE_BIND_LOCAL);
+
+  if (!PRIV (module)->module)
+    {
+      g_warning ("error loading module from \"%s\"",
+                 PRIV (module)->module_path);
+    }
+
+  return PRIV (module)->module != NULL;
 }
 
 static void
 ui_unload (GTypeModule* module)
 {
-  g_signal_emit (module, ui_signals[UNLOAD], 0);
+  if (!PRIV (module)->module)
+    {
+      g_warning ("don't try do unload modules twice");
+      return;
+    }
+
+  if (!g_module_close (PRIV (module)->module))
+    {
+      g_warning ("error closing module");
+    }
+
+  PRIV (module)->module = NULL;
 }
 
 static void
 c_user_interface_class_init (CUserInterfaceClass* self_class)
 {
+  GObjectClass    * object_class = G_OBJECT_CLASS (self_class);
   GTypeModuleClass* module_class = G_TYPE_MODULE_CLASS (self_class);
+
+  object_class->constructed  = ui_constructed;
+  object_class->finalize     = ui_finalize;
+  object_class->set_property = ui_set_property;
+
+  g_object_class_install_property (object_class, PROP_MODULE_PATH,
+                                   g_param_spec_string ("module-path", "module path",
+                                                        "the path to the file containing the module",
+                                                        NULL, G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
 
   module_class->load   = ui_load;
   module_class->unload = ui_unload;
 
-  ui_signals[CREATE_MAIN_WINDOW] = g_signal_new ("create-main-window",
-                                                 G_OBJECT_CLASS_TYPE (self_class),
-                                                 G_SIGNAL_ACTION, 0,
-                                                 NULL, NULL, /* FIXME: add accumulator to only receive one */
-                                                 classify_marshal_OBJECT__VOID,
-                                                 GTK_TYPE_WIDGET,
-                                                 0);
-  ui_signals[LOAD] = g_signal_new ("load",
-                                   G_OBJECT_CLASS_TYPE (self_class),
-                                   G_SIGNAL_ACTION, 0,
-                                   NULL, NULL, /* FIXME: add accumulator to stop after first success */
-                                   classify_marshal_BOOL__VOID,
-                                   G_TYPE_BOOLEAN,
-                                   0);
-  ui_signals[UNLOAD] = g_signal_new ("unload",
-                                     G_OBJECT_CLASS_TYPE (self_class),
-                                     G_SIGNAL_ACTION, 0,
-                                     NULL, NULL,
-                                     g_cclosure_marshal_VOID__VOID,
-                                     G_TYPE_NONE, 0);
+  g_type_class_add_private (self_class, sizeof (CUserInterfacePrivate));
 }
 
 CUserInterface*
-c_user_interface_new (void)
+c_user_interface_new (gchar const* path)
 {
   return g_object_new (C_TYPE_USER_INTERFACE,
+                       "module-path", path,
                        NULL);
 }
 
 GtkWidget*
 c_user_interface_get_main_window (CUserInterface* self)
 {
+  /* FIXME: move into instance's private data */
   static gpointer main_window = NULL;
 
   g_return_val_if_fail (C_IS_USER_INTERFACE (self), NULL);
 
+  if (G_TYPE_MODULE (self)->use_count < 1)
+    {
+      g_warning ("trying to get a main window from an unused user interface, call g_type_module_use() before");
+      return NULL;
+    }
+
   if (G_UNLIKELY (!main_window))
     {
-      g_signal_emit (self, ui_signals[CREATE_MAIN_WINDOW], 0, &main_window);
+      GtkWidget* (*creator) (void) = NULL;
+
+      if (ui_lookup_create (self, &creator))
+        {
+          main_window = creator ();
+        }
 
       if (!main_window)
         {
@@ -118,5 +224,13 @@ c_user_interface_get_main_window (CUserInterface* self)
     }
 
   return main_window;
+}
+
+gboolean
+c_user_interface_is_valid (CUserInterface const* self)
+{
+  g_return_val_if_fail (C_IS_USER_INTERFACE (self), FALSE);
+
+  return PRIV (self)->initialized;
 }
 

@@ -39,8 +39,10 @@ typedef struct _CUserInterfaceClass   CUserInterfaceClass;
 #define C_IS_USER_INTERFACE_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), C_TYPE_USER_INTERFACE))
 #define C_USER_INTERFACE_GET_CLASS(i) (G_TYPE_INSTANCE_GET_CLASS ((i), C_TYPE_USER_INTERFACE, CUserInterfaceClass))
 
-CUserInterface* c_user_interface_new             (void);
-GtkWidget*      c_user_interface_get_main_window (CUserInterface* self);
+GType           c_user_interface_get_type        (void);
+CUserInterface* c_user_interface_new             (gchar const         * path);
+gboolean        c_user_interface_is_valid        (CUserInterface const* self);
+GtkWidget*      c_user_interface_get_main_window (CUserInterface      * self);
 
 struct _CUserInterface {
         GTypeModule            base_instance;

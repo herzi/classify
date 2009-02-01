@@ -23,56 +23,6 @@
 
 #include "user-interface-factory.h"
 
-static gboolean
-load_module (CUserInterface* self,
-             gchar const   * path)
-{
-  GModule* module = g_module_open (path, G_MODULE_BIND_LAZY);
-
-  if (!module)
-    {
-      g_warning ("error opening module \"%s\"", path);
-      return FALSE;
-    }
-
-  g_object_set_data (G_OBJECT (self),
-                     "CUserInterface::Module",
-                     module);
-
-  return TRUE;
-}
-
-static void
-unload_module (CUserInterface* self)
-{
-  GModule* module = g_object_steal_data (G_OBJECT (self), "CUserInterface::Module");
-  gchar  * name = g_module_name (module);
-
-  if (!g_module_close (module))
-    {
-      g_warning ("error closing module \"%s\"", name);
-    }
-
-  g_free (name);
-}
-
-static GtkWidget*
-create_main_window (CUserInterface* self)
-{
-  GModule* module = g_object_get_data (G_OBJECT (self), "CUserInterface::Module");
-  GtkWidget* (*ui_new) (void);
-
-  if (!g_module_symbol (module, "c_user_interface_module_create_window", (gpointer*)(gpointer)&ui_new))
-    {
-      g_warning ("error looking up \"c_user_interface_module_create_window()\"");
-      return NULL;
-    }
-
-  g_return_val_if_fail (ui_new != NULL, NULL);
-
-  return ui_new ();
-}
-
 static void
 queue_fill (GQueue     * queue,
             gchar const* path)
@@ -95,36 +45,28 @@ queue_fill (GQueue     * queue,
 
   for (file = g_dir_read_name (dir); file; file = g_dir_read_name (dir))
     {
-      gchar* filename = g_build_filename (path, file, NULL);
-      GModule* module = g_module_open (filename, G_MODULE_BIND_LAZY);
-      gpointer ui_new;
+      CUserInterface* ui;
+      gchar         * filename;
 
-      g_free (filename);
-
-      if (!module)
-        continue;
-
-      if (g_module_symbol (module, "c_user_interface_module_create_window", (gpointer*)&ui_new))
+      if (!g_str_has_suffix (file, "." G_MODULE_SUFFIX))
         {
-          /* now we have a valid module */
-          CUserInterface* ui = c_user_interface_new ();
-          filename = g_build_filename (path, file, NULL);
-          g_signal_connect (ui, "load",
-                            G_CALLBACK (load_module), filename);
-          g_signal_connect (ui, "unload",
-                            G_CALLBACK (unload_module), NULL);
-          g_signal_connect (ui, "create-main-window",
-                            G_CALLBACK (create_main_window), NULL);
+          continue;
+        }
 
+      filename = g_build_filename (path, file, NULL);
+      ui       = c_user_interface_new (filename);
+
+      if (c_user_interface_is_valid (ui))
+        {
           /* FIXME: introduce priorities */
           g_queue_push_head (queue, ui);
         }
+      else
+        {
+          g_object_unref (ui);
+        }
 
-      if (!g_module_close (module))
-        g_warning ("error closing module \"%s%c%s\"",
-                   path,
-                   G_DIR_SEPARATOR,
-                   file);
+      g_free (filename);
     }
 
   g_dir_close (dir);
