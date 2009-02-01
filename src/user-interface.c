@@ -30,6 +30,8 @@
 struct _CUserInterfacePrivate {
   gchar  * module_path;
   GModule* module;
+
+  gint     priority;
   guint    initialized : 1;
 };
 
@@ -76,8 +78,8 @@ static void
 ui_constructed (GObject* object)
 {
   CUserInterface* self = C_USER_INTERFACE (object);
-  gpointer        creator = NULL;
-  gpointer        ignore_creator = &creator;
+  gpointer        func = NULL;
+  gpointer        func_ptr = &func;
 
   if (!g_type_module_use (G_TYPE_MODULE (self)))
     {
@@ -86,8 +88,12 @@ ui_constructed (GObject* object)
       return;
     }
 
-  if (ui_lookup_create (self, ignore_creator))
+  if (ui_lookup_create (self, func_ptr) &&
+      g_module_symbol (PRIV (self)->module, "c_ui_module_get_priority", &func))
     {
+      gint (*get_prio) (void) = func;
+
+      PRIV (self)->priority = get_prio ();
       PRIV (self)->initialized = TRUE;
     }
 

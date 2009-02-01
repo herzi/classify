@@ -26,10 +26,17 @@
 #include "window.h"
 
 G_MODULE_EXPORT GtkWidget* c_user_interface_module_create_window (void);
+G_MODULE_EXPORT gint       c_ui_module_get_priority              (void);
 
 GtkWidget*
 c_user_interface_module_create_window (void)
 {
   return c_window_new ();
+}
+
+gint
+c_ui_module_get_priority (void)
+{
+  return 0; /* default priority */
 }
 
