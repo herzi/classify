@@ -47,8 +47,21 @@ defaultui_la_SOURCES=\
 	src/window.c \
 	src/window.h \
 	$(NULL)
+defaultui_la_CPPFLAGS=$(AM_CPPFLAGS) -UHAVE_HILDON -UHAVE_OSSO
 defaultui_la_LIBADD=$(LDADD)
 defaultui_la_LDFLAGS=-avoid-version -module
+
+if WITH_MAEMO
+mod_LTLIBRARIES+=hildonui.la
+
+hildonui_la_SOURCES=\
+	src/hildon-user-interface.c \
+	src/window.c \
+	src/window.h \
+	$(NULL)
+hildonui_la_LIBADD=$(LDADD)
+hildonui_la_LDFLAGS=-avoid-version -module
+endif
 
 libclassify_la_SOURCES=\
 	src/task.c \
