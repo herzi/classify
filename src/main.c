@@ -37,7 +37,12 @@ main (int   argc,
   gtk_init (&argc, &argv);
 
   user_interface = c_user_interface_factory_get_ui ();
-  g_type_module_use (G_TYPE_MODULE (user_interface));
+  if (!g_type_module_use (G_TYPE_MODULE (user_interface)))
+    {
+      /* FIXME: popup a dialog */
+      g_warning ("no suitable user interface module found"); /* FIXME: mention search paths */
+      return 1;
+    }
 
   window = c_user_interface_get_main_window (user_interface);
 
