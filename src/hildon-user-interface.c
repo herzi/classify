@@ -165,11 +165,13 @@ c_ui_module_test (void)
       return FALSE;
     }
 
+#if 0
   {
     gchar* name = g_strndup ((gchar*)data, actual_length);
     g_print ("window manager is %s\n", name);
     g_free (name);
   }
+#endif
 
   result = actual_length >= 8 && g_str_has_prefix ((gchar*)data, "matchbox");
 
