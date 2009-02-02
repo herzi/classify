@@ -24,5 +24,33 @@
 #ifndef TASK_WIDGET_H
 #define TASK_WIDGET_H
 
+#include <gtk/gtk.h>
+
+G_BEGIN_DECLS
+
+typedef struct _CTaskWidget        CTaskWidget;
+typedef struct _CTaskWidgetPrivate CTaskWidgetPrivate;
+typedef struct _CTaskWidgetClass   CTaskWidgetClass;
+
+#define C_TYPE_TASK_WIDGET         (c_task_widget_get_type ())
+#define C_TASK_WIDGET(i)           (G_TYPE_CHECK_INSTANCE_CAST ((i), C_TYPE_TASK_WIDGET, CTaskWidget))
+#define C_TASK_WIDGET_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), C_TYPE_TASK_WIDGET, CTaskWidgetClass))
+#define C_IS_TASK_WIDGET(i)        (G_TYPE_CHECK_INSTANCE_TYPE ((i), C_TYPE_TASK_WIDGET))
+#define C_IS_TASK_WIDGET_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), C_TYPE_TASK_WIDGET))
+#define C_TASK_WIDGET_GET_CLASS(i) (G_TYPE_INSTANCE_GET_CLASS ((i), C_TYPE_TASK_WIDGET, CTaskWidgetClass))
+
+GType      c_task_widget_get_type (void);
+GtkWidget* c_task_widget_new      (void);
+
+struct _CTaskWidget {
+  GtkTreeView         base_instance;
+  CTaskWidgetPrivate* _private;
+};
+
+struct _CTaskWidgetClass {
+  GtkTreeViewClass    base_class;
+};
+
+G_END_DECLS
 
 #endif /* !TASK_WIDGET_H */

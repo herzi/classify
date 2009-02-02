@@ -23,3 +23,20 @@
 
 #include "task-widget.h"
 
+G_DEFINE_TYPE (CTaskWidget, c_task_widget, GTK_TYPE_TREE_VIEW);
+
+static void
+c_task_widget_init (CTaskWidget* self)
+{}
+
+static void
+c_task_widget_class_init (CTaskWidgetClass* self_class)
+{}
+
+GtkWidget*
+c_task_widget_new (void)
+{
+  return g_object_new (C_TYPE_TASK_WIDGET,
+                       NULL);
+}
+

@@ -30,6 +30,7 @@
 #include "preferences.h"
 #endif
 #include "task-list.h"
+#include "task-widget.h"
 
 #include <glib/gi18n.h>
 
@@ -879,7 +880,7 @@ c_window_init (CWindow* self)
 	gtk_widget_show (swin);
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
 
-	tree = gtk_tree_view_new ();
+	tree = c_task_widget_new ();
 	gtk_tree_view_set_reorderable (GTK_TREE_VIEW (tree),
 				       TRUE);
 	gtk_tree_view_set_rules_hint  (GTK_TREE_VIEW (tree),
