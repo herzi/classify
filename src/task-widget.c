@@ -27,7 +27,12 @@ G_DEFINE_TYPE (CTaskWidget, c_task_widget, GTK_TYPE_TREE_VIEW);
 
 static void
 c_task_widget_init (CTaskWidget* self)
-{}
+{
+  gtk_tree_view_set_reorderable (GTK_TREE_VIEW (self),
+                                 TRUE);
+  gtk_tree_view_set_rules_hint  (GTK_TREE_VIEW (self),
+                                 TRUE);
+}
 
 static void
 c_task_widget_class_init (CTaskWidgetClass* self_class)

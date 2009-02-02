@@ -881,10 +881,6 @@ c_window_init (CWindow* self)
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
 
 	tree = c_task_widget_new ();
-	gtk_tree_view_set_reorderable (GTK_TREE_VIEW (tree),
-				       TRUE);
-	gtk_tree_view_set_rules_hint  (GTK_TREE_VIEW (tree),
-				       TRUE);
 	gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (tree),
 					     tree_search_equal_func,
 					     NULL, NULL);
