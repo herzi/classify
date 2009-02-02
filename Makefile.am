@@ -83,6 +83,8 @@ libclassify_la_SOURCES=\
 	$(NULL)
 libclassify_la_LIBADD=$(CLASSIFY_LIBS)
 libclassifyui_la_SOURCES=\
+	src/main-window.c \
+	src/main-window.h \
 	src/task-widget.c \
 	src/task-widget.h \
 	$(NULL)
