@@ -98,7 +98,12 @@ ui_constructed (GObject* object)
       goto cleanup;
     }
 
-  if (g_module_symbol (PRIV (self)->module, "c_ui_module_get_priority", &func))
+  if (!g_module_symbol (PRIV (self)->module, "c_ui_module_get_priority", &func) || !func)
+    {
+      g_info ("%s: c_ui_module_get_priority() undefined", g_module_name (PRIV (self)->module));
+      goto cleanup;
+    }
+
     {
       gint (*get_prio) (void) = func;
 
