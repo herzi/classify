@@ -347,30 +347,6 @@ view_collapse_all_activated (GtkAction* action,
 }
 
 static gboolean
-tree_button_press_event (GtkWidget     * tree,
-			 GdkEventButton* event,
-			 CWindow       * window)
-{
-        gboolean result = FALSE;
-
-        if (event->button == 1 && event->type == GDK_2BUTTON_PRESS) {
-                GtkTreeSelection* selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
-                if (gtk_tree_selection_count_selected_rows (selection) == 1) {
-                        GList* selected = gtk_tree_selection_get_selected_rows (selection, NULL);
-
-                        c_task_widget_edit_path (C_TASK_WIDGET (tree), selected->data);
-
-                        g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
-                        g_list_free    (selected);
-
-                        result = TRUE;
-                }
-        }
-
-	return result;
-}
-
-static gboolean
 tree_delete_selected (GtkTreeView* tree)
 {
 	GtkTreeModel* model = NULL;
@@ -853,8 +829,6 @@ c_window_init (CWindow* self)
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
 
 	tree = c_task_widget_new ();
-	g_signal_connect (tree, "button-press-event",
-			  G_CALLBACK (tree_button_press_event), self);
 	g_signal_connect (tree, "size-allocate",
 			        G_CALLBACK (tree_size_allocate_after), NULL);
 	g_object_set_data_full (G_OBJECT (self),

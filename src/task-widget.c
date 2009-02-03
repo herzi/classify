@@ -57,9 +57,39 @@ c_task_widget_init (CTaskWidget* self)
                                        0);
 }
 
+static gboolean
+task_widget_button_press_event (GtkWidget     * widget,
+                                GdkEventButton* event)
+{
+        if (event->button == 1 && event->type == GDK_2BUTTON_PRESS) {
+                GtkTreeSelection* selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (widget));
+                if (gtk_tree_selection_count_selected_rows (selection) == 1) {
+                        GList* selected = gtk_tree_selection_get_selected_rows (selection, NULL);
+
+                        c_task_widget_edit_path (C_TASK_WIDGET (widget), selected->data);
+
+                        g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
+                        g_list_free    (selected);
+
+                        return TRUE;
+                }
+        }
+
+        if (GTK_WIDGET_CLASS (c_task_widget_parent_class)->button_press_event)
+          {
+            return GTK_WIDGET_CLASS (c_task_widget_parent_class)->button_press_event (widget, event);
+          }
+
+        return FALSE;
+}
+
 static void
 c_task_widget_class_init (CTaskWidgetClass* self_class)
-{}
+{
+  GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (self_class);
+
+  widget_class->button_press_event = task_widget_button_press_event;
+}
 
 static int
 renderer_is_text (gconstpointer a,
