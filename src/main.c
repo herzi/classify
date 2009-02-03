@@ -26,6 +26,23 @@
 
 #include <glib/gi18n.h>
 
+static void
+my_log_func (gchar const   * domain,
+             GLogLevelFlags  flags,
+             gchar const   * message,
+             gpointer        user_data)
+{
+  GLogFunc old_func = user_data;
+
+  if (!user_data)
+    {
+      old_func = g_log_default_handler;
+    }
+
+  if ((flags & G_LOG_LEVEL_MASK) <= G_LOG_LEVEL_MESSAGE)
+    old_func (domain, flags, message, NULL);
+}
+
 int
 main (int   argc,
       char**argv)
@@ -34,10 +51,16 @@ main (int   argc,
   GOptionContext* context;
   GtkWidget     * window;
   GError        * error = NULL;
+  gboolean        verbose = FALSE;
+  GOptionEntry    entries[] = {
+    {"verbose", 'v', 0, G_OPTION_ARG_NONE, &verbose, N_("be verbose"), NULL},
+    {NULL}
+  };
 
   g_set_application_name (_("Classify"));
 
   context = g_option_context_new ("");
+  g_option_context_add_main_entries (context, entries, NULL);
   g_option_context_add_group (context, gtk_get_option_group (TRUE));
   if (!g_option_context_parse (context, &argc, &argv, &error))
     {
@@ -60,6 +83,12 @@ main (int   argc,
     }
 
   g_option_context_free (context);
+
+  if (!verbose)
+    {
+      GLogFunc old_handler = g_log_set_default_handler (my_log_func, NULL);
+      g_log_set_default_handler (my_log_func, old_handler);
+    }
 
   user_interface = c_user_interface_factory_get_ui ();
   if (!user_interface || !g_type_module_use (G_TYPE_MODULE (user_interface)))
