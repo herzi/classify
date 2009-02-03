@@ -31,10 +31,35 @@ main (int   argc,
       char**argv)
 {
   CUserInterface* user_interface;
+  GOptionContext* context;
   GtkWidget     * window;
+  GError        * error = NULL;
 
   g_set_application_name (_("Classify"));
-  gtk_init (&argc, &argv);
+
+  context = g_option_context_new ("");
+  g_option_context_add_group (context, gtk_get_option_group (TRUE));
+  if (!g_option_context_parse (context, &argc, &argv, &error))
+    {
+#if GLIB_CHECK_VERSION(2,14,0)
+      gchar* help = g_option_context_get_help (context, TRUE, NULL);
+      g_printerr ("%s", help);
+      g_free (help);
+
+      if (error)
+        {
+          g_warning ("%s", error->message);
+        }
+#else
+      g_warning ("error parsing command liner arguments: %s", error ? error->message : "no error supplied");
+#endif
+
+      g_clear_error (&error);
+      g_option_context_free (context);
+      return 1;
+    }
+
+  g_option_context_free (context);
 
   user_interface = c_user_interface_factory_get_ui ();
   if (!user_interface || !g_type_module_use (G_TYPE_MODULE (user_interface)))
