@@ -43,6 +43,8 @@ typedef struct _CWindowClass   CWindowClass;
 #define C_IS_WINDOW_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), C_TYPE_WINDOW))
 #define C_WINDOW_GET_CLASS(i) (G_TYPE_INSTANCE_GET_CLASS ((i), C_TYPE_WINDOW, CWindowClass))
 
+G_MODULE_EXPORT GType      c_ui_module_register_type (GTypeModule* module);
+
 GType      c_window_get_type   (void);
 GtkWidget* c_window_new        (void);
 GtkWidget* c_window_get_button (CWindow* self);

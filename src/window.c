@@ -55,7 +55,7 @@ static void     c_window_class_init  (CWindowClass* self_class);
 static GType c_window_type = 0;
 
 GType
-c_window_get_type (void)
+c_ui_module_register_type (GTypeModule* module)
 {
   if (G_UNLIKELY (!c_window_type))
     {
@@ -68,16 +68,23 @@ c_window_get_type (void)
         (GInstanceInitFunc) c_window_init,
         NULL
       };
-      c_window_type = g_type_register_static (PARENT_TYPE,
-                                              type_name,
-                                              &info,
-                                              0);
+      c_window_type = g_type_module_register_type (module,
+                                                   PARENT_TYPE,
+                                                   type_name,
+                                                   &info,
+                                                   0);
     }
 
   return c_window_type;
 }
 #undef type_name
 #undef PARENT_TYPE
+
+GType
+c_window_get_type (void)
+{
+  return c_window_type;
+}
 
 GtkWidget*
 c_window_get_button (CWindow* self)

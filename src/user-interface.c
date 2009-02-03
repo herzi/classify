@@ -37,6 +37,10 @@ struct _CUserInterfacePrivate {
 
 #define PRIV(i) (((CUserInterface*)(i))->_private)
 
+#ifndef g_info
+#define g_info(...) g_log (G_LOG_DOMAIN, G_LOG_LEVEL_INFO, __VA_ARGS__)
+#endif
+
 enum {
   PROP_0,
   PROP_MODULE_PATH
@@ -73,10 +77,6 @@ ui_lookup_create (CUserInterface* self,
 
   return FALSE;
 }
-
-#ifndef g_info
-#define g_info(...) g_log (G_LOG_DOMAIN, G_LOG_LEVEL_INFO, __VA_ARGS__)
-#endif
 
 static void
 ui_constructed (GObject* object)
@@ -115,8 +115,6 @@ cleanup:
   g_type_module_unuse (G_TYPE_MODULE (self));
 }
 
-#undef g_info
-
 static void
 ui_finalize (GObject* object)
 {
@@ -147,6 +145,8 @@ ui_set_property (GObject     * object,
 static gboolean
 ui_load (GTypeModule* module)
 {
+  gpointer        tfunc = NULL;
+
   if (PRIV (module)->module)
     {
       g_warning ("don't try to load the module twice");
@@ -159,6 +159,18 @@ ui_load (GTypeModule* module)
     {
       g_warning ("error loading module from \"%s\"",
                  PRIV (module)->module_path);
+      return FALSE;
+    }
+
+  if (!g_module_symbol (PRIV (module)->module, "c_ui_module_register_type", &tfunc) || !tfunc)
+    {
+      g_info ("%s: c_window_register_type() undefined", g_module_name (PRIV (module)->module));
+    }
+  else
+    {
+      GType (*register_type) (GTypeModule* module) = tfunc;
+
+      register_type (module);
     }
 
   return PRIV (module)->module != NULL;
