@@ -40,13 +40,32 @@ struct _CWindowPrivate {
 
 #define PRIV(i) (((CWindow*)(i))->_private)
 
-static gboolean tree_delete_selected (GtkTreeView* tree);
+static gboolean tree_delete_selected (GtkTreeView * tree);
+static void     c_window_init        (CWindow     * self);
+static void     c_window_class_init  (CWindowClass* self_class);
 
+GType
+c_window_get_type (void)
+{
+  static GType type = 0;
+
+  if (G_UNLIKELY (!type))
+    {
+      GType parent = GTK_TYPE_WINDOW;
 #ifdef HAVE_HILDON
-G_DEFINE_TYPE (CWindow, c_window, HILDON_TYPE_WINDOW);
-#else
-G_DEFINE_TYPE (CWindow, c_window, GTK_TYPE_WINDOW);
+      parent = HILDON_TYPE_WINDOW;
 #endif
+      type = g_type_register_static_simple (parent,
+                                            "CWindow",
+                                            sizeof (CWindowClass),
+                                            (GClassInitFunc)c_window_class_init,
+                                            sizeof (CWindow),
+                                            (GInstanceInitFunc)c_window_init,
+                                            0);
+    }
+
+  return type;
+}
 
 GtkWidget*
 c_window_get_button (CWindow* self)
