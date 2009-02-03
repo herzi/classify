@@ -51,17 +51,23 @@ c_window_get_type (void)
 
   if (G_UNLIKELY (!type))
     {
+      GTypeInfo const info = {
+        sizeof (CWindowClass),
+        NULL, NULL,
+        (GClassInitFunc) c_window_class_init,
+        NULL, NULL,
+        sizeof (CWindow), 0,
+        (GInstanceInitFunc) c_window_init,
+        NULL
+      };
       GType parent = GTK_TYPE_WINDOW;
 #ifdef HAVE_HILDON
       parent = HILDON_TYPE_WINDOW;
 #endif
-      type = g_type_register_static_simple (parent,
-                                            "CWindow",
-                                            sizeof (CWindowClass),
-                                            (GClassInitFunc)c_window_class_init,
-                                            sizeof (CWindow),
-                                            (GInstanceInitFunc)c_window_init,
-                                            0);
+      type = g_type_register_static (parent,
+                                     "CWindow",
+                                     &info,
+                                     0);
     }
 
   return type;
