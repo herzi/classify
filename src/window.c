@@ -347,36 +347,19 @@ tree_button_press_event (GtkWidget     * tree,
 {
 	gboolean result = FALSE;
 
-	if (event->button == 1 && event->type == GDK_2BUTTON_PRESS) {
+        if (event->button == 1 && event->type == GDK_2BUTTON_PRESS) {
                 GtkTreeSelection* selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
                 if (gtk_tree_selection_count_selected_rows (selection) == 1) {
-                        GtkCellRenderer* renderer;
-                        GtkTreeModel   * model = NULL;
-                        GList          * selected = gtk_tree_selection_get_selected_rows (selection, &model);
-                        GList       * columns  = gtk_tree_view_get_columns (GTK_TREE_VIEW (tree));
-                        GList       * renderers;
+                        GList* selected = gtk_tree_selection_get_selected_rows (selection, NULL);
 
-                        renderers = gtk_tree_view_column_get_cell_renderers (g_list_last (columns)->data);
+                        tree_edit_path (GTK_TREE_VIEW (tree),
+                                        selected->data);
 
-                        renderer = g_list_find_custom (renderers,
-                                                       NULL,
-                                                       renderer_is_text)->data;
-
-                        g_object_set (renderer, "editable", TRUE, NULL);
-                        gtk_tree_view_set_cursor_on_cell (GTK_TREE_VIEW (tree),
-                                                          selected->data,
-                                                          g_list_last (columns)->data,
-                                                          renderer,
-                                                          TRUE);
-                        g_object_set (renderer, "editable", FALSE, NULL);
                         g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
                         g_list_free    (selected);
 
-                        g_list_free    (renderers);
-                        g_list_free    (columns);
-
                         result = TRUE;
-		}
+                }
 	}
 
 	return result;
