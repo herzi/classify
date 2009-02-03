@@ -579,22 +579,6 @@ tree_size_allocate_after (GtkWidget    * tree_widget,
 	g_list_free (renderers);
 }
 
-static gboolean
-tree_search_equal_func (GtkTreeModel* model,
-			gint          column,
-			gchar const * key,
-			GtkTreeIter * iter,
-			gpointer      search_data)
-{
-	gchar* text = g_utf8_strdown (c_task_list_get_text (C_TASK_LIST (model), iter), -1);
-	gchar* key_ = g_utf8_strdown (key, -1);
-	gboolean result = g_str_has_prefix (text, key);
-	g_free (key_);
-	g_free (text);
-
-	return !result;
-}
-
 static void
 row_has_child_toggled_cb (GtkTreeModel* model,
 			  GtkTreePath * path,
@@ -902,11 +886,6 @@ c_window_init (CWindow* self)
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
 
 	tree = c_task_widget_new ();
-	gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (tree),
-					     tree_search_equal_func,
-					     NULL, NULL);
-	gtk_tree_view_set_search_column     (GTK_TREE_VIEW (tree),
-					     0);
 	g_signal_connect (tree, "button-press-event",
 			  G_CALLBACK (tree_button_press_event), self);
 	g_signal_connect (tree, "size-allocate",

@@ -23,7 +23,25 @@
 
 #include "task-widget.h"
 
+#include "task-list.h"
+
 G_DEFINE_TYPE (CTaskWidget, c_task_widget, GTK_TYPE_TREE_VIEW);
+
+static gboolean
+tree_search_equal_func (GtkTreeModel* model,
+                        gint          column,
+                        gchar const * key,
+                        GtkTreeIter * iter,
+                        gpointer      search_data)
+{
+  gchar* text = g_utf8_strdown (c_task_list_get_text (C_TASK_LIST (model), iter), -1);
+  gchar* key_ = g_utf8_strdown (key, -1);
+  gboolean result = g_str_has_prefix (text, key);
+  g_free (key_);
+  g_free (text);
+
+  return !result;
+}
 
 static void
 c_task_widget_init (CTaskWidget* self)
@@ -32,6 +50,11 @@ c_task_widget_init (CTaskWidget* self)
                                  TRUE);
   gtk_tree_view_set_rules_hint  (GTK_TREE_VIEW (self),
                                  TRUE);
+  gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (self),
+                                       tree_search_equal_func,
+                                       NULL, NULL);
+  gtk_tree_view_set_search_column     (GTK_TREE_VIEW (self),
+                                       0);
 }
 
 static void
