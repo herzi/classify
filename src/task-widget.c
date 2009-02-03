@@ -58,6 +58,77 @@ c_task_widget_init (CTaskWidget* self)
 }
 
 static gboolean
+all_changed (GtkTreeModel* model,
+	     GtkTreePath * path,
+	     GtkTreeIter * iter,
+	     gpointer      data)
+{
+	gtk_tree_model_row_changed (model, path, iter);
+	return FALSE;
+}
+
+static void
+task_widget_size_allocate (GtkWidget    * widget,
+                           GtkAllocation* allocation)
+{
+	GtkTreeViewColumn* column;
+	GtkTreeView      * view;
+	GList            * renderers;
+	gint               wrap_width;
+	gint               focus;
+	gint               hspace;
+	gint               expander;
+	gint               text_pad;
+	gint               target_width;
+
+        GTK_WIDGET_CLASS (c_task_widget_parent_class)->size_allocate (widget, allocation);
+
+	view      = GTK_TREE_VIEW (widget);
+	column    = gtk_tree_view_get_column (view, 0);
+	renderers = gtk_tree_view_column_get_cell_renderers (column);
+
+	g_object_get (renderers->data,
+		      "xpad",       &text_pad,
+		      "wrap-width", &wrap_width,
+		      NULL);
+
+	gtk_widget_style_get (widget,
+			      "expander-size",        &expander,
+			      "focus-padding",        &focus,
+			      "horizontal-separator", &hspace,
+			      NULL);
+
+	target_width = allocation->width - 2 * (hspace + focus + text_pad);
+
+	if ((gtk_tree_model_get_flags (gtk_tree_view_get_model (view)) & GTK_TREE_MODEL_LIST_ONLY) == 0) {
+		if (column == gtk_tree_view_get_expander_column (view)) {
+			target_width -= expander + 4 /* EXPANDER_EXTRA_PADDING */;
+		}
+	}
+
+	target_width = MAX (target_width, 0);
+
+	if (target_width != wrap_width) {
+		GtkTreeModel* model;
+
+		gtk_tree_view_column_set_sizing      (column, GTK_TREE_VIEW_COLUMN_FIXED);
+		gtk_tree_view_column_set_fixed_width (column, allocation->width);
+
+		g_object_set (renderers->data,
+			      "wrap-width", target_width,
+			      NULL);
+
+		model = gtk_tree_view_get_model (view);
+
+		gtk_tree_model_foreach (model,
+					all_changed,
+					NULL);
+	}
+
+	g_list_free (renderers);
+}
+
+static gboolean
 task_widget_button_press_event (GtkWidget     * widget,
                                 GdkEventButton* event)
 {
@@ -88,6 +159,10 @@ c_task_widget_class_init (CTaskWidgetClass* self_class)
 {
   GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (self_class);
 
+  /* size management */
+  widget_class->size_allocate      = task_widget_size_allocate;
+
+  /* event handling */
   widget_class->button_press_event = task_widget_button_press_event;
 }
 

@@ -453,75 +453,6 @@ c_window_new (void)
 	return g_object_new (C_TYPE_WINDOW, NULL);
 }
 
-static gboolean
-all_changed (GtkTreeModel* model,
-	     GtkTreePath * path,
-	     GtkTreeIter * iter,
-	     gpointer      data)
-{
-	gtk_tree_model_row_changed (model, path, iter);
-	return FALSE;
-}
-
-static void
-tree_size_allocate_after (GtkWidget    * tree_widget,
-			  GtkAllocation* allocation)
-{
-	GtkTreeViewColumn* column;
-	GtkTreeView      * view;
-	GList            * renderers;
-	gint               wrap_width;
-	gint               focus;
-	gint               hspace;
-	gint               expander;
-	gint               text_pad;
-	gint               target_width;
-
-	view      = GTK_TREE_VIEW (tree_widget);
-	column    = gtk_tree_view_get_column (view, 0);
-	renderers = gtk_tree_view_column_get_cell_renderers (column);
-
-	g_object_get (renderers->data,
-		      "xpad",       &text_pad,
-		      "wrap-width", &wrap_width,
-		      NULL);
-
-	gtk_widget_style_get (tree_widget,
-			      "expander-size",        &expander,
-			      "focus-padding",        &focus,
-			      "horizontal-separator", &hspace,
-			      NULL);
-
-	target_width = allocation->width - 2 * (hspace + focus + text_pad);
-
-	if ((gtk_tree_model_get_flags (gtk_tree_view_get_model (view)) & GTK_TREE_MODEL_LIST_ONLY) == 0) {
-		if (column == gtk_tree_view_get_expander_column (view)) {
-			target_width -= expander + 4 /* EXPANDER_EXTRA_PADDING */;
-		}
-	}
-
-	target_width = MAX (target_width, 0);
-
-	if (target_width != wrap_width) {
-		GtkTreeModel* model;
-
-		gtk_tree_view_column_set_sizing      (column, GTK_TREE_VIEW_COLUMN_FIXED);
-		gtk_tree_view_column_set_fixed_width (column, allocation->width);
-
-		g_object_set (renderers->data,
-			      "wrap-width", target_width,
-			      NULL);
-
-		model = gtk_tree_view_get_model (view);
-
-		gtk_tree_model_foreach (model,
-					all_changed,
-					NULL);
-	}
-
-	g_list_free (renderers);
-}
-
 static void
 row_has_child_toggled_cb (GtkTreeModel* model,
 			  GtkTreePath * path,
@@ -829,8 +760,6 @@ c_window_init (CWindow* self)
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
 
 	tree = c_task_widget_new ();
-	g_signal_connect (tree, "size-allocate",
-			        G_CALLBACK (tree_size_allocate_after), NULL);
 	g_object_set_data_full (G_OBJECT (self),
 				"CWindow::TreeView",
 				g_object_ref_sink (tree),
