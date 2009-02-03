@@ -23,7 +23,15 @@
 
 #include "task-widget.h"
 
+#include <string.h>
+
 #include "task-list.h"
+
+struct _CTaskWidgetPrivate {
+  CTaskList* list;
+};
+
+#define PRIV(i) (((CTaskWidget*)(i))->_private)
 
 G_DEFINE_TYPE (CTaskWidget, c_task_widget, GTK_TYPE_TREE_VIEW);
 
@@ -46,6 +54,8 @@ tree_search_equal_func (GtkTreeModel* model,
 static void
 c_task_widget_init (CTaskWidget* self)
 {
+  PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_TASK_WIDGET, CTaskWidgetPrivate);
+
   gtk_tree_view_set_reorderable (GTK_TREE_VIEW (self),
                                  TRUE);
   gtk_tree_view_set_rules_hint  (GTK_TREE_VIEW (self),
@@ -55,6 +65,21 @@ c_task_widget_init (CTaskWidget* self)
                                        NULL, NULL);
   gtk_tree_view_set_search_column     (GTK_TREE_VIEW (self),
                                        0);
+}
+
+static void
+task_widget_notify (GObject   * object,
+                    GParamSpec* pspec)
+{
+  if (G_UNLIKELY (!strcmp (pspec->name, "model")))
+    {
+      PRIV (object)->list = C_TASK_LIST (gtk_tree_view_get_model (GTK_TREE_VIEW (object)));
+    }
+
+  if (G_OBJECT_CLASS (c_task_widget_parent_class)->notify)
+    {
+      G_OBJECT_CLASS (c_task_widget_parent_class)->notify (object, pspec);
+    }
 }
 
 static gboolean
@@ -157,13 +182,18 @@ task_widget_button_press_event (GtkWidget     * widget,
 static void
 c_task_widget_class_init (CTaskWidgetClass* self_class)
 {
+  GObjectClass  * object_class = G_OBJECT_CLASS (self_class);
   GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (self_class);
+
+  object_class->notify             = task_widget_notify;
 
   /* size management */
   widget_class->size_allocate      = task_widget_size_allocate;
 
   /* event handling */
   widget_class->button_press_event = task_widget_button_press_event;
+
+  g_type_class_add_private (self_class, sizeof (CTaskWidgetPrivate));
 }
 
 static int

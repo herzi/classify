@@ -760,6 +760,8 @@ c_window_init (CWindow* self)
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
 
 	tree = c_task_widget_new ();
+
+        /* FIXME: properly use the private data */
 	g_object_set_data_full (G_OBJECT (self),
 				"CWindow::TreeView",
 				g_object_ref_sink (tree),
