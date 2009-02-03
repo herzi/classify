@@ -23,7 +23,6 @@
 
 #include "window.h"
 
-#include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
 #ifndef HAVE_HILDON
@@ -377,76 +376,6 @@ tree_delete_selected (GtkTreeView* tree)
 	return TRUE;
 }
 
-static gboolean
-entry_key_press_event (GtkWidget  * widget,
-		       GdkEventKey* event,
-		       gpointer     user_data)
-{
-	if ((event->state & GDK_SHIFT_MASK) != 0 &&
-	    (event->keyval == GDK_Return || event->keyval == GDK_KP_Enter))
-	{
-		gint cursor, select;
-		g_object_get (widget,
-			      "cursor-position", &cursor,
-			      "selection-bound", &select,
-			      NULL);
-
-		if (cursor != select) {
-			gtk_editable_delete_text (GTK_EDITABLE (widget),
-						  MIN (cursor, select),
-						  MAX (cursor, select));
-		}
-
-		g_signal_emit_by_name (widget, "insert-at-cursor",
-				       "\n");
-
-		return TRUE;
-	}
-
-	return FALSE;
-}
-
-static void
-editing_started_cb (GtkCellRenderer* renderer,
-		    GtkCellEditable* editable,
-		    gchar const    * path,
-		    gpointer         user_data)
-{
-  if (GTK_IS_ENTRY (editable))
-    {
-#ifdef HAVE_HILDON
-      hildon_gtk_im_context_show (GTK_ENTRY (editable)->im_context);
-#endif
-      g_signal_connect (editable, "key-press-event",
-                        G_CALLBACK (entry_key_press_event), NULL);
-    }
-}
-
-static void
-edited_cb (GtkCellRendererText* renderer,
-	   gchar* path,
-	   gchar* new_text,
-	   GtkTreeView        * tree)
-{
-	GtkTreePath* _path = gtk_tree_path_new_from_string (path);
-	GtkTreeIter  iter;
-	gtk_tree_model_get_iter (gtk_tree_view_get_model (tree), &iter, _path);
-	c_task_list_set_text (C_TASK_LIST (gtk_tree_view_get_model (tree)), &iter, new_text);
-	gtk_tree_path_free (_path);
-}
-
-static void
-task_list_data_func (GtkTreeViewColumn* column,
-		     GtkCellRenderer  * renderer,
-		     GtkTreeModel     * model,
-		     GtkTreeIter      * iter,
-		     gpointer           data)
-{
-	g_object_set (renderer,
-		      "text", c_task_list_get_text (C_TASK_LIST (model), iter),
-		      NULL);
-}
-
 GtkWidget*
 c_window_new (void)
 {
@@ -553,7 +482,6 @@ c_window_init (CWindow* self)
                  G_CALLBACK (view_fullscreen)}
 #endif
 	};
-	GtkCellRenderer* renderer;
 	GtkActionGroup* group;
 	CTaskList   * store;
 	GtkWidget   * swin;
@@ -768,21 +696,6 @@ c_window_init (CWindow* self)
 	g_object_unref (store);
 	gtk_widget_show (tree);
 	gtk_container_add (GTK_CONTAINER (swin), tree);
-
-	renderer = gtk_cell_renderer_text_new ();
-	g_object_set     (renderer,
-			  "wrap-mode", PANGO_WRAP_WORD_CHAR,
-			  NULL);
-	g_signal_connect (renderer, "editing-started",
-			  G_CALLBACK (editing_started_cb), NULL);
-	g_signal_connect (renderer, "edited",
-			  G_CALLBACK (edited_cb), tree);
-	gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
-						    -1,
-						    _("Task"),
-						    renderer,
-						    task_list_data_func,
-						    NULL, NULL);
 
 	gtk_widget_show    (vbox);
         gtk_container_add  (GTK_CONTAINER (self),
