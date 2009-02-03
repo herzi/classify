@@ -68,12 +68,36 @@ c_task_widget_init (CTaskWidget* self)
 }
 
 static void
+row_has_child_toggled_cb (GtkTreeModel* model,
+                          GtkTreePath * path,
+                          GtkTreeIter * iter,
+                          GtkTreeView * view)
+{
+  if (gtk_tree_model_iter_has_child (model, iter))
+    {
+      gtk_tree_view_expand_row (view, path, TRUE);
+    }
+}
+
+static void
 task_widget_notify (GObject   * object,
                     GParamSpec* pspec)
 {
   if (G_UNLIKELY (!strcmp (pspec->name, "model")))
     {
+      if (PRIV (object)->list)
+        {
+          g_signal_handlers_disconnect_by_func (PRIV (object)->list, row_has_child_toggled_cb, object);
+        }
+
       PRIV (object)->list = C_TASK_LIST (gtk_tree_view_get_model (GTK_TREE_VIEW (object)));
+
+      if (PRIV (object)->list)
+        {
+          g_signal_connect_after   (PRIV (object)->list, "row-has-child-toggled",
+                                    G_CALLBACK (row_has_child_toggled_cb), object);
+          gtk_tree_view_expand_all (GTK_TREE_VIEW (object));
+        }
     }
 
   if (G_OBJECT_CLASS (c_task_widget_parent_class)->notify)

@@ -453,17 +453,6 @@ c_window_new (void)
 	return g_object_new (C_TYPE_WINDOW, NULL);
 }
 
-static void
-row_has_child_toggled_cb (GtkTreeModel* model,
-			  GtkTreePath * path,
-			  GtkTreeIter * iter,
-			  GtkTreeView * view)
-{
-	gtk_tree_view_expand_row (view,
-				  path,
-				  TRUE);
-}
-
 #ifdef HAVE_HILDON
 #if !GLIB_CHECK_VERSION(2,18,0)
 #define g_dgettext(dom,msg) dgettext (dom, msg)
@@ -769,10 +758,7 @@ c_window_init (CWindow* self)
 	store = c_task_list_new_default ();
 	gtk_tree_view_set_model  (GTK_TREE_VIEW (tree),
 				  GTK_TREE_MODEL (store));
-	g_signal_connect_after   (store, "row-has-child-toggled",
-				  G_CALLBACK (row_has_child_toggled_cb), tree);
 	g_object_unref (store);
-	gtk_tree_view_expand_all (GTK_TREE_VIEW (tree));
 	gtk_widget_show (tree);
 	gtk_container_add (GTK_CONTAINER (swin), tree);
 
