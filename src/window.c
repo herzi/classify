@@ -567,6 +567,13 @@ c_window_init (CWindow* self)
         gtk_window_add_accel_group  (GTK_WINDOW (self),
                                      gtk_ui_manager_get_accel_group (PRIV (self)->ui_manager));
 
+        /* FIXME: remove this and properly use the private data */
+        g_object_set_data_full (G_OBJECT (self),
+                                "CWindow::UIManager",
+                                PRIV (self)->ui_manager,
+                                g_object_unref);
+
+        /* FIXME: store/restore window size and position properly */
         gtk_window_set_default_size (GTK_WINDOW (self),
 				     400, 300);
 	gtk_window_set_title        (GTK_WINDOW (self),
@@ -776,12 +783,6 @@ c_window_init (CWindow* self)
 						    renderer,
 						    task_list_data_func,
 						    NULL, NULL);
-
-        /* FIXME: remove this and properly use the private data */
-	g_object_set_data_full (G_OBJECT (self),
-                                "CWindow::UIManager",
-                                PRIV (self)->ui_manager,
-                                g_object_unref);
 
 	gtk_widget_show    (vbox);
         gtk_container_add  (GTK_CONTAINER (self),
