@@ -315,6 +315,45 @@ c_task_widget_class_init (CTaskWidgetClass* self_class)
   g_type_class_add_private (self_class, sizeof (CTaskWidgetPrivate));
 }
 
+void
+c_task_widget_create_task (CTaskWidget* self)
+{
+	GtkTreeSelection* selection;
+	GtkTreeView * tree  = GTK_TREE_VIEW  (self);
+	CTaskList   * store = PRIV (self)->list;
+	GtkTreePath * path;
+	GtkTreeIter   iter;
+
+	selection = gtk_tree_view_get_selection (tree);
+
+	if (gtk_tree_selection_count_selected_rows (selection) == 1) {
+		GtkTreeIter  selected_iter;
+		GList      * selected = gtk_tree_selection_get_selected_rows (selection, NULL);
+
+		if (selected && gtk_tree_model_get_iter (GTK_TREE_MODEL (store), &selected_iter, selected->data)) {
+			c_task_list_append (store,
+					    &iter,
+					    &selected_iter,
+					    _("New Task"));
+		} else {
+			// FIXME: this is not supposed to happen
+			c_task_list_append (store, &iter, NULL, _("New Task"));
+		}
+
+		g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
+		g_list_free    (selected);
+	} else {
+		c_task_list_append (store, &iter, NULL, _("New Task"));
+	}
+
+	path = gtk_tree_model_get_path (gtk_tree_view_get_model (tree),
+                                        &iter);
+
+        c_task_widget_edit_path (C_TASK_WIDGET (tree), path);
+
+        gtk_tree_path_free (path);
+}
+
 static int
 renderer_is_text (gconstpointer a,
                   gconstpointer b)
