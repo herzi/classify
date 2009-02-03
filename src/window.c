@@ -46,8 +46,10 @@ static void     c_window_class_init  (CWindowClass* self_class);
 
 #ifdef HAVE_HILDON
 #define PARENT_TYPE HILDON_TYPE_WINDOW
+#define type_name "CWindowHildon"
 #else
 #define PARENT_TYPE GTK_TYPE_WINDOW
+#define type_name "CWindowDefault"
 #endif
 
 GType
@@ -67,13 +69,14 @@ c_window_get_type (void)
         NULL
       };
       type = g_type_register_static (PARENT_TYPE,
-                                     "CWindow",
+                                     type_name,
                                      &info,
                                      0);
     }
 
   return type;
 }
+#undef type_name
 #undef PARENT_TYPE
 
 GtkWidget*
