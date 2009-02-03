@@ -44,6 +44,12 @@ static gboolean tree_delete_selected (GtkTreeView * tree);
 static void     c_window_init        (CWindow     * self);
 static void     c_window_class_init  (CWindowClass* self_class);
 
+#ifdef HAVE_HILDON
+#define PARENT_TYPE HILDON_TYPE_WINDOW
+#else
+#define PARENT_TYPE GTK_TYPE_WINDOW
+#endif
+
 GType
 c_window_get_type (void)
 {
@@ -60,11 +66,7 @@ c_window_get_type (void)
         (GInstanceInitFunc) c_window_init,
         NULL
       };
-      GType parent = GTK_TYPE_WINDOW;
-#ifdef HAVE_HILDON
-      parent = HILDON_TYPE_WINDOW;
-#endif
-      type = g_type_register_static (parent,
+      type = g_type_register_static (PARENT_TYPE,
                                      "CWindow",
                                      &info,
                                      0);
@@ -72,6 +74,7 @@ c_window_get_type (void)
 
   return type;
 }
+#undef PARENT_TYPE
 
 GtkWidget*
 c_window_get_button (CWindow* self)
