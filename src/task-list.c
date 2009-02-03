@@ -254,6 +254,10 @@ c_task_list_new_from_file (gchar const* path,
 	}
 
         /* don't request save after loading a file */
+        if (G_UNLIKELY (i == G_N_ELEMENTS (loaders)))
+          {
+            /* FIXME: populate with some instructions… */
+          }
         if (PRIV (self)->save_timeout)
           {
             g_source_remove (self->_private->save_timeout);
