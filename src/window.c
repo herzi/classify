@@ -216,38 +216,6 @@ open_prefs (GtkAction* action,
 }
 #endif
 
-static int
-renderer_is_text (gconstpointer a,
-                  gconstpointer b)
-{
-  if (GTK_IS_CELL_RENDERER_TEXT (a))
-    return 0;
-
-  return 1;
-}
-
-static void
-tree_edit_path (GtkTreeView* tree,
-                GtkTreePath* path)
-{
-  GtkCellRenderer* renderer;
-  GList          * columns   = gtk_tree_view_get_columns (tree);
-  GList          * renderers = gtk_tree_view_column_get_cell_renderers (g_list_last (columns)->data);
-
-  renderer = g_list_find_custom (renderers,
-                                 NULL,
-                                 renderer_is_text)->data;
-  g_object_set (renderer, "editable", TRUE, NULL);
-  gtk_tree_view_set_cursor_on_cell (tree,
-                                    path,
-                                    g_list_last (columns)->data,
-                                    renderer,
-                                    TRUE);
-  g_object_set (renderer, "editable", FALSE, NULL);
-  g_list_free (renderers);
-  g_list_free (columns);
-}
-
 static gboolean
 tree_rename_selected (GtkTreeView* view)
 {
@@ -257,9 +225,9 @@ tree_rename_selected (GtkTreeView* view)
 		return FALSE;
 	}
 
-	list = gtk_tree_selection_get_selected_rows (gtk_tree_view_get_selection (view), NULL);
-	tree_edit_path (view, list->data);
-	g_list_foreach (list, (GFunc)gtk_tree_path_free, NULL);
+        list = gtk_tree_selection_get_selected_rows (gtk_tree_view_get_selection (view), NULL);
+        c_task_widget_edit_path (C_TASK_WIDGET (view), list->data);
+        g_list_foreach (list, (GFunc)gtk_tree_path_free, NULL);
 	g_list_free    (list);
 
 	return TRUE;
@@ -331,11 +299,11 @@ task_new_activated (GtkAction* action,
 	}
 
 	path = gtk_tree_model_get_path (gtk_tree_view_get_model (tree),
-				        &iter);
+                                        &iter);
 
-	tree_edit_path (tree, path);
+        c_task_widget_edit_path (C_TASK_WIDGET (tree), path);
 
-	gtk_tree_path_free (path);
+        gtk_tree_path_free (path);
 }
 
 static void
@@ -383,22 +351,21 @@ tree_button_press_event (GtkWidget     * tree,
 			 GdkEventButton* event,
 			 CWindow       * window)
 {
-	gboolean result = FALSE;
+        gboolean result = FALSE;
 
         if (event->button == 1 && event->type == GDK_2BUTTON_PRESS) {
                 GtkTreeSelection* selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
                 if (gtk_tree_selection_count_selected_rows (selection) == 1) {
                         GList* selected = gtk_tree_selection_get_selected_rows (selection, NULL);
 
-                        tree_edit_path (GTK_TREE_VIEW (tree),
-                                        selected->data);
+                        c_task_widget_edit_path (C_TASK_WIDGET (tree), selected->data);
 
                         g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
                         g_list_free    (selected);
 
                         result = TRUE;
                 }
-	}
+        }
 
 	return result;
 }

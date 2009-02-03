@@ -61,6 +61,43 @@ static void
 c_task_widget_class_init (CTaskWidgetClass* self_class)
 {}
 
+static int
+renderer_is_text (gconstpointer a,
+                  gconstpointer b)
+{
+  if (GTK_IS_CELL_RENDERER_TEXT (a))
+    return 0;
+
+  return 1;
+}
+
+void
+c_task_widget_edit_path (CTaskWidget* self,
+                         GtkTreePath* path)
+{
+  GtkCellRenderer* renderer;
+  GList          * columns;
+  GList          * renderers;
+
+  g_return_if_fail (C_IS_TASK_WIDGET (self));
+  g_return_if_fail (path && gtk_tree_path_get_depth (path) > 0);
+
+  columns   = gtk_tree_view_get_columns (GTK_TREE_VIEW (self));
+  renderers = gtk_tree_view_column_get_cell_renderers (g_list_last (columns)->data);
+  renderer = g_list_find_custom (renderers,
+                                 NULL,
+                                 renderer_is_text)->data;
+  g_object_set (renderer, "editable", TRUE, NULL);
+  gtk_tree_view_set_cursor_on_cell (GTK_TREE_VIEW (self),
+                                    path,
+                                    g_list_last (columns)->data,
+                                    renderer,
+                                    TRUE);
+  g_object_set (renderer, "editable", FALSE, NULL);
+  g_list_free (renderers);
+  g_list_free (columns);
+}
+
 GtkWidget*
 c_task_widget_new (void)
 {
