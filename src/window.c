@@ -55,9 +55,9 @@ static void     c_window_class_init  (CWindowClass* self_class);
 GType
 c_window_get_type (void)
 {
-  static GType type = 0;
+  static GType c_window_type = 0;
 
-  if (G_UNLIKELY (!type))
+  if (G_UNLIKELY (!c_window_type))
     {
       GTypeInfo const info = {
         sizeof (CWindowClass),
@@ -68,13 +68,13 @@ c_window_get_type (void)
         (GInstanceInitFunc) c_window_init,
         NULL
       };
-      type = g_type_register_static (PARENT_TYPE,
-                                     type_name,
-                                     &info,
-                                     0);
+      c_window_type = g_type_register_static (PARENT_TYPE,
+                                              type_name,
+                                              &info,
+                                              0);
     }
 
-  return type;
+  return c_window_type;
 }
 #undef type_name
 #undef PARENT_TYPE
