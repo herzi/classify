@@ -52,11 +52,11 @@ static void     c_window_class_init  (CWindowClass* self_class);
 #define type_name "CWindowDefault"
 #endif
 
+static GType c_window_type = 0;
+
 GType
 c_window_get_type (void)
 {
-  static GType c_window_type = 0;
-
   if (G_UNLIKELY (!c_window_type))
     {
       GTypeInfo const info = {
