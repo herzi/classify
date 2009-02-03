@@ -74,6 +74,10 @@ ui_lookup_create (CUserInterface* self,
   return FALSE;
 }
 
+#ifndef g_info
+#define g_info(...) g_log (G_LOG_DOMAIN, G_LOG_LEVEL_INFO, __VA_ARGS__)
+#endif
+
 static void
 ui_constructed (GObject* object)
 {
@@ -88,8 +92,13 @@ ui_constructed (GObject* object)
       return;
     }
 
-  if (ui_lookup_create (self, func_ptr) &&
-      g_module_symbol (PRIV (self)->module, "c_ui_module_get_priority", &func))
+  if (!ui_lookup_create (self, func_ptr))
+    {
+      g_info ("%s: c_user_interface_module_create_window() undefined", g_module_name (PRIV (self)->module));
+      goto cleanup;
+    }
+
+  if (g_module_symbol (PRIV (self)->module, "c_ui_module_get_priority", &func))
     {
       gint (*get_prio) (void) = func;
 
@@ -97,8 +106,11 @@ ui_constructed (GObject* object)
       PRIV (self)->initialized = TRUE;
     }
 
+cleanup:
   g_type_module_unuse (G_TYPE_MODULE (self));
 }
+
+#undef g_info
 
 static void
 ui_finalize (GObject* object)
