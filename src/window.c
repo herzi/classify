@@ -1,9 +1,9 @@
 /* This file is part of classify
  *
  * AUTHORS
- *     Sven Herzberg  <herzi@gnome-de.org>
+ *     Sven Herzberg  <herzi@lanedo.com>
  *
- * Copyright (C) 2007  Sven Herzberg
+ * Copyright (C) 2007,2009  Sven Herzberg
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -175,14 +175,14 @@ static void
 view_expand_all_activated (GtkAction* action,
 			   CWindow  * self)
 {
-	gtk_tree_view_expand_all (GTK_TREE_VIEW (c_window_get_tree (self)));
+  gtk_tree_view_expand_all (GTK_TREE_VIEW (c_window_get_tree (self)));
 }
 
 static void
 view_collapse_all_activated (GtkAction* action,
 			     CWindow  * self)
 {
-	gtk_tree_view_collapse_all (GTK_TREE_VIEW (c_window_get_tree (self)));
+  gtk_tree_view_collapse_all (GTK_TREE_VIEW (c_window_get_tree (self)));
 }
 
 GtkWidget*
