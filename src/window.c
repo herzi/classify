@@ -491,7 +491,7 @@ c_window_init (CWindow* self)
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (swin),
 					     GTK_SHADOW_IN);
 	gtk_widget_show (swin);
-	gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
+	gtk_box_pack_end_defaults (GTK_BOX (vbox), swin);
 
 	tree = c_task_widget_new ();
 
