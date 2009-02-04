@@ -452,6 +452,31 @@ c_task_widget_edit_path (CTaskWidget* self,
   g_list_free (columns);
 }
 
+void
+c_task_widget_move_bottom (CTaskWidget* self)
+{
+	GtkTreeSelection* selection;
+	GtkTreeIter       iter;
+	GList           * selected;
+
+	g_return_if_fail (C_IS_TASK_WIDGET (self));
+
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (self));
+
+	if (1 != gtk_tree_selection_count_selected_rows (selection)) {
+		return;
+	}
+
+	selected = gtk_tree_selection_get_selected_rows (selection, NULL);
+	g_return_if_fail (selected);
+	g_return_if_fail (gtk_tree_model_get_iter (gtk_tree_view_get_model (GTK_TREE_VIEW (self)), &iter, selected->data));
+	gtk_tree_store_move_before (GTK_TREE_STORE (gtk_tree_view_get_model (GTK_TREE_VIEW (self))),
+				    &iter,
+				    NULL);
+	g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
+	g_list_free    (selected);
+}
+
 GtkWidget*
 c_task_widget_new (void)
 {
