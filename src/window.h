@@ -65,6 +65,9 @@ struct _CWindowClass {
 #else
 	GtkWindowClass     base_class;
 #endif
+
+        void (*pack_toolbar) (CWindow  * self,
+                              GtkWidget* toolbar);
 };
 
 G_END_DECLS

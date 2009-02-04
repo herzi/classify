@@ -35,6 +35,7 @@
 
 struct _CWindowPrivate {
   GtkUIManager* ui_manager;
+  GtkWidget   * vbox;
 };
 
 #define PRIV(i) (((CWindow*)(i))->_private)
@@ -296,10 +297,11 @@ c_window_init (CWindow* self)
 	CTaskList   * store;
 	GtkWidget   * swin;
 	GtkWidget   * tree;
-	GtkWidget   * vbox  = gtk_vbox_new (FALSE, 0);
         GError      * error = NULL;
 
         PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_WINDOW, CWindowPrivate);
+
+        PRIV (self)->vbox = gtk_vbox_new (FALSE, 0);
 
         PRIV (self)->ui_manager = gtk_ui_manager_new ();
         gtk_window_add_accel_group  (GTK_WINDOW (self),
@@ -448,7 +450,7 @@ c_window_init (CWindow* self)
 					    -1,
 					    &error);
 
-        gtk_box_pack_start (GTK_BOX (vbox),
+        gtk_box_pack_start (GTK_BOX (PRIV (self)->vbox),
                             gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/menubar"),
                             FALSE,
                             FALSE,
@@ -473,17 +475,6 @@ c_window_init (CWindow* self)
 		error = NULL;
 	}
 
-#ifdef HAVE_HILDON
-        hildon_window_add_toolbar (HILDON_WINDOW (self),
-                                   GTK_TOOLBAR (gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/toolbar")));
-#else
-        gtk_box_pack_start (GTK_BOX (vbox),
-                            gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/toolbar"),
-                            FALSE,
-			    FALSE,
-			    0);
-#endif
-
 	swin = gtk_scrolled_window_new (NULL, NULL);
 	//gtk_scrolled_window_set_policy      (GTK_SCROLLED_WINDOW (swin),
 	//				     GTK_POLICY_NEVER,
@@ -491,7 +482,7 @@ c_window_init (CWindow* self)
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (swin),
 					     GTK_SHADOW_IN);
 	gtk_widget_show (swin);
-	gtk_box_pack_end_defaults (GTK_BOX (vbox), swin);
+	gtk_box_pack_end_defaults (GTK_BOX (PRIV (self)->vbox), swin);
 
 	tree = c_task_widget_new ();
 
@@ -507,10 +498,6 @@ c_window_init (CWindow* self)
 	gtk_widget_show (tree);
 	gtk_container_add (GTK_CONTAINER (swin), tree);
 
-	gtk_widget_show    (vbox);
-        gtk_container_add  (GTK_CONTAINER (self),
-                            vbox);
-
 #ifdef HAVE_HILDON
         g_signal_connect (self, "window-state-event",
                           G_CALLBACK (window_state_event), NULL);
@@ -520,10 +507,31 @@ c_window_init (CWindow* self)
 static void
 window_constructed (GObject* object)
 {
+  CWindow* self = C_WINDOW (object);
+
   if (G_OBJECT_CLASS (c_window_parent_class)->constructed)
     {
       G_OBJECT_CLASS (c_window_parent_class)->constructed (object);
     }
+
+  C_WINDOW_GET_CLASS (object)->pack_toolbar (self,
+                                             gtk_ui_manager_get_widget (PRIV (self)->ui_manager,
+                                                                        "/ui/toolbar"));
+
+  gtk_widget_show    (PRIV (self)->vbox);
+  gtk_container_add  (GTK_CONTAINER (self), PRIV (self)->vbox);
+}
+
+static void
+window_pack_toolbar (CWindow  * self,
+                     GtkWidget* toolbar)
+{
+#ifdef HAVE_HILDON
+  hildon_window_add_toolbar (HILDON_WINDOW (self), GTK_TOOLBAR (toolbar));
+#else
+  gtk_box_pack_start (GTK_BOX (PRIV (self)->vbox), toolbar,
+                      FALSE, FALSE, 0);
+#endif
 }
 
 static void
@@ -532,6 +540,8 @@ c_window_class_init (CWindowClass* self_class)
   GObjectClass* object_class = G_OBJECT_CLASS (self_class);
 
   object_class->constructed = window_constructed;
+
+  self_class->pack_toolbar  = window_pack_toolbar;
 
   c_window_parent_class = g_type_class_peek_parent (self_class);
 
