@@ -47,6 +47,7 @@ void       c_task_widget_delete_selected  (CTaskWidget* self);
 void       c_task_widget_edit_path        (CTaskWidget* self,
                                            GtkTreePath* path);
 void       c_task_widget_move_bottom      (CTaskWidget* self);
+void       c_task_widget_move_top         (CTaskWidget* self);
 void       c_task_widget_paste_clipboard  (CTaskWidget* self);
 void       c_task_widget_rename_selection (CTaskWidget* self);
 

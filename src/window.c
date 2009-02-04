@@ -168,26 +168,7 @@ static void
 task_top_activated (GtkAction* action,
 		    CWindow  * self)
 {
-	GtkTreeSelection* selection;
-	GtkTreeIter       iter;
-	GList           * selected;
-
-	g_return_if_fail (C_IS_WINDOW (self));
-
-	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (c_window_get_tree (self)));
-
-	if (1 != gtk_tree_selection_count_selected_rows (selection)) {
-		return;
-	}
-
-	selected = gtk_tree_selection_get_selected_rows (selection, NULL);
-	g_return_if_fail (selected);
-	g_return_if_fail (gtk_tree_model_get_iter (gtk_tree_view_get_model (GTK_TREE_VIEW (c_window_get_tree (self))), &iter, selected->data));
-	gtk_tree_store_move_after (GTK_TREE_STORE (gtk_tree_view_get_model (GTK_TREE_VIEW (c_window_get_tree (self)))),
-				   &iter,
-				   NULL);
-	g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
-	g_list_free    (selected);
+  c_task_widget_move_top (C_TASK_WIDGET (c_window_get_tree (self)));
 }
 
 static void
