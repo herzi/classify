@@ -56,6 +56,8 @@ mod_LTLIBRARIES+=hildonui.la
 
 hildonui_la_SOURCES=\
 	src/hildon-user-interface.c \
+	src/hildon-window.c \
+	src/hildon-window.h \
 	src/window.c \
 	src/window.h \
 	$(NULL)

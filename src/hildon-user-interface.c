@@ -24,7 +24,7 @@
 #include "user-interface.h"
 
 #include <gdk/gdkx.h>
-#include "window.h"
+#include "hildon-window.h"
 
 G_MODULE_EXPORT GtkWidget* c_user_interface_module_create_window (void);
 G_MODULE_EXPORT gint       c_ui_module_get_priority              (void);
@@ -34,7 +34,7 @@ G_MODULE_EXPORT gboolean   c_ui_module_test                      (void);
 GtkWidget*
 c_user_interface_module_create_window (void)
 {
-  return c_window_new ();
+  return c_hildon_window_new ();
 }
 
 gint
@@ -46,7 +46,8 @@ c_ui_module_get_priority (void)
 void
 c_ui_module_register_types (GTypeModule* module)
 {
-  c_ui_module_register_type (module);
+  c_ui_module_register_type     (module);
+  c_hildon_window_register_type (module);
 }
 
 gboolean
