@@ -147,17 +147,7 @@ static void
 edit_rename (GtkAction* action,
 	     CWindow  * self)
 {
-        GtkTreeView* view = GTK_TREE_VIEW (c_window_get_tree (self));
-	GList* list;
-
-	if (gtk_tree_selection_count_selected_rows (gtk_tree_view_get_selection (view)) != 1) {
-		return;
-	}
-
-        list = gtk_tree_selection_get_selected_rows (gtk_tree_view_get_selection (view), NULL);
-        c_task_widget_edit_path (C_TASK_WIDGET (view), list->data);
-        g_list_foreach (list, (GFunc)gtk_tree_path_free, NULL);
-	g_list_free    (list);
+        c_task_widget_rename_selection (C_TASK_WIDGET (c_window_get_tree (self)));
 }
 
 static void

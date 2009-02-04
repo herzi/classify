@@ -39,14 +39,15 @@ typedef struct _CTaskWidgetClass   CTaskWidgetClass;
 #define C_IS_TASK_WIDGET_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), C_TYPE_TASK_WIDGET))
 #define C_TASK_WIDGET_GET_CLASS(i) (G_TYPE_INSTANCE_GET_CLASS ((i), C_TYPE_TASK_WIDGET, CTaskWidgetClass))
 
-GType      c_task_widget_get_type        (void);
-GtkWidget* c_task_widget_new             (void);
-void       c_task_widget_copy_clipboard  (CTaskWidget* self);
-void       c_task_widget_create_task     (CTaskWidget* self);
-void       c_task_widget_delete_selected (CTaskWidget* self);
-void       c_task_widget_edit_path       (CTaskWidget* self,
-                                          GtkTreePath* path);
-void       c_task_widget_paste_clipboard (CTaskWidget* self);
+GType      c_task_widget_get_type         (void);
+GtkWidget* c_task_widget_new              (void);
+void       c_task_widget_copy_clipboard   (CTaskWidget* self);
+void       c_task_widget_create_task      (CTaskWidget* self);
+void       c_task_widget_delete_selected  (CTaskWidget* self);
+void       c_task_widget_edit_path        (CTaskWidget* self,
+                                           GtkTreePath* path);
+void       c_task_widget_paste_clipboard  (CTaskWidget* self);
+void       c_task_widget_rename_selection (CTaskWidget* self);
 
 struct _CTaskWidget {
   GtkTreeView         base_instance;

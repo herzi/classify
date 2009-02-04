@@ -511,3 +511,20 @@ c_task_widget_paste_clipboard (CTaskWidget* self)
 				    clipboard_text_received_cb,
 				    self);
 }
+
+void
+c_task_widget_rename_selection (CTaskWidget* self)
+{
+        GtkTreeView* view = GTK_TREE_VIEW (self);
+	GList* list;
+
+	if (gtk_tree_selection_count_selected_rows (gtk_tree_view_get_selection (view)) != 1) {
+		return;
+	}
+
+        list = gtk_tree_selection_get_selected_rows (gtk_tree_view_get_selection (view), NULL);
+        c_task_widget_edit_path (C_TASK_WIDGET (view), list->data);
+        g_list_foreach (list, (GFunc)gtk_tree_path_free, NULL);
+	g_list_free    (list);
+}
+
