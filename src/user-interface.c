@@ -162,9 +162,9 @@ ui_load (GTypeModule* module)
       return FALSE;
     }
 
-  if (!g_module_symbol (PRIV (module)->module, "c_ui_module_register_type", &tfunc) || !tfunc)
+  if (!g_module_symbol (PRIV (module)->module, "c_ui_module_register_types", &tfunc) || !tfunc)
     {
-      g_info ("%s: c_window_register_type() undefined", g_module_name (PRIV (module)->module));
+      g_info ("%s: c_window_register_types() undefined", g_module_name (PRIV (module)->module));
     }
   else
     {

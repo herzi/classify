@@ -27,6 +27,7 @@
 
 G_MODULE_EXPORT GtkWidget* c_user_interface_module_create_window (void);
 G_MODULE_EXPORT gint       c_ui_module_get_priority              (void);
+G_MODULE_EXPORT void       c_ui_module_register_types            (GTypeModule* module);
 
 GtkWidget*
 c_user_interface_module_create_window (void)
@@ -38,5 +39,11 @@ gint
 c_ui_module_get_priority (void)
 {
   return 0; /* default priority */
+}
+
+void
+c_ui_module_register_types (GTypeModule* module)
+{
+  c_ui_module_register_type (module);
 }
 
