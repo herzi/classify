@@ -22,7 +22,7 @@ classify_SOURCES=\
 	src/user-interface-factory.h \
 	$(NULL)
 LDADD=\
-	$(CLASSIFY_LIBS) \
+	$(libclassify_la_LIBADD) \
 	libclassify.la \
 	$(NULL)
 AM_CPPFLAGS=\
@@ -62,7 +62,7 @@ hildonui_la_SOURCES=\
 	src/window.h \
 	$(NULL)
 hildonui_la_LIBADD=$(defaultui_la_LIBADD)
-hildonui_la_LDFLAGS=-avoid-version -module
+hildonui_la_LDFLAGS=$(defaultui_la_LDFLAGS)
 endif
 
 libclassify_la_SOURCES=\
@@ -79,10 +79,12 @@ libclassify_la_SOURCES=\
 	src/uuid.c \
 	src/uuid.h \
 	$(NULL)
+libclassify_la_LIBADD=$(CLASSIFY_LIBS)
 libclassifyui_la_SOURCES=\
 	src/task-widget.c \
 	src/task-widget.h \
 	$(NULL)
+libclassifyui_la_LIBADD=$(LDADD)
 
 applications_in_files=classify.desktop.in
 applications_DATA=$(applications_in_files:.desktop.in=.desktop)
