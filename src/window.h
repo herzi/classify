@@ -66,9 +66,11 @@ struct _CWindowClass {
 	GtkWindowClass     base_class;
 #endif
 
+        /* vtable: all functions mandatory, unless marked as optional */
         void (*pack_menu_shell) (CWindow     * self,
                                  GtkMenuShell* shell);
-
+        void (*pack_content)    (CWindow     * self,
+                                 GtkWidget   * content);
         /* FIXME: change to GtkToolbar */
         void (*pack_toolbar)    (CWindow  * self,
                                  GtkWidget* toolbar);
