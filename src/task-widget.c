@@ -316,6 +316,36 @@ c_task_widget_class_init (CTaskWidgetClass* self_class)
 }
 
 void
+c_task_widget_copy_clipboard (CTaskWidget* self)
+{
+	GtkTreeSelection* selection;
+	GtkTreeModel    * model;
+	GtkTreeView     * view;
+	GtkTreeIter       iter;
+	GList           * selected;
+
+        /* FIXME: I think it reduces the code size to have task_widget_get_selected_path() */
+	view      = GTK_TREE_VIEW (self);
+	selection = gtk_tree_view_get_selection (view);
+
+	if (1 != gtk_tree_selection_count_selected_rows (selection)) {
+		return;
+	}
+
+	selected = gtk_tree_selection_get_selected_rows (selection, &model);
+	gtk_tree_model_get_iter (model, &iter, selected->data);
+
+	gtk_clipboard_set_text (gtk_clipboard_get_for_display (gtk_widget_get_display (GTK_WIDGET (self)),
+							       GDK_SELECTION_CLIPBOARD),
+				c_task_list_get_text (C_TASK_LIST (gtk_tree_view_get_model (view)),
+						      &iter),
+				-1);
+
+	g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
+	g_list_free    (selected);
+}
+
+void
 c_task_widget_create_task (CTaskWidget* self)
 {
 	GtkTreeSelection* selection;
