@@ -39,7 +39,6 @@ struct _CWindowPrivate {
 
 #define PRIV(i) (((CWindow*)(i))->_private)
 
-static gboolean tree_delete_selected (GtkTreeView * tree);
 static void     c_window_init        (CWindow     * self);
 static void     c_window_class_init  (CWindowClass* self_class);
 
@@ -119,7 +118,32 @@ static void
 edit_delete_activated (GtkAction* action,
 		       CWindow  * self)
 {
-	tree_delete_selected (GTK_TREE_VIEW (c_window_get_tree (self)));
+	GtkTreeModel* model = NULL;
+	GtkTreeView * tree = GTK_TREE_VIEW (c_window_get_tree (self));
+	GList       * selected;
+	GList       * iter;
+
+	if (gtk_tree_selection_count_selected_rows (gtk_tree_view_get_selection (tree)) == 0) {
+		return;
+	}
+
+	selected = gtk_tree_selection_get_selected_rows (gtk_tree_view_get_selection (tree), &model);
+
+	for (iter = selected; iter; iter = iter->next) {
+		GtkTreePath* path = iter->data;
+		iter->data = gtk_tree_row_reference_new (model, path);
+		gtk_tree_path_free (path);
+	}
+	for (iter = selected; iter; iter = iter->next) {
+		GtkTreeIter titer;
+		gtk_tree_model_get_iter (model, &titer,
+					 gtk_tree_row_reference_get_path (iter->data));
+		gtk_tree_store_remove   (GTK_TREE_STORE (model),
+					 &titer);
+		gtk_tree_row_reference_free (iter->data);
+	}
+
+	g_list_free (selected);
 }
 
 static void
@@ -280,37 +304,6 @@ view_collapse_all_activated (GtkAction* action,
 			     CWindow  * self)
 {
 	gtk_tree_view_collapse_all (GTK_TREE_VIEW (c_window_get_tree (self)));
-}
-
-static gboolean
-tree_delete_selected (GtkTreeView* tree)
-{
-	GtkTreeModel* model = NULL;
-	GList       * selected;
-	GList       * iter;
-
-	if (gtk_tree_selection_count_selected_rows (gtk_tree_view_get_selection (tree)) == 0) {
-		return FALSE;
-	}
-
-	selected = gtk_tree_selection_get_selected_rows (gtk_tree_view_get_selection (tree), &model);
-
-	for (iter = selected; iter; iter = iter->next) {
-		GtkTreePath* path = iter->data;
-		iter->data = gtk_tree_row_reference_new (model, path);
-		gtk_tree_path_free (path);
-	}
-	for (iter = selected; iter; iter = iter->next) {
-		GtkTreeIter titer;
-		gtk_tree_model_get_iter (model, &titer,
-					 gtk_tree_row_reference_get_path (iter->data));
-		gtk_tree_store_remove   (GTK_TREE_STORE (model),
-					 &titer);
-		gtk_tree_row_reference_free (iter->data);
-	}
-
-	g_list_free (selected);
-	return TRUE;
 }
 
 GtkWidget*
