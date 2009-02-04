@@ -219,7 +219,7 @@ window_state_event (GtkWidget          * widget,
     {
       GtkStockItem  item;
       gchar const * stock_id = (event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN) ? GTK_STOCK_LEAVE_FULLSCREEN : GTK_STOCK_FULLSCREEN;
-      GtkAction   * action = gtk_ui_manager_get_action (PRIV (widget)->ui_manager, "/menupopup/ViewToggleFullscreen");
+      GtkAction   * action = gtk_ui_manager_get_action (PRIV (widget)->ui_manager, "/menus/ViewToggleFullscreen");
 
       if (gtk_stock_lookup (stock_id, &item))
         {
@@ -400,9 +400,9 @@ c_window_init (CWindow* self)
 #ifdef HAVE_HILDON
         gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
                                             "<ui>"
-                                              "<popup name='menupopup'>"
-						"<menuitem action='TaskNew'/>"
-						"<separator/>"
+                                              "<popup name='menus'>"
+                                                "<menuitem action='TaskNew'/>"
+                                                "<separator/>"
 						"<menu action='Edit'>"
 						  "<menuitem action='EditCopy'/>"
 						  "<menuitem action='EditPaste'/>"
@@ -421,14 +421,12 @@ c_window_init (CWindow* self)
 					    -1,
 					    &error);
 
-        hildon_window_set_menu (HILDON_WINDOW (self),
-                                GTK_MENU (gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/menupopup")));
 #else
         gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
                                             "<ui>"
-						"<menubar name='menubar'>"
-							"<menu action='File'>"
-								"<menuitem action='TaskNew'/>"
+                                                "<menubar name='menus'>"
+                                                        "<menu action='File'>"
+                                                                "<menuitem action='TaskNew'/>"
 								"<separator/>"
 								"<menuitem action='FileClose' />"
 							"</menu>"
@@ -449,12 +447,6 @@ c_window_init (CWindow* self)
 					    "</ui>",
 					    -1,
 					    &error);
-
-        gtk_box_pack_start (GTK_BOX (PRIV (self)->vbox),
-                            gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/menubar"),
-                            FALSE,
-                            FALSE,
-                            0);
 #endif
         gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
                                             "<ui>"
@@ -514,12 +506,29 @@ window_constructed (GObject* object)
       G_OBJECT_CLASS (c_window_parent_class)->constructed (object);
     }
 
+  C_WINDOW_GET_CLASS (object)->pack_menu_shell (self,
+                                                GTK_MENU_SHELL (gtk_ui_manager_get_widget (PRIV (self)->ui_manager,
+                                                                                           "/ui/menus")));
+
   C_WINDOW_GET_CLASS (object)->pack_toolbar (self,
                                              gtk_ui_manager_get_widget (PRIV (self)->ui_manager,
                                                                         "/ui/toolbar"));
 
   gtk_widget_show    (PRIV (self)->vbox);
   gtk_container_add  (GTK_CONTAINER (self), PRIV (self)->vbox);
+}
+
+static void
+window_pack_menu_shell (CWindow     * self,
+                        GtkMenuShell* shell)
+{
+#ifdef HAVE_HILDON
+  hildon_window_set_menu (HILDON_WINDOW (self),
+                          GTK_MENU (shell));
+#else
+  gtk_box_pack_start (GTK_BOX (PRIV (self)->vbox), GTK_WIDGET (shell),
+                      FALSE, FALSE, 0);
+#endif
 }
 
 static void
@@ -541,7 +550,8 @@ c_window_class_init (CWindowClass* self_class)
 
   object_class->constructed = window_constructed;
 
-  self_class->pack_toolbar  = window_pack_toolbar;
+  self_class->pack_menu_shell  = window_pack_menu_shell;
+  self_class->pack_toolbar     = window_pack_toolbar;
 
   c_window_parent_class = g_type_class_peek_parent (self_class);
 
