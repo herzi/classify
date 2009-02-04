@@ -384,6 +384,37 @@ c_task_widget_create_task (CTaskWidget* self)
         gtk_tree_path_free (path);
 }
 
+void
+c_task_widget_delete_selected (CTaskWidget* self)
+{
+	GtkTreeModel* model = NULL;
+	GtkTreeView * tree = GTK_TREE_VIEW (self);
+	GList       * selected;
+	GList       * iter;
+
+	if (gtk_tree_selection_count_selected_rows (gtk_tree_view_get_selection (tree)) == 0) {
+		return;
+	}
+
+	selected = gtk_tree_selection_get_selected_rows (gtk_tree_view_get_selection (tree), &model);
+
+	for (iter = selected; iter; iter = iter->next) {
+		GtkTreePath* path = iter->data;
+		iter->data = gtk_tree_row_reference_new (model, path);
+		gtk_tree_path_free (path);
+	}
+	for (iter = selected; iter; iter = iter->next) {
+		GtkTreeIter titer;
+		gtk_tree_model_get_iter (model, &titer,
+					 gtk_tree_row_reference_get_path (iter->data));
+		gtk_tree_store_remove   (GTK_TREE_STORE (model),
+					 &titer);
+		gtk_tree_row_reference_free (iter->data);
+	}
+
+	g_list_free (selected);
+}
+
 static int
 renderer_is_text (gconstpointer a,
                   gconstpointer b)
