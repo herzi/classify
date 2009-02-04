@@ -46,6 +46,7 @@ void       c_task_widget_create_task     (CTaskWidget* self);
 void       c_task_widget_delete_selected (CTaskWidget* self);
 void       c_task_widget_edit_path       (CTaskWidget* self,
                                           GtkTreePath* path);
+void       c_task_widget_paste_clipboard (CTaskWidget* self);
 
 struct _CTaskWidget {
   GtkTreeView         base_instance;

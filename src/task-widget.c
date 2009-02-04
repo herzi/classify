@@ -459,3 +459,55 @@ c_task_widget_new (void)
                        NULL);
 }
 
+static void
+clipboard_text_received_cb (GtkClipboard* clipboard,
+			    gchar const * text,
+			    gpointer      data)
+{
+	GtkTreeSelection* selection;
+	GtkTreeModel    * model = NULL;
+	GtkTreeView     * view;
+	GtkTreePath     * path;
+	GtkTreeIter       iter;
+	GtkTreeIter       sibling;
+        gboolean          has_sibling;
+        GList           * columns;
+
+        view        = GTK_TREE_VIEW (data);
+	selection   = gtk_tree_view_get_selection (view);
+	has_sibling = 1 == gtk_tree_selection_count_selected_rows (selection);
+
+	if (has_sibling) {
+		GList* selected = gtk_tree_selection_get_selected_rows (selection, &model);
+		gtk_tree_model_get_iter (model, &sibling, selected->data);
+		g_list_foreach (selected, (GFunc)gtk_tree_path_free, NULL);
+		g_list_free    (selected);
+	} else {
+		model = gtk_tree_view_get_model (view);
+	}
+
+	c_task_list_append (C_TASK_LIST (model),
+			    &iter,
+			    has_sibling ? &sibling : NULL,
+			    text);
+
+        path = gtk_tree_model_get_path (model, &iter);
+        columns = gtk_tree_view_get_columns (view);
+        gtk_tree_view_set_cursor (view,
+                                  path,
+                                  g_list_last (columns)->data,
+                                  FALSE);
+        g_list_free (columns);
+        gtk_tree_path_free (path);
+}
+
+void
+c_task_widget_paste_clipboard (CTaskWidget* self)
+{
+	GtkClipboard* clipboard = gtk_clipboard_get_for_display (gtk_widget_get_display (GTK_WIDGET (self)),
+								 GDK_SELECTION_CLIPBOARD);
+
+	gtk_clipboard_request_text (clipboard,
+				    clipboard_text_received_cb,
+				    self);
+}
