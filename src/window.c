@@ -50,7 +50,8 @@ static void     c_window_class_init  (CWindowClass* self_class);
 #define type_name "CWindowDefault"
 #endif
 
-static GType c_window_type = 0;
+static GType    c_window_type = 0;
+static gpointer c_window_parent_class = NULL;
 
 GType
 c_ui_module_register_type (GTypeModule* module)
@@ -517,8 +518,23 @@ c_window_init (CWindow* self)
 }
 
 static void
+window_constructed (GObject* object)
+{
+  if (G_OBJECT_CLASS (c_window_parent_class)->constructed)
+    {
+      G_OBJECT_CLASS (c_window_parent_class)->constructed (object);
+    }
+}
+
+static void
 c_window_class_init (CWindowClass* self_class)
 {
+  GObjectClass* object_class = G_OBJECT_CLASS (self_class);
+
+  object_class->constructed = window_constructed;
+
+  c_window_parent_class = g_type_class_peek_parent (self_class);
+
   g_type_class_add_private (self_class, sizeof (CWindowPrivate));
 }
 
