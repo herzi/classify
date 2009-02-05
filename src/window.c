@@ -337,8 +337,8 @@ window_constructed (GObject* object)
   c_main_window_pack_tools (C_MAIN_WINDOW (self),
                             GTK_TOOLBAR (gtk_ui_manager_get_widget (PRIV (object)->ui_manager,
                                                                     "/ui/toolbar")));
-  c_main_window_pack_content (C_MAIN_WINDOW (self),
-                              c_main_window_get_content (C_MAIN_WINDOW (self)));
+
+  c_main_window_constructed (C_MAIN_WINDOW (self));
 }
 
 static void

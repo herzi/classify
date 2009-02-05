@@ -38,6 +38,8 @@ typedef struct _CMainWindowIface CMainWindowIface;
 
 GType      c_main_window_get_type (void);
 
+void       c_main_window_constructed (CMainWindow* self);
+
 GtkWidget* c_main_window_get_content  (CMainWindow * self);
 
 void       c_main_window_pack_content (CMainWindow * self,

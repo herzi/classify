@@ -46,6 +46,15 @@ c_main_window_get_type (void)
   return type;
 }
 
+void
+c_main_window_constructed (CMainWindow* self)
+{
+  g_return_if_fail (C_IS_MAIN_WINDOW (self));
+
+  c_main_window_pack_content (C_MAIN_WINDOW (self),
+                              c_main_window_get_content (C_MAIN_WINDOW (self)));
+}
+
 GtkWidget*
 c_main_window_get_content (CMainWindow * self)
 {
