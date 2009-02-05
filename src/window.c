@@ -190,6 +190,14 @@ view_collapse_all_activated (GtkAction* action,
   gtk_tree_view_collapse_all (GTK_TREE_VIEW (c_window_get_tree (self)));
 }
 
+GtkUIManager*
+c_window_get_ui_manager (CWindow* self)
+{
+  g_return_val_if_fail (C_IS_WINDOW (self), NULL);
+
+  return PRIV (self)->ui_manager;
+}
+
 GtkWidget*
 c_window_new (void)
 {
@@ -212,40 +220,6 @@ view_fullscreen (GtkAction* action,
     {
       gtk_window_unfullscreen (GTK_WINDOW (widget));
     }
-}
-
-static gboolean
-window_state_event (GtkWidget          * widget,
-                    GdkEventWindowState* event)
-{
-  if ((event->changed_mask & GDK_WINDOW_STATE_FULLSCREEN) != 0)
-    {
-      GtkStockItem  item;
-      gchar const * stock_id = (event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN) ? GTK_STOCK_LEAVE_FULLSCREEN : GTK_STOCK_FULLSCREEN;
-      GtkAction   * action = gtk_ui_manager_get_action (PRIV (widget)->ui_manager, "/menus/ViewToggleFullscreen");
-
-      if (gtk_stock_lookup (stock_id, &item))
-        {
-          g_object_set (action,
-                        "icon-name", "qgn_list_hw_button_view_toggle",
-                        "label", g_dgettext (item.translation_domain, item.label),
-                        "stock-id", NULL,
-                        NULL);
-        }
-      else
-        {
-          g_object_set (action,
-                        "stock-id", stock_id,
-                        NULL);
-        }
-    }
-
-  if (GTK_WIDGET_CLASS (c_window_parent_class)->window_state_event)
-    {
-      return GTK_WIDGET_CLASS (c_window_parent_class)->window_state_event (widget, event);
-    }
-
-  return FALSE;
 }
 #endif
 
@@ -580,15 +554,8 @@ static void
 c_window_class_init (CWindowClass* self_class)
 {
   GObjectClass  * object_class = G_OBJECT_CLASS (self_class);
-#ifdef HAVE_HILDON
-  GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (self_class);
-#endif
 
   object_class->constructed = window_constructed;
-
-#ifdef HAVE_HILDON
-  widget_class->window_state_event = window_state_event;
-#endif
 
   self_class->pack_menu_shell  = window_pack_menu_shell;
   self_class->pack_toolbar     = window_pack_toolbar;

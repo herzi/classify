@@ -23,10 +23,19 @@
 
 #include "hildon-window.h"
 
+/* FIXME: define a proper package */
+#define GETTEXT_PACKAGE NULL
+#include <glib/gi18n-lib.h>
+
+#if !GLIB_CHECK_VERSION(2,18,0)
+#define g_dgettext(dom,msg) dgettext (dom, msg)
+#endif
+
 static void     c_hildon_window_init        (CHildonWindow     * self);
 static void     c_hildon_window_class_init  (CHildonWindowClass* self_class);
 
-static GType c_hildon_window_type = 0;
+static GType    c_hildon_window_type = 0;
+static gpointer c_hildon_window_parent_class = NULL;
 
 GType
 c_hildon_window_register_type (GTypeModule* module)
@@ -62,9 +71,50 @@ static void
 c_hildon_window_init (CHildonWindow* self)
 {}
 
+static gboolean
+window_state_event (GtkWidget          * widget,
+                    GdkEventWindowState* event)
+{
+  if ((event->changed_mask & GDK_WINDOW_STATE_FULLSCREEN) != 0)
+    {
+      GtkStockItem  item;
+      gchar const * stock_id = (event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN) ? GTK_STOCK_LEAVE_FULLSCREEN : GTK_STOCK_FULLSCREEN;
+      GtkAction   * action = gtk_ui_manager_get_action (c_window_get_ui_manager (C_WINDOW (widget)),
+                                                        "/menus/ViewToggleFullscreen");
+
+      if (gtk_stock_lookup (stock_id, &item))
+        {
+          g_object_set (action,
+                        "icon-name", "qgn_list_hw_button_view_toggle",
+                        "label", g_dgettext (item.translation_domain, item.label),
+                        "stock-id", NULL,
+                        NULL);
+        }
+      else
+        {
+          g_object_set (action,
+                        "stock-id", stock_id,
+                        NULL);
+        }
+    }
+
+  if (GTK_WIDGET_CLASS (c_hildon_window_parent_class)->window_state_event)
+    {
+      return GTK_WIDGET_CLASS (c_hildon_window_parent_class)->window_state_event (widget, event);
+    }
+
+  return FALSE;
+}
+
 static void
 c_hildon_window_class_init (CHildonWindowClass* self_class)
-{}
+{
+  GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (self_class);
+
+  c_hildon_window_parent_class = g_type_class_peek_parent (self_class);
+
+  widget_class->window_state_event = window_state_event;
+}
 
 GtkWidget*
 c_hildon_window_new (void)
