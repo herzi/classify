@@ -234,6 +234,8 @@ c_window_init (CWindow* self)
 	GtkActionGroup* group;
         CTaskList   * store;
         GtkWidget   * tree;
+  GError   * error = NULL;
+
 
         PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_WINDOW, CWindowPrivate);
 
@@ -286,30 +288,6 @@ c_window_init (CWindow* self)
 	g_object_unref (store);
 	gtk_widget_show (tree);
 	gtk_container_add (GTK_CONTAINER (PRIV (self)->scrolled_window), tree);
-}
-
-static void
-window_constructed (GObject* object)
-{
-  CWindow* self = C_WINDOW (object);
-
-  if (G_OBJECT_CLASS (c_window_parent_class)->constructed)
-    {
-      G_OBJECT_CLASS (c_window_parent_class)->constructed (object);
-    }
-
-  C_WINDOW_GET_CLASS (object)->pack_menu_shell (self);
-  C_WINDOW_GET_CLASS (object)->pack_toolbar    (self);
-
-  gtk_widget_show (PRIV (self)->scrolled_window);
-
-  C_WINDOW_GET_CLASS (object)->pack_content    (self, PRIV (self)->scrolled_window);
-}
-
-static void
-window_pack_toolbar (CWindow* self)
-{
-  GError   * error = NULL;
 
         gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
                                             "<ui>"
@@ -332,13 +310,29 @@ window_pack_toolbar (CWindow* self)
 }
 
 static void
+window_constructed (GObject* object)
+{
+  CWindow* self = C_WINDOW (object);
+
+  if (G_OBJECT_CLASS (c_window_parent_class)->constructed)
+    {
+      G_OBJECT_CLASS (c_window_parent_class)->constructed (object);
+    }
+
+  C_WINDOW_GET_CLASS (object)->pack_menu_shell (self);
+  C_WINDOW_GET_CLASS (object)->pack_toolbar    (self);
+
+  gtk_widget_show (PRIV (self)->scrolled_window);
+
+  C_WINDOW_GET_CLASS (object)->pack_content    (self, PRIV (self)->scrolled_window);
+}
+
+static void
 c_window_class_init (CWindowClass* self_class)
 {
   GObjectClass  * object_class = G_OBJECT_CLASS (self_class);
 
   object_class->constructed = window_constructed;
-
-  self_class->pack_toolbar     = window_pack_toolbar;
 
   c_window_parent_class = g_type_class_peek_parent (self_class);
 
