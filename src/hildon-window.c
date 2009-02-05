@@ -239,7 +239,9 @@ static void
 hildon_window_pack_content (CWindow  * window,
                             GtkWidget* content)
 {
-  gtk_container_add (GTK_CONTAINER (window), content);
+  hildon_window_add_with_scrollbar (HILDON_WINDOW (window), content);
+
+  gtk_widget_show_all (GTK_WIDGET (window));
 }
 
 static void

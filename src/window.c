@@ -34,8 +34,6 @@
 struct _CWindowPrivate {
   GtkUIManager  * ui_manager;
   GtkActionGroup* actions;
-
-  GtkWidget     * scrolled_window;
 };
 
 #define PRIV(i) (((CWindow*)(i))->_private)
@@ -278,13 +276,6 @@ c_window_init (CWindow* self)
         g_object_unref (group);
         PRIV (self)->actions = group;
 
-	PRIV (self)->scrolled_window = gtk_scrolled_window_new (NULL, NULL);
-	//gtk_scrolled_window_set_policy      (GTK_SCROLLED_WINDOW (PRIV (self)->scrolled_window),
-	//				     GTK_POLICY_NEVER,
-	//				     GTK_POLICY_AUTOMATIC);
-	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (PRIV (self)->scrolled_window),
-					     GTK_SHADOW_IN);
-
 	tree = c_task_widget_new ();
 
         /* FIXME: properly use the private data */
@@ -297,7 +288,6 @@ c_window_init (CWindow* self)
 				  GTK_TREE_MODEL (store));
 	g_object_unref (store);
 	gtk_widget_show (tree);
-	gtk_container_add (GTK_CONTAINER (PRIV (self)->scrolled_window), tree);
 
         gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
                                             "<ui>"
@@ -317,8 +307,6 @@ c_window_init (CWindow* self)
 		g_error_free (error);
 		error = NULL;
 	}
-
-  gtk_widget_show (PRIV (self)->scrolled_window);
 }
 
 static void
@@ -349,7 +337,7 @@ c_window_class_init (CWindowClass* self_class)
 static GtkWidget*
 window_get_content (CMainWindow* main_window)
 {
-  return PRIV (main_window)->scrolled_window;
+  return c_window_get_tree (C_WINDOW (main_window));
 }
 
 static GtkMenuShell*

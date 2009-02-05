@@ -27,6 +27,8 @@
 
 struct _CDefaultWindowPrivate {
   GtkWidget* vbox;
+
+  GtkWidget* scrolled_window;
 };
 
 #define PRIV(i) (((CDefaultWindow*)(i))->_private)
@@ -129,6 +131,16 @@ c_default_window_init (CDefaultWindow* self)
       g_error_free (error);
       return;
     }
+
+	PRIV (self)->scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+	//gtk_scrolled_window_set_policy      (GTK_SCROLLED_WINDOW (PRIV (self)->scrolled_window),
+	//				     GTK_POLICY_NEVER,
+	//				     GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (PRIV (self)->scrolled_window),
+					     GTK_SHADOW_IN);
+
+  gtk_box_pack_end_defaults (GTK_BOX (PRIV (self)->vbox), PRIV (self)->scrolled_window);
+  gtk_container_add (GTK_CONTAINER (self), PRIV (self)->vbox);
 }
 
 static void
@@ -162,10 +174,11 @@ static void
 default_window_pack_content (CWindow  * window,
                              GtkWidget* content)
 {
-  gtk_box_pack_end_defaults (GTK_BOX (PRIV (window)->vbox), content);
+  gtk_container_add (GTK_CONTAINER (PRIV (window)->scrolled_window), content);
+
+  gtk_widget_show (PRIV (window)->scrolled_window);
 
   gtk_widget_show (PRIV (window)->vbox);
-  gtk_container_add (GTK_CONTAINER (window), PRIV (window)->vbox);
 }
 
 static void
