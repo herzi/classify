@@ -89,6 +89,23 @@ c_main_window_get_menus (CMainWindow* self)
     }
 }
 
+GtkToolbar*
+c_main_window_get_toolbar (CMainWindow * self)
+{
+  g_return_val_if_fail (C_IS_MAIN_WINDOW (self), NULL);
+
+  if (C_MAIN_WINDOW_GET_IFACE (self)->get_toolbar)
+    {
+      return C_MAIN_WINDOW_GET_IFACE (self)->get_toolbar (self);
+    }
+  else
+    {
+      g_warning ("%s doesn't implement get_toolbar()",
+                 G_OBJECT_TYPE_NAME (self));
+      return NULL;
+    }
+}
+
 void
 c_main_window_pack_content (CMainWindow * self,
                             GtkWidget   * content)

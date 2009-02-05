@@ -334,8 +334,7 @@ window_constructed (GObject* object)
   c_main_window_pack_menus (C_MAIN_WINDOW (self),
                             c_main_window_get_menus (C_MAIN_WINDOW (self)));
   c_main_window_pack_tools (C_MAIN_WINDOW (self),
-                            GTK_TOOLBAR (gtk_ui_manager_get_widget (PRIV (object)->ui_manager,
-                                                                    "/ui/toolbar")));
+                            c_main_window_get_toolbar (C_MAIN_WINDOW (self)));
 
   c_main_window_constructed (C_MAIN_WINDOW (self));
 }
@@ -362,6 +361,13 @@ static GtkMenuShell*
 window_get_menus (CMainWindow* main_window)
 {
   return GTK_MENU_SHELL (gtk_ui_manager_get_widget (PRIV (main_window)->ui_manager, "/ui/menus"));
+}
+
+static GtkToolbar*
+window_get_toolbar (CMainWindow* main_window)
+{
+  return GTK_TOOLBAR (gtk_ui_manager_get_widget (PRIV (main_window)->ui_manager,
+                                                 "/ui/toolbar"));
 }
 
 static void
@@ -396,6 +402,7 @@ implement_main_window (CMainWindowIface* iface)
 {
   iface->get_content  = window_get_content;
   iface->get_menus    = window_get_menus;
+  iface->get_toolbar  = window_get_toolbar;
 
   iface->pack_content = window_pack_content;
   iface->pack_menus   = window_pack_menus;

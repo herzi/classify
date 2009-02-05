@@ -42,6 +42,7 @@ void          c_main_window_constructed (CMainWindow* self);
 
 GtkWidget*    c_main_window_get_content  (CMainWindow * self);
 GtkMenuShell* c_main_window_get_menus    (CMainWindow * self);
+GtkToolbar*   c_main_window_get_toolbar  (CMainWindow * self);
 
 void          c_main_window_pack_content (CMainWindow * self,
                                           GtkWidget   * content);
@@ -56,6 +57,7 @@ struct _CMainWindowIface {
   /* vtable */
   GtkWidget*    (*get_content)  (CMainWindow * self);
   GtkMenuShell* (*get_menus)    (CMainWindow * self);
+  GtkToolbar*   (*get_toolbar)  (CMainWindow * self);
 
   void          (*pack_content) (CMainWindow * self,
                                  GtkWidget   * content);
