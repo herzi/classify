@@ -402,57 +402,6 @@ c_window_init (CWindow* self)
                                             0);
         g_object_unref (group);
 
-#ifdef HAVE_HILDON
-        gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
-                                            "<ui>"
-                                              "<popup name='menus'>"
-                                                "<menuitem action='TaskNew'/>"
-                                                "<separator/>"
-						"<menu action='Edit'>"
-						  "<menuitem action='EditCopy'/>"
-						  "<menuitem action='EditPaste'/>"
-                                                  "<menuitem action='EditDelete'/>"
-                                                  "<separator/>"
-                                                /*  "<menuitem action='EditRename'/>" */ // FIXME: doesn't work yet
-                                                "</menu>"
-                                                "<separator/>"
-                                                "<menuitem action='ViewToggleFullscreen'/>"
-                                                "<menuitem action='ViewExpandAll'/>"
-                                                "<menuitem action='ViewCollapseAll'/>"
-                                                "<separator/>"
-                                                "<menuitem action='FileClose' />"
-					      "</popup>"
-					    "</ui>",
-					    -1,
-					    &error);
-
-#else
-        gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
-                                            "<ui>"
-                                                "<menubar name='menus'>"
-                                                        "<menu action='File'>"
-                                                                "<menuitem action='TaskNew'/>"
-								"<separator/>"
-								"<menuitem action='FileClose' />"
-							"</menu>"
-							"<menu action='Edit'>"
-								"<menuitem action='EditCopy'/>"
-								"<menuitem action='EditPaste'/>"
-								"<menuitem action='EditDelete'/>"
-								"<separator/>"
-								"<menuitem action='EditRename'/>"
-								"<separator/>"
-								"<menuitem action='EditPreferences' />"
-							"</menu>"
-							"<menu action='View'>"
-								"<menuitem action='ViewExpandAll'/>"
-								"<menuitem action='ViewCollapseAll'/>"
-							"</menu>"
-						"</menubar>"
-					    "</ui>",
-					    -1,
-					    &error);
-#endif
         gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
                                             "<ui>"
 						"<toolbar name='toolbar'>"
@@ -524,6 +473,67 @@ static void
 window_pack_menu_shell (CWindow     * self,
                         GtkMenuShell* shell)
 {
+  GError* error = NULL;
+
+#ifdef HAVE_HILDON
+        gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
+                                            "<ui>"
+                                              "<popup name='menus'>"
+                                                "<menuitem action='TaskNew'/>"
+                                                "<separator/>"
+						"<menu action='Edit'>"
+						  "<menuitem action='EditCopy'/>"
+						  "<menuitem action='EditPaste'/>"
+                                                  "<menuitem action='EditDelete'/>"
+                                                  "<separator/>"
+                                                /*  "<menuitem action='EditRename'/>" */ // FIXME: doesn't work yet
+                                                "</menu>"
+                                                "<separator/>"
+                                                "<menuitem action='ViewToggleFullscreen'/>"
+                                                "<menuitem action='ViewExpandAll'/>"
+                                                "<menuitem action='ViewCollapseAll'/>"
+                                                "<separator/>"
+                                                "<menuitem action='FileClose' />"
+					      "</popup>"
+					    "</ui>",
+					    -1,
+					    &error);
+
+#else
+        gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
+                                            "<ui>"
+                                                "<menubar name='menus'>"
+                                                        "<menu action='File'>"
+                                                                "<menuitem action='TaskNew'/>"
+								"<separator/>"
+								"<menuitem action='FileClose' />"
+							"</menu>"
+							"<menu action='Edit'>"
+								"<menuitem action='EditCopy'/>"
+								"<menuitem action='EditPaste'/>"
+								"<menuitem action='EditDelete'/>"
+								"<separator/>"
+								"<menuitem action='EditRename'/>"
+								"<separator/>"
+								"<menuitem action='EditPreferences' />"
+							"</menu>"
+							"<menu action='View'>"
+								"<menuitem action='ViewExpandAll'/>"
+								"<menuitem action='ViewCollapseAll'/>"
+							"</menu>"
+						"</menubar>"
+					    "</ui>",
+					    -1,
+					    &error);
+#endif
+
+  if (error)
+    {
+      g_warning ("error constructing window: %s", error->message);
+      g_error_free (error);
+      return;
+    }
+
 #ifdef HAVE_HILDON
   hildon_window_set_menu (HILDON_WINDOW (self),
                           GTK_MENU (shell));
