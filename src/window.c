@@ -34,9 +34,11 @@
 #include <glib/gi18n.h>
 
 struct _CWindowPrivate {
-  GtkUIManager* ui_manager;
-  GtkWidget   * vbox;
-  GtkWidget   * scrolled_window;
+  GtkUIManager  * ui_manager;
+  GtkActionGroup* actions;
+
+  GtkWidget     * vbox;
+  GtkWidget     * scrolled_window;
 };
 
 #define PRIV(i) (((CWindow*)(i))->_private)
@@ -148,42 +150,42 @@ open_prefs (GtkAction* action,
 
 static void
 edit_rename (GtkAction* action,
-	     CWindow  * self)
+             CWindow  * self)
 {
-        c_task_widget_rename_selection (C_TASK_WIDGET (c_window_get_tree (self)));
+  c_task_widget_rename_selection (C_TASK_WIDGET (c_window_get_tree (self)));
 }
 
 static void
 task_bottom_activated (GtkAction* action,
-		       CWindow  * self)
+                       CWindow  * self)
 {
   c_task_widget_move_bottom (C_TASK_WIDGET (c_window_get_tree (self)));
 }
 
 static void
 task_new_activated (GtkAction* action,
-		    CWindow  * self)
+                    CWindow  * self)
 {
   c_task_widget_create_task (C_TASK_WIDGET (c_window_get_tree (self)));
 }
 
 static void
 task_top_activated (GtkAction* action,
-		    CWindow  * self)
+                    CWindow  * self)
 {
   c_task_widget_move_top (C_TASK_WIDGET (c_window_get_tree (self)));
 }
 
 static void
 view_expand_all_activated (GtkAction* action,
-			   CWindow  * self)
+                           CWindow  * self)
 {
   gtk_tree_view_expand_all (GTK_TREE_VIEW (c_window_get_tree (self)));
 }
 
 static void
 view_collapse_all_activated (GtkAction* action,
-			     CWindow  * self)
+                             CWindow  * self)
 {
   gtk_tree_view_collapse_all (GTK_TREE_VIEW (c_window_get_tree (self)));
 }
@@ -191,7 +193,7 @@ view_collapse_all_activated (GtkAction* action,
 GtkWidget*
 c_window_new (void)
 {
-	return g_object_new (C_TYPE_WINDOW, NULL);
+  return g_object_new (C_TYPE_WINDOW, NULL);
 }
 
 #ifdef HAVE_HILDON
@@ -267,11 +269,6 @@ c_window_init (CWindow* self)
 		{"EditPaste", GTK_STOCK_PASTE, NULL,
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (edit_paste_activated)},
-#ifndef HAVE_HILDON
-		{"EditPreferences", GTK_STOCK_PREFERENCES, NULL,
-		 NULL, NULL, // FIXME: add tooltip
-		 G_CALLBACK (open_prefs)},
-#endif
 		{"EditRename", NULL, N_("_Rename"),
 		 "F2", NULL, // FIXME: add tooltip
 		 G_CALLBACK (edit_rename)},
@@ -293,16 +290,10 @@ c_window_init (CWindow* self)
 		{"ViewCollapseAll", NULL, N_("_Collapse All"),
 		 NULL, NULL, // FIXME: add tooltip
                  G_CALLBACK (view_collapse_all_activated)}
-#ifdef HAVE_HILDON
-                ,{"ViewToggleFullscreen", GTK_STOCK_FULLSCREEN, NULL,
-                 "F6", NULL, // FIXME: add tooltip
-                 G_CALLBACK (view_fullscreen)}
-#endif
 	};
 	GtkActionGroup* group;
         CTaskList   * store;
         GtkWidget   * tree;
-        GError      * error = NULL;
 
         PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_WINDOW, CWindowPrivate);
 
@@ -329,8 +320,94 @@ c_window_init (CWindow* self)
         group = gtk_action_group_new ("main-group");
         gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), self);
 
+        gtk_ui_manager_insert_action_group (PRIV (self)->ui_manager,
+                                            group,
+                                            0);
+
+        /* FIXME: delay until finalize */
+        g_object_unref (group);
+        PRIV (self)->actions = group;
+
+	PRIV (self)->scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+	//gtk_scrolled_window_set_policy      (GTK_SCROLLED_WINDOW (PRIV (self)->scrolled_window),
+	//				     GTK_POLICY_NEVER,
+	//				     GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (PRIV (self)->scrolled_window),
+					     GTK_SHADOW_IN);
+
+	tree = c_task_widget_new ();
+
+        /* FIXME: properly use the private data */
+	g_object_set_data_full (G_OBJECT (self),
+				"CWindow::TreeView",
+				g_object_ref_sink (tree),
+				g_object_unref);
+	store = c_task_list_new_default ();
+	gtk_tree_view_set_model  (GTK_TREE_VIEW (tree),
+				  GTK_TREE_MODEL (store));
+	g_object_unref (store);
+	gtk_widget_show (tree);
+	gtk_container_add (GTK_CONTAINER (PRIV (self)->scrolled_window), tree);
+}
+
+static void
+window_constructed (GObject* object)
+{
+  CWindow* self = C_WINDOW (object);
+
+  if (G_OBJECT_CLASS (c_window_parent_class)->constructed)
+    {
+      G_OBJECT_CLASS (c_window_parent_class)->constructed (object);
+    }
+
+  C_WINDOW_GET_CLASS (object)->pack_menu_shell (self);
+  C_WINDOW_GET_CLASS (object)->pack_toolbar    (self);
+  C_WINDOW_GET_CLASS (object)->pack_content    (self, PRIV (self)->scrolled_window);
+
+  gtk_widget_show (PRIV (self)->scrolled_window);
+
+  gtk_widget_show (PRIV (self)->vbox);
+  gtk_container_add (GTK_CONTAINER (self), PRIV (self)->vbox);
+}
+
+static void
+window_pack_menu_shell (CWindow* self)
+{
+  GtkActionGroup* group;
+  GtkActionEntry  entries[] = {
+#ifndef HAVE_HILDON
+		{"EditPreferences", GTK_STOCK_PREFERENCES, NULL,
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (open_prefs)}
+#else
+                {"ViewToggleFullscreen", GTK_STOCK_FULLSCREEN, NULL,
+                 "F6", NULL, // FIXME: add tooltip
+                 G_CALLBACK (view_fullscreen)}
+#endif
+  };
 #ifdef HAVE_HILDON
-        GtkStockItem  item;
+  GtkStockItem    item;
+#endif
+  GtkWidget     * shell;
+  GError        * error = NULL;
+
+  group = gtk_action_group_new ("backend-actions");
+  gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), self);
+  gtk_ui_manager_insert_action_group (PRIV (self)->ui_manager, group, -1);
+  g_object_unref (group);
+
+#ifdef HAVE_HILDON
+        if (gtk_stock_lookup (GTK_STOCK_FULLSCREEN, &item))
+          {
+            g_object_set (gtk_action_group_get_action (group, "ViewToggleFullscreen"),
+                          "icon-name", "qgn_list_hw_button_view_toggle",
+                          "label", g_dgettext (item.translation_domain, item.label),
+                          "stock-id", NULL,
+                          NULL);
+          }
+
+  group = PRIV (self)->actions;
+
         if (gtk_stock_lookup (GTK_STOCK_ADD, &item))
           {
             g_object_set (gtk_action_group_get_action (group, "TaskNew"),
@@ -387,103 +464,15 @@ c_window_init (CWindow* self)
                           "stock-id", NULL,
                           NULL);
           }
-        if (gtk_stock_lookup (GTK_STOCK_FULLSCREEN, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "ViewToggleFullscreen"),
-                          "icon-name", "qgn_list_hw_button_view_toggle",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
-#endif
 
-        gtk_ui_manager_insert_action_group (PRIV (self)->ui_manager,
-                                            group,
-                                            0);
-        g_object_unref (group);
-
-        gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
-                                            "<ui>"
-						"<toolbar name='toolbar'>"
-							"<toolitem action='TaskNew'/>"
-							"<separator/>"
-							"<toolitem action='TaskTop'/>"
-							"<toolitem action='TaskBottom'/>"
-						"</toolbar>"
-					    "</ui>",
-					    -1,
-					    &error);
-
-	if (error) {
-		g_warning ("Error setting up the user interface: %s",
-			   error->message);
-		g_error_free (error);
-		error = NULL;
-	}
-
-	PRIV (self)->scrolled_window = gtk_scrolled_window_new (NULL, NULL);
-	//gtk_scrolled_window_set_policy      (GTK_SCROLLED_WINDOW (PRIV (self)->scrolled_window),
-	//				     GTK_POLICY_NEVER,
-	//				     GTK_POLICY_AUTOMATIC);
-	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (PRIV (self)->scrolled_window),
-					     GTK_SHADOW_IN);
-
-	tree = c_task_widget_new ();
-
-        /* FIXME: properly use the private data */
-	g_object_set_data_full (G_OBJECT (self),
-				"CWindow::TreeView",
-				g_object_ref_sink (tree),
-				g_object_unref);
-	store = c_task_list_new_default ();
-	gtk_tree_view_set_model  (GTK_TREE_VIEW (tree),
-				  GTK_TREE_MODEL (store));
-	g_object_unref (store);
-	gtk_widget_show (tree);
-	gtk_container_add (GTK_CONTAINER (PRIV (self)->scrolled_window), tree);
-}
-
-static void
-window_constructed (GObject* object)
-{
-  CWindow* self = C_WINDOW (object);
-
-  if (G_OBJECT_CLASS (c_window_parent_class)->constructed)
-    {
-      G_OBJECT_CLASS (c_window_parent_class)->constructed (object);
-    }
-
-  C_WINDOW_GET_CLASS (object)->pack_menu_shell (self,
-                                                GTK_MENU_SHELL (gtk_ui_manager_get_widget (PRIV (self)->ui_manager,
-                                                                                           "/ui/menus")));
-
-  C_WINDOW_GET_CLASS (object)->pack_toolbar (self,
-                                             gtk_ui_manager_get_widget (PRIV (self)->ui_manager,
-                                                                        "/ui/toolbar"));
-
-  C_WINDOW_GET_CLASS (object)->pack_content (self, PRIV (self)->scrolled_window);
-
-  gtk_widget_show (PRIV (self)->scrolled_window);
-
-  gtk_widget_show (PRIV (self)->vbox);
-  gtk_container_add  (GTK_CONTAINER (self), PRIV (self)->vbox);
-}
-
-static void
-window_pack_menu_shell (CWindow     * self,
-                        GtkMenuShell* shell)
-{
-  GError* error = NULL;
-
-#ifdef HAVE_HILDON
         gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
                                             "<ui>"
                                               "<popup name='menus'>"
                                                 "<menuitem action='TaskNew'/>"
                                                 "<separator/>"
-						"<menu action='Edit'>"
-						  "<menuitem action='EditCopy'/>"
-						  "<menuitem action='EditPaste'/>"
+                                                "<menu action='Edit'>"
+                                                  "<menuitem action='EditCopy'/>"
+                                                  "<menuitem action='EditPaste'/>"
                                                   "<menuitem action='EditDelete'/>"
                                                   "<separator/>"
                                                 /*  "<menuitem action='EditRename'/>" */ // FIXME: doesn't work yet
@@ -534,6 +523,8 @@ window_pack_menu_shell (CWindow     * self,
       return;
     }
 
+  shell = gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/ui/menus");
+
 #ifdef HAVE_HILDON
   hildon_window_set_menu (HILDON_WINDOW (self),
                           GTK_MENU (shell));
@@ -544,9 +535,32 @@ window_pack_menu_shell (CWindow     * self,
 }
 
 static void
-window_pack_toolbar (CWindow  * self,
-                     GtkWidget* toolbar)
+window_pack_toolbar (CWindow* self)
 {
+  GtkWidget* toolbar;
+  GError   * error = NULL;
+
+        gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
+                                            "<ui>"
+						"<toolbar name='toolbar'>"
+							"<toolitem action='TaskNew'/>"
+							"<separator/>"
+							"<toolitem action='TaskTop'/>"
+							"<toolitem action='TaskBottom'/>"
+						"</toolbar>"
+					    "</ui>",
+					    -1,
+					    &error);
+
+	if (error) {
+		g_warning ("Error setting up the user interface: %s",
+			   error->message);
+		g_error_free (error);
+		error = NULL;
+	}
+
+  toolbar = gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/ui/toolbar");
+
 #ifdef HAVE_HILDON
   hildon_window_add_toolbar (HILDON_WINDOW (self), GTK_TOOLBAR (toolbar));
 #else
