@@ -46,3 +46,21 @@ c_main_window_get_type (void)
   return type;
 }
 
+void
+c_main_window_pack_menus (CMainWindow * self,
+                          GtkMenuShell* menus)
+{
+  g_return_if_fail (C_IS_MAIN_WINDOW (self));
+  g_return_if_fail (GTK_IS_MENU_SHELL (menus));
+
+  if (C_MAIN_WINDOW_GET_IFACE (self)->pack_menus)
+    {
+      C_MAIN_WINDOW_GET_IFACE (self)->pack_menus (self, menus);
+    }
+  else
+    {
+      g_warning ("%s doesn't implement pack_menus()",
+                 G_OBJECT_TYPE_NAME (self));
+    }
+}
+

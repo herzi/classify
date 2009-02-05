@@ -329,9 +329,9 @@ window_constructed (GObject* object)
       G_OBJECT_CLASS (c_window_parent_class)->constructed (object);
     }
 
-  C_WINDOW_GET_CLASS (object)->pack_menu_shell (self,
-                                                GTK_MENU_SHELL (gtk_ui_manager_get_widget (PRIV (object)->ui_manager,
-                                                                                           "/ui/menus")));
+  c_main_window_pack_menus (C_MAIN_WINDOW (self),
+                            GTK_MENU_SHELL (gtk_ui_manager_get_widget (PRIV (object)->ui_manager,
+                                                                       "/ui/menus")));
   C_WINDOW_GET_CLASS (object)->pack_toolbar    (self);
 
   gtk_widget_show (PRIV (self)->scrolled_window);

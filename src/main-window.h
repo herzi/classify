@@ -38,6 +38,9 @@ typedef struct _CMainWindowIface CMainWindowIface;
 
 GType c_main_window_get_type (void);
 
+void  c_main_window_pack_menus (CMainWindow * self,
+                                GtkMenuShell* menus);
+
 struct _CMainWindowIface {
   GTypeInterface base_interface;
 
