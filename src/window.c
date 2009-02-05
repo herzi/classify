@@ -386,7 +386,9 @@ window_pack_menu_shell (CWindow* self)
 static void
 window_pack_toolbar (CWindow* self)
 {
+#ifndef HAVE_HILDON
   GtkWidget* toolbar;
+#endif
   GError   * error = NULL;
 
         gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
@@ -408,11 +410,9 @@ window_pack_toolbar (CWindow* self)
 		error = NULL;
 	}
 
+#ifndef HAVE_HILDON
   toolbar = gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/ui/toolbar");
 
-#ifdef HAVE_HILDON
-  hildon_window_add_toolbar (HILDON_WINDOW (self), GTK_TOOLBAR (toolbar));
-#else
   gtk_box_pack_start (GTK_BOX (PRIV (self)->vbox), toolbar,
                       FALSE, FALSE, 0);
 #endif

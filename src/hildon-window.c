@@ -250,6 +250,20 @@ hildon_window_pack_menu_shell (CWindow* window)
 }
 
 static void
+hildon_window_pack_toolbar (CWindow* window)
+{
+  GtkWidget* toolbar;
+
+  if (C_WINDOW_CLASS (c_hildon_window_parent_class)->pack_toolbar)
+    {
+      C_WINDOW_CLASS (c_hildon_window_parent_class)->pack_toolbar (window);
+    }
+
+  toolbar = gtk_ui_manager_get_widget (c_window_get_ui_manager (window), "/ui/toolbar");
+  hildon_window_add_toolbar (HILDON_WINDOW (window), GTK_TOOLBAR (toolbar));
+}
+
+static void
 c_hildon_window_class_init (CHildonWindowClass* self_class)
 {
   GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (self_class);
@@ -260,6 +274,7 @@ c_hildon_window_class_init (CHildonWindowClass* self_class)
   widget_class->window_state_event = window_state_event;
 
   window_class->pack_menu_shell    = hildon_window_pack_menu_shell;
+  window_class->pack_toolbar       = hildon_window_pack_toolbar;
 }
 
 GtkWidget*
