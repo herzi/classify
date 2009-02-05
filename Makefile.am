@@ -21,6 +21,7 @@ classify_SOURCES=\
 	src/user-interface-factory.c \
 	src/user-interface-factory.h \
 	$(NULL)
+classify_LDADD=$(libclassify_ui_LIBADD) libclassifyui.la
 LDADD=\
 	$(libclassify_la_LIBADD) \
 	libclassify.la \

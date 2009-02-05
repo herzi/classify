@@ -1,4 +1,4 @@
-/* This file is part of ...
+/* This file is part of classify
  *
  * AUTHORS
  *     Sven Herzberg  <herzi@lanedo.com>
@@ -22,4 +22,27 @@
  */
 
 #include "main-window.h"
+
+GType
+c_main_window_get_type (void)
+{
+  static GType type = 0;
+
+  if (G_UNLIKELY (!type))
+    {
+      GTypeInfo const info = {
+        sizeof (CMainWindowIface),
+        NULL, NULL,
+        NULL, NULL, NULL,
+        0, 0,
+        NULL
+      };
+
+      type = g_type_register_static (G_TYPE_INTERFACE,
+                                     G_STRINGIFY (CMainWindow),
+                                     &info, 0);
+    }
+
+  return type;
+}
 

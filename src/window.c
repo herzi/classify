@@ -25,6 +25,7 @@
 
 #include <gtk/gtk.h>
 
+#include "main-window.h"
 #include "task-list.h"
 #include "task-widget.h"
 
@@ -67,11 +68,18 @@ c_ui_module_register_type (GTypeModule* module)
         (GInstanceInitFunc) c_window_init,
         NULL
       };
+      GInterfaceInfo const iinfo = {
+        NULL, NULL, NULL
+      };
       c_window_type = g_type_module_register_type (module,
                                                    PARENT_TYPE,
                                                    type_name,
                                                    &info,
                                                    0);
+      g_type_module_add_interface (module,
+                                   c_window_type,
+                                   C_TYPE_MAIN_WINDOW,
+                                   &iinfo);
     }
 
   return c_window_type;

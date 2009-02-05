@@ -1,4 +1,4 @@
-/* This file is part of ...
+/* This file is part of classify
  *
  * AUTHORS
  *     Sven Herzberg  <herzi@lanedo.com>
@@ -24,5 +24,24 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
+#include <gtk/gtk.h>
+
+G_BEGIN_DECLS
+
+typedef struct _CMainWindow      CMainWindow;
+typedef struct _CMainWindowIface CMainWindowIface;
+
+#define C_TYPE_MAIN_WINDOW         (c_main_window_get_type ())
+#define C_MAIN_WINDOW(i)           (G_TYPE_CHECK_INSTANCE_CAST ((i), C_TYPE_MAIN_WINDOW, CMainWindow))
+#define C_IS_MAIN_WINDOW(i)        (G_TYPE_CHECK_INSTANCE_TYPE ((i), C_TYPE_MAIN_WINDOW))
+#define C_MAIN_WINDOW_GET_IFACE(i) (G_TYPE_INSTANCE_GET_INTERFACE ((i), C_TYPE_MAIN_WINDOW, CMainWindowIface))
+
+GType c_main_window_get_type (void);
+
+struct _CMainWindowIface {
+  GTypeInterface base_interface;
+};
+
+G_END_DECLS
 
 #endif /* !MAIN_WINDOW_H */
