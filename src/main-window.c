@@ -56,7 +56,7 @@ c_main_window_constructed (CMainWindow* self)
 }
 
 GtkWidget*
-c_main_window_get_content (CMainWindow * self)
+c_main_window_get_content (CMainWindow* self)
 {
   g_return_val_if_fail (C_IS_MAIN_WINDOW (self), NULL);
 
@@ -67,6 +67,23 @@ c_main_window_get_content (CMainWindow * self)
   else
     {
       g_warning ("%s doesn't implement get_content()",
+                 G_OBJECT_TYPE_NAME (self));
+      return NULL;
+    }
+}
+
+GtkMenuShell*
+c_main_window_get_menus (CMainWindow* self)
+{
+  g_return_val_if_fail (C_IS_MAIN_WINDOW (self), NULL);
+
+  if (C_MAIN_WINDOW_GET_IFACE (self)->get_menus)
+    {
+      return C_MAIN_WINDOW_GET_IFACE (self)->get_menus (self);
+    }
+  else
+    {
+      g_warning ("%s doesn't implement get_menus()",
                  G_OBJECT_TYPE_NAME (self));
       return NULL;
     }

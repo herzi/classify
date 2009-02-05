@@ -332,8 +332,7 @@ window_constructed (GObject* object)
     }
 
   c_main_window_pack_menus (C_MAIN_WINDOW (self),
-                            GTK_MENU_SHELL (gtk_ui_manager_get_widget (PRIV (object)->ui_manager,
-                                                                       "/ui/menus")));
+                            c_main_window_get_menus (C_MAIN_WINDOW (self)));
   c_main_window_pack_tools (C_MAIN_WINDOW (self),
                             GTK_TOOLBAR (gtk_ui_manager_get_widget (PRIV (object)->ui_manager,
                                                                     "/ui/toolbar")));
@@ -357,6 +356,12 @@ static GtkWidget*
 window_get_content (CMainWindow* main_window)
 {
   return PRIV (main_window)->scrolled_window;
+}
+
+static GtkMenuShell*
+window_get_menus (CMainWindow* main_window)
+{
+  return GTK_MENU_SHELL (gtk_ui_manager_get_widget (PRIV (main_window)->ui_manager, "/ui/menus"));
 }
 
 static void
@@ -390,6 +395,7 @@ static void
 implement_main_window (CMainWindowIface* iface)
 {
   iface->get_content  = window_get_content;
+  iface->get_menus    = window_get_menus;
 
   iface->pack_content = window_pack_content;
   iface->pack_menus   = window_pack_menus;

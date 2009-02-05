@@ -36,31 +36,33 @@ typedef struct _CMainWindowIface CMainWindowIface;
 #define C_IS_MAIN_WINDOW(i)        (G_TYPE_CHECK_INSTANCE_TYPE ((i), C_TYPE_MAIN_WINDOW))
 #define C_MAIN_WINDOW_GET_IFACE(i) (G_TYPE_INSTANCE_GET_INTERFACE ((i), C_TYPE_MAIN_WINDOW, CMainWindowIface))
 
-GType      c_main_window_get_type (void);
+GType         c_main_window_get_type (void);
 
-void       c_main_window_constructed (CMainWindow* self);
+void          c_main_window_constructed (CMainWindow* self);
 
-GtkWidget* c_main_window_get_content  (CMainWindow * self);
+GtkWidget*    c_main_window_get_content  (CMainWindow * self);
+GtkMenuShell* c_main_window_get_menus    (CMainWindow * self);
 
-void       c_main_window_pack_content (CMainWindow * self,
-                                       GtkWidget   * content);
-void       c_main_window_pack_menus   (CMainWindow * self,
-                                       GtkMenuShell* menus);
-void       c_main_window_pack_tools   (CMainWindow * self,
-                                       GtkToolbar  * tools);
+void          c_main_window_pack_content (CMainWindow * self,
+                                          GtkWidget   * content);
+void          c_main_window_pack_menus   (CMainWindow * self,
+                                          GtkMenuShell* menus);
+void          c_main_window_pack_tools   (CMainWindow * self,
+                                          GtkToolbar  * tools);
 
 struct _CMainWindowIface {
   GTypeInterface base_interface;
 
   /* vtable */
-  GtkWidget* (*get_content)  (CMainWindow * self);
+  GtkWidget*    (*get_content)  (CMainWindow * self);
+  GtkMenuShell* (*get_menus)    (CMainWindow * self);
 
-  void       (*pack_content) (CMainWindow * self,
-                              GtkWidget   * content);
-  void       (*pack_menus)   (CMainWindow * self,
-                              GtkMenuShell* menus);
-  void       (*pack_tools)   (CMainWindow * self,
-                              GtkToolbar  * tools);
+  void          (*pack_content) (CMainWindow * self,
+                                 GtkWidget   * content);
+  void          (*pack_menus)   (CMainWindow * self,
+                                 GtkMenuShell* menus);
+  void          (*pack_tools)   (CMainWindow * self,
+                                 GtkToolbar  * tools);
 };
 
 G_END_DECLS
