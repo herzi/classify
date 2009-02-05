@@ -338,7 +338,7 @@ window_constructed (GObject* object)
                             GTK_TOOLBAR (gtk_ui_manager_get_widget (PRIV (object)->ui_manager,
                                                                     "/ui/toolbar")));
   c_main_window_pack_content (C_MAIN_WINDOW (self),
-                              PRIV (self)->scrolled_window);
+                              c_main_window_get_content (C_MAIN_WINDOW (self)));
 }
 
 static void
@@ -351,6 +351,12 @@ c_window_class_init (CWindowClass* self_class)
   c_window_parent_class = g_type_class_peek_parent (self_class);
 
   g_type_class_add_private (self_class, sizeof (CWindowPrivate));
+}
+
+static GtkWidget*
+window_get_content (CMainWindow* main_window)
+{
+  return PRIV (main_window)->scrolled_window;
 }
 
 static void
@@ -383,6 +389,8 @@ window_pack_tools (CMainWindow* main_window,
 static void
 implement_main_window (CMainWindowIface* iface)
 {
+  iface->get_content  = window_get_content;
+
   iface->pack_content = window_pack_content;
   iface->pack_menus   = window_pack_menus;
   iface->pack_tools   = window_pack_tools;

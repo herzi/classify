@@ -46,6 +46,23 @@ c_main_window_get_type (void)
   return type;
 }
 
+GtkWidget*
+c_main_window_get_content (CMainWindow * self)
+{
+  g_return_val_if_fail (C_IS_MAIN_WINDOW (self), NULL);
+
+  if (C_MAIN_WINDOW_GET_IFACE (self)->get_content)
+    {
+      return C_MAIN_WINDOW_GET_IFACE (self)->get_content (self);
+    }
+  else
+    {
+      g_warning ("%s doesn't implement get_content()",
+                 G_OBJECT_TYPE_NAME (self));
+      return NULL;
+    }
+}
+
 void
 c_main_window_pack_content (CMainWindow * self,
                             GtkWidget   * content)
