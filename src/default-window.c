@@ -25,6 +25,12 @@
 
 #include "preferences.h"
 
+struct _CDefaultWindowPrivate {
+  GtkWidget* vbox;
+};
+
+#define PRIV(i) (((CDefaultWindow*)(i))->_private)
+
 static void c_default_window_init       (CDefaultWindow     * self);
 static void c_default_window_class_init (CDefaultWindowClass* self_class);
 
@@ -47,7 +53,7 @@ c_default_window_register_type (GTypeModule* module)
         NULL, NULL,
         (GClassInitFunc) c_default_window_class_init,
         NULL, NULL,
-        sizeof (CWindow), 0,
+        sizeof (CDefaultWindow), 0,
         (GInstanceInitFunc) c_default_window_init,
         NULL
       };
@@ -64,7 +70,9 @@ c_default_window_register_type (GTypeModule* module)
 
 static void
 c_default_window_init (CDefaultWindow* self)
-{}
+{
+  PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_DEFAULT_WINDOW, CDefaultWindowPrivate);
+}
 
 static void
 open_prefs (GtkAction* action,
@@ -138,6 +146,8 @@ c_default_window_class_init (CDefaultWindowClass* self_class)
   c_default_window_parent_class = g_type_class_peek_parent (self_class);
 
   window_class->pack_menu_shell = default_window_pack_menu_shell;
+
+  g_type_class_add_private (self_class, sizeof (CDefaultWindowPrivate));
 }
 
 GtkWidget*

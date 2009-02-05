@@ -73,9 +73,9 @@ c_ui_module_test (void)
                          &actual_length,
                          &data))
     {
-      g_warning ("Couldn't get _NET_SUPPORTING_WM_CHECK on the root window.");
-      g_warning ("\tplease use a window manager compliant to the FreeDesktop.org specification:");
-      g_warning ("\thttp://standards.freedesktop.org/wm-spec/wm-spec-latest.html#id2550836");
+      g_message ("Couldn't get _NET_SUPPORTING_WM_CHECK on the root window.");
+      g_message ("\tplease use a window manager compliant to the FreeDesktop.org specification:");
+      g_message ("\thttp://standards.freedesktop.org/wm-spec/wm-spec-latest.html#id2550836");
       return FALSE;
     }
 
