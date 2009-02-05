@@ -250,6 +250,13 @@ hildon_window_pack_menu_shell (CWindow* window)
 }
 
 static void
+hildon_window_pack_content (CWindow  * window,
+                            GtkWidget* content)
+{
+  gtk_container_add (GTK_CONTAINER (window), content);
+}
+
+static void
 hildon_window_pack_toolbar (CWindow* window)
 {
   GtkWidget* toolbar;
@@ -273,6 +280,7 @@ c_hildon_window_class_init (CHildonWindowClass* self_class)
 
   widget_class->window_state_event = window_state_event;
 
+  window_class->pack_content       = hildon_window_pack_content;
   window_class->pack_menu_shell    = hildon_window_pack_menu_shell;
   window_class->pack_toolbar       = hildon_window_pack_toolbar;
 }

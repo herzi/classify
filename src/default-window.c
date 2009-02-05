@@ -72,6 +72,8 @@ static void
 c_default_window_init (CDefaultWindow* self)
 {
   PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_DEFAULT_WINDOW, CDefaultWindowPrivate);
+
+  PRIV (self)->vbox = gtk_vbox_new (FALSE, 0);
 }
 
 static void
@@ -92,6 +94,7 @@ default_window_pack_menu_shell (CWindow* window)
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (open_prefs)}
   };
+  GtkWidget     * shell;
   GError        * error = NULL;
 
   group = gtk_action_group_new ("backend-actions");
@@ -136,6 +139,37 @@ default_window_pack_menu_shell (CWindow* window)
     {
       C_WINDOW_CLASS (c_default_window_parent_class)->pack_menu_shell (window);
     }
+
+  shell = gtk_ui_manager_get_widget (c_window_get_ui_manager (window), "/ui/menus");
+
+  gtk_box_pack_start (GTK_BOX (PRIV (window)->vbox), shell,
+                      FALSE, FALSE, 0);
+}
+
+static void
+default_window_pack_toolbar (CWindow* window)
+{
+  GtkWidget* toolbar;
+
+  if (C_WINDOW_CLASS (c_default_window_parent_class)->pack_toolbar)
+    {
+      C_WINDOW_CLASS (c_default_window_parent_class)->pack_toolbar (window);
+    }
+
+  toolbar = gtk_ui_manager_get_widget (c_window_get_ui_manager (window), "/ui/toolbar");
+
+  gtk_box_pack_start (GTK_BOX (PRIV (window)->vbox), toolbar,
+                      FALSE, FALSE, 0);
+}
+
+static void
+default_window_pack_content (CWindow  * window,
+                             GtkWidget* content)
+{
+  gtk_box_pack_end_defaults (GTK_BOX (PRIV (window)->vbox), content);
+
+  gtk_widget_show (PRIV (window)->vbox);
+  gtk_container_add (GTK_CONTAINER (window), PRIV (window)->vbox);
 }
 
 static void
@@ -145,7 +179,9 @@ c_default_window_class_init (CDefaultWindowClass* self_class)
 
   c_default_window_parent_class = g_type_class_peek_parent (self_class);
 
+  window_class->pack_content    = default_window_pack_content;
   window_class->pack_menu_shell = default_window_pack_menu_shell;
+  window_class->pack_toolbar    = default_window_pack_toolbar;
 
   g_type_class_add_private (self_class, sizeof (CDefaultWindowPrivate));
 }

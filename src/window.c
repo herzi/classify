@@ -34,7 +34,6 @@ struct _CWindowPrivate {
   GtkUIManager  * ui_manager;
   GtkActionGroup* actions;
 
-  GtkWidget     * vbox;
   GtkWidget     * scrolled_window;
 };
 
@@ -238,8 +237,6 @@ c_window_init (CWindow* self)
 
         PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_WINDOW, CWindowPrivate);
 
-        PRIV (self)->vbox = gtk_vbox_new (FALSE, 0);
-
         PRIV (self)->ui_manager = gtk_ui_manager_new ();
         gtk_window_add_accel_group  (GTK_WINDOW (self),
                                      gtk_ui_manager_get_accel_group (PRIV (self)->ui_manager));
@@ -303,33 +300,15 @@ window_constructed (GObject* object)
 
   C_WINDOW_GET_CLASS (object)->pack_menu_shell (self);
   C_WINDOW_GET_CLASS (object)->pack_toolbar    (self);
-  C_WINDOW_GET_CLASS (object)->pack_content    (self, PRIV (self)->scrolled_window);
 
   gtk_widget_show (PRIV (self)->scrolled_window);
 
-  gtk_widget_show (PRIV (self)->vbox);
-  gtk_container_add (GTK_CONTAINER (self), PRIV (self)->vbox);
-}
-
-static void
-window_pack_menu_shell (CWindow* self)
-{
-#ifndef HAVE_HILDON
-  GtkWidget     * shell;
-
-  shell = gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/ui/menus");
-
-  gtk_box_pack_start (GTK_BOX (PRIV (self)->vbox), GTK_WIDGET (shell),
-                      FALSE, FALSE, 0);
-#endif
+  C_WINDOW_GET_CLASS (object)->pack_content    (self, PRIV (self)->scrolled_window);
 }
 
 static void
 window_pack_toolbar (CWindow* self)
 {
-#ifndef HAVE_HILDON
-  GtkWidget* toolbar;
-#endif
   GError   * error = NULL;
 
         gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
@@ -350,20 +329,6 @@ window_pack_toolbar (CWindow* self)
 		g_error_free (error);
 		error = NULL;
 	}
-
-#ifndef HAVE_HILDON
-  toolbar = gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/ui/toolbar");
-
-  gtk_box_pack_start (GTK_BOX (PRIV (self)->vbox), toolbar,
-                      FALSE, FALSE, 0);
-#endif
-}
-
-static void
-window_pack_content (CWindow  * self,
-                     GtkWidget* content)
-{
-  gtk_box_pack_end_defaults (GTK_BOX (PRIV (self)->vbox), PRIV (self)->scrolled_window);
 }
 
 static void
@@ -373,9 +338,7 @@ c_window_class_init (CWindowClass* self_class)
 
   object_class->constructed = window_constructed;
 
-  self_class->pack_menu_shell  = window_pack_menu_shell;
   self_class->pack_toolbar     = window_pack_toolbar;
-  self_class->pack_content     = window_pack_content;
 
   c_window_parent_class = g_type_class_peek_parent (self_class);
 
