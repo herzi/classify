@@ -47,6 +47,24 @@ c_main_window_get_type (void)
 }
 
 void
+c_main_window_pack_content (CMainWindow * self,
+                            GtkWidget   * content)
+{
+  g_return_if_fail (C_IS_MAIN_WINDOW (self));
+  g_return_if_fail (GTK_IS_WIDGET (content));
+
+  if (C_MAIN_WINDOW_GET_IFACE (self)->pack_content)
+    {
+      C_MAIN_WINDOW_GET_IFACE (self)->pack_content (self, content);
+    }
+  else
+    {
+      g_warning ("%s doesn't implement pack_content()",
+                 G_OBJECT_TYPE_NAME (self));
+    }
+}
+
+void
 c_main_window_pack_menus (CMainWindow * self,
                           GtkMenuShell* menus)
 {

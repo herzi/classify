@@ -38,19 +38,23 @@ typedef struct _CMainWindowIface CMainWindowIface;
 
 GType c_main_window_get_type (void);
 
-void  c_main_window_pack_menus (CMainWindow * self,
-                                GtkMenuShell* menus);
-void  c_main_window_pack_tools (CMainWindow * self,
-                                GtkToolbar  * tools);
+void  c_main_window_pack_content (CMainWindow * self,
+                                  GtkWidget   * content);
+void  c_main_window_pack_menus   (CMainWindow * self,
+                                  GtkMenuShell* menus);
+void  c_main_window_pack_tools   (CMainWindow * self,
+                                  GtkToolbar  * tools);
 
 struct _CMainWindowIface {
   GTypeInterface base_interface;
 
   /* vtable */
-  void (*pack_menus) (CMainWindow * self,
-                      GtkMenuShell* menus);
-  void (*pack_tools) (CMainWindow * self,
-                      GtkToolbar  * tools);
+  void (*pack_content) (CMainWindow * self,
+                        GtkWidget   * content);
+  void (*pack_menus)   (CMainWindow * self,
+                        GtkMenuShell* menus);
+  void (*pack_tools)   (CMainWindow * self,
+                        GtkToolbar  * tools);
 };
 
 G_END_DECLS

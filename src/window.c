@@ -317,6 +317,8 @@ c_window_init (CWindow* self)
 		g_error_free (error);
 		error = NULL;
 	}
+
+  gtk_widget_show (PRIV (self)->scrolled_window);
 }
 
 static void
@@ -335,10 +337,8 @@ window_constructed (GObject* object)
   c_main_window_pack_tools (C_MAIN_WINDOW (self),
                             GTK_TOOLBAR (gtk_ui_manager_get_widget (PRIV (object)->ui_manager,
                                                                     "/ui/toolbar")));
-
-  gtk_widget_show (PRIV (self)->scrolled_window);
-
-  C_WINDOW_GET_CLASS (object)->pack_content (self, PRIV (self)->scrolled_window);
+  c_main_window_pack_content (C_MAIN_WINDOW (self),
+                              PRIV (self)->scrolled_window);
 }
 
 static void
@@ -351,6 +351,15 @@ c_window_class_init (CWindowClass* self_class)
   c_window_parent_class = g_type_class_peek_parent (self_class);
 
   g_type_class_add_private (self_class, sizeof (CWindowPrivate));
+}
+
+static void
+window_pack_content (CMainWindow* main_window,
+                     GtkWidget  * content)
+{
+  g_return_if_fail (C_WINDOW_GET_CLASS (main_window)->pack_content);
+
+  C_WINDOW_GET_CLASS (main_window)->pack_content (C_WINDOW (main_window), content);
 }
 
 static void
@@ -374,7 +383,8 @@ window_pack_tools (CMainWindow* main_window,
 static void
 implement_main_window (CMainWindowIface* iface)
 {
-  iface->pack_menus = window_pack_menus;
-  iface->pack_tools = window_pack_tools;
+  iface->pack_content = window_pack_content;
+  iface->pack_menus   = window_pack_menus;
+  iface->pack_tools   = window_pack_tools;
 }
 
