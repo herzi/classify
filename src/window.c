@@ -238,6 +238,11 @@ window_state_event (GtkWidget          * widget,
         }
     }
 
+  if (GTK_WIDGET_CLASS (c_window_parent_class)->window_state_event)
+    {
+      return GTK_WIDGET_CLASS (c_window_parent_class)->window_state_event (widget, event);
+    }
+
   return FALSE;
 }
 #endif
@@ -487,11 +492,6 @@ c_window_init (CWindow* self)
 	g_object_unref (store);
 	gtk_widget_show (tree);
 	gtk_container_add (GTK_CONTAINER (PRIV (self)->scrolled_window), tree);
-
-#ifdef HAVE_HILDON
-        g_signal_connect (self, "window-state-event",
-                          G_CALLBACK (window_state_event), NULL);
-#endif
 }
 
 static void
@@ -555,9 +555,16 @@ window_pack_content (CWindow  * self,
 static void
 c_window_class_init (CWindowClass* self_class)
 {
-  GObjectClass* object_class = G_OBJECT_CLASS (self_class);
+  GObjectClass  * object_class = G_OBJECT_CLASS (self_class);
+#ifdef HAVE_HILDON
+  GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (self_class);
+#endif
 
   object_class->constructed = window_constructed;
+
+#ifdef HAVE_HILDON
+  widget_class->window_state_event = window_state_event;
+#endif
 
   self_class->pack_menu_shell  = window_pack_menu_shell;
   self_class->pack_toolbar     = window_pack_toolbar;
