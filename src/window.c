@@ -361,8 +361,9 @@ window_pack_menu_shell (CWindow* self)
   };
 #ifdef HAVE_HILDON
   GtkStockItem    item;
-#endif
+#else
   GtkWidget     * shell;
+#endif
   GError        * error = NULL;
 
   group = gtk_action_group_new ("backend-actions");
@@ -497,12 +498,9 @@ window_pack_menu_shell (CWindow* self)
       return;
     }
 
+#ifndef HAVE_HILDON
   shell = gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/ui/menus");
 
-#ifdef HAVE_HILDON
-  hildon_window_set_menu (HILDON_WINDOW (self),
-                          GTK_MENU (shell));
-#else
   gtk_box_pack_start (GTK_BOX (PRIV (self)->vbox), GTK_WIDGET (shell),
                       FALSE, FALSE, 0);
 #endif

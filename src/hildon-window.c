@@ -107,13 +107,31 @@ window_state_event (GtkWidget          * widget,
 }
 
 static void
+hildon_window_pack_menu_shell (CWindow* self)
+{
+  GtkWidget* shell;
+
+  if (C_WINDOW_CLASS (c_hildon_window_parent_class)->pack_menu_shell)
+    {
+      C_WINDOW_CLASS (c_hildon_window_parent_class)->pack_menu_shell (self);
+    }
+
+  shell = gtk_ui_manager_get_widget (c_window_get_ui_manager (self), "/ui/menus");
+
+  hildon_window_set_menu (HILDON_WINDOW (self),
+                          GTK_MENU (shell));
+}
+static void
 c_hildon_window_class_init (CHildonWindowClass* self_class)
 {
   GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (self_class);
+  CWindowClass  * window_class = C_WINDOW_CLASS (self_class);
 
   c_hildon_window_parent_class = g_type_class_peek_parent (self_class);
 
   widget_class->window_state_event = window_state_event;
+
+  window_class->pack_menu_shell    = hildon_window_pack_menu_shell;
 }
 
 GtkWidget*
