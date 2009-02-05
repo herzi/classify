@@ -204,25 +204,6 @@ c_window_new (void)
   return g_object_new (C_TYPE_WINDOW, NULL);
 }
 
-#ifdef HAVE_HILDON
-#if !GLIB_CHECK_VERSION(2,18,0)
-#define g_dgettext(dom,msg) dgettext (dom, msg)
-#endif
-static void
-view_fullscreen (GtkAction* action,
-                 GtkWidget* widget)
-{
-  if ((gdk_window_get_state (widget->window) & GDK_WINDOW_STATE_FULLSCREEN) == 0)
-    {
-      gtk_window_fullscreen (GTK_WINDOW (widget));
-    }
-  else
-    {
-      gtk_window_unfullscreen (GTK_WINDOW (widget));
-    }
-}
-#endif
-
 static void
 c_window_init (CWindow* self)
 {
@@ -347,23 +328,14 @@ window_constructed (GObject* object)
 static void
 window_pack_menu_shell (CWindow* self)
 {
+#ifndef HAVE_HILDON
   GtkActionGroup* group;
   GtkActionEntry  entries[] = {
-#ifndef HAVE_HILDON
 		{"EditPreferences", GTK_STOCK_PREFERENCES, NULL,
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (open_prefs)}
-#else
-                {"ViewToggleFullscreen", GTK_STOCK_FULLSCREEN, NULL,
-                 "F6", NULL, // FIXME: add tooltip
-                 G_CALLBACK (view_fullscreen)}
-#endif
   };
-#ifdef HAVE_HILDON
-  GtkStockItem    item;
-#else
   GtkWidget     * shell;
-#endif
   GError        * error = NULL;
 
   group = gtk_action_group_new ("backend-actions");
@@ -371,99 +343,6 @@ window_pack_menu_shell (CWindow* self)
   gtk_ui_manager_insert_action_group (PRIV (self)->ui_manager, group, -1);
   g_object_unref (group);
 
-#ifdef HAVE_HILDON
-        if (gtk_stock_lookup (GTK_STOCK_FULLSCREEN, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "ViewToggleFullscreen"),
-                          "icon-name", "qgn_list_hw_button_view_toggle",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
-
-  group = PRIV (self)->actions;
-
-        if (gtk_stock_lookup (GTK_STOCK_ADD, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "TaskNew"),
-                          "icon-name", "qgn_indi_gene_plus",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
-        if (gtk_stock_lookup (GTK_STOCK_GOTO_BOTTOM, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "TaskBottom"),
-                          "icon-name", "qgn_indi_arrow_down",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
-        if (gtk_stock_lookup (GTK_STOCK_GOTO_TOP, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "TaskTop"),
-                          "icon-name", "qgn_indi_arrow_up",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
-        if (gtk_stock_lookup (GTK_STOCK_COPY, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "EditCopy"),
-                          "icon-name", "qgn_list_gene_copy",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
-        if (gtk_stock_lookup (GTK_STOCK_PASTE, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "EditPaste"),
-                          "icon-name", "qgn_list_gene_paste",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
-        if (gtk_stock_lookup (GTK_STOCK_DELETE, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "EditDelete"),
-                          "icon-name", "qgn_toolb_gene_deletebutton",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
-        if (gtk_stock_lookup (GTK_STOCK_CLOSE, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "FileClose"),
-                          "icon-name", "qgn_toolb_gene_close",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
-
-        gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
-                                            "<ui>"
-                                              "<popup name='menus'>"
-                                                "<menuitem action='TaskNew'/>"
-                                                "<separator/>"
-                                                "<menu action='Edit'>"
-                                                  "<menuitem action='EditCopy'/>"
-                                                  "<menuitem action='EditPaste'/>"
-                                                  "<menuitem action='EditDelete'/>"
-                                                  "<separator/>"
-                                                /*  "<menuitem action='EditRename'/>" */ // FIXME: doesn't work yet
-                                                "</menu>"
-                                                "<separator/>"
-                                                "<menuitem action='ViewToggleFullscreen'/>"
-                                                "<menuitem action='ViewExpandAll'/>"
-                                                "<menuitem action='ViewCollapseAll'/>"
-                                                "<separator/>"
-                                                "<menuitem action='FileClose' />"
-					      "</popup>"
-					    "</ui>",
-					    -1,
-					    &error);
-
-#else
         gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
                                             "<ui>"
                                                 "<menubar name='menus'>"
@@ -489,7 +368,6 @@ window_pack_menu_shell (CWindow* self)
 					    "</ui>",
 					    -1,
 					    &error);
-#endif
 
   if (error)
     {
@@ -498,7 +376,6 @@ window_pack_menu_shell (CWindow* self)
       return;
     }
 
-#ifndef HAVE_HILDON
   shell = gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/ui/menus");
 
   gtk_box_pack_start (GTK_BOX (PRIV (self)->vbox), GTK_WIDGET (shell),
