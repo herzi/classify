@@ -331,11 +331,6 @@ window_constructed (GObject* object)
       G_OBJECT_CLASS (c_window_parent_class)->constructed (object);
     }
 
-  c_main_window_pack_menus (C_MAIN_WINDOW (self),
-                            c_main_window_get_menus (C_MAIN_WINDOW (self)));
-  c_main_window_pack_tools (C_MAIN_WINDOW (self),
-                            c_main_window_get_toolbar (C_MAIN_WINDOW (self)));
-
   c_main_window_constructed (C_MAIN_WINDOW (self));
 }
 

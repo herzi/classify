@@ -51,8 +51,10 @@ c_main_window_constructed (CMainWindow* self)
 {
   g_return_if_fail (C_IS_MAIN_WINDOW (self));
 
-  c_main_window_pack_content (C_MAIN_WINDOW (self),
-                              c_main_window_get_content (C_MAIN_WINDOW (self)));
+  c_main_window_pack_menus (self, c_main_window_get_menus (self));
+  c_main_window_pack_tools (self, c_main_window_get_toolbar (self));
+
+  c_main_window_pack_content (self, c_main_window_get_content (self));
 }
 
 GtkWidget*
