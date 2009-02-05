@@ -146,18 +146,15 @@ default_window_pack_menu_shell (CWindow     * window,
 }
 
 static void
-default_window_pack_toolbar (CWindow* window)
+default_window_pack_toolbar (CWindow   * window,
+                             GtkToolbar* toolbar)
 {
-  GtkWidget* toolbar;
-
   if (C_WINDOW_CLASS (c_default_window_parent_class)->pack_toolbar)
     {
-      C_WINDOW_CLASS (c_default_window_parent_class)->pack_toolbar (window);
+      C_WINDOW_CLASS (c_default_window_parent_class)->pack_toolbar (window, toolbar);
     }
 
-  toolbar = gtk_ui_manager_get_widget (c_window_get_ui_manager (window), "/ui/toolbar");
-
-  gtk_box_pack_start (GTK_BOX (PRIV (window)->vbox), toolbar,
+  gtk_box_pack_start (GTK_BOX (PRIV (window)->vbox), GTK_WIDGET (toolbar),
                       FALSE, FALSE, 0);
 }
 

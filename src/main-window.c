@@ -64,3 +64,21 @@ c_main_window_pack_menus (CMainWindow * self,
     }
 }
 
+void
+c_main_window_pack_tools (CMainWindow * self,
+                          GtkToolbar  * tools)
+{
+  g_return_if_fail (C_IS_MAIN_WINDOW (self));
+  g_return_if_fail (GTK_IS_TOOLBAR (tools));
+
+  if (C_MAIN_WINDOW_GET_IFACE (self)->pack_tools)
+    {
+      C_MAIN_WINDOW_GET_IFACE (self)->pack_tools (self, tools);
+    }
+  else
+    {
+      g_warning ("%s doesn't implement pack_tools()",
+                 G_OBJECT_TYPE_NAME (self));
+    }
+}
+

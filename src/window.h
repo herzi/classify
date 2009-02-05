@@ -72,7 +72,8 @@ struct _CWindowClass {
                                  GtkMenuShell* menus);
         void (*pack_content)    (CWindow     * self,
                                  GtkWidget   * content);
-        void (*pack_toolbar)    (CWindow     * self);
+        void (*pack_toolbar)    (CWindow     * self,
+                                 GtkToolbar  * toolbar);
 };
 
 G_END_DECLS

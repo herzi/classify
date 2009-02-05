@@ -332,7 +332,9 @@ window_constructed (GObject* object)
   c_main_window_pack_menus (C_MAIN_WINDOW (self),
                             GTK_MENU_SHELL (gtk_ui_manager_get_widget (PRIV (object)->ui_manager,
                                                                        "/ui/menus")));
-  C_WINDOW_GET_CLASS (object)->pack_toolbar    (self);
+  c_main_window_pack_tools (C_MAIN_WINDOW (self),
+                            GTK_TOOLBAR (gtk_ui_manager_get_widget (PRIV (object)->ui_manager,
+                                                                    "/ui/toolbar")));
 
   gtk_widget_show (PRIV (self)->scrolled_window);
 
@@ -361,8 +363,18 @@ window_pack_menus (CMainWindow * main_window,
 }
 
 static void
+window_pack_tools (CMainWindow* main_window,
+                   GtkToolbar * tools)
+{
+  g_return_if_fail (C_WINDOW_GET_CLASS (main_window)->pack_toolbar);
+
+  C_WINDOW_GET_CLASS (main_window)->pack_toolbar (C_WINDOW (main_window), tools);
+}
+
+static void
 implement_main_window (CMainWindowIface* iface)
 {
   iface->pack_menus = window_pack_menus;
+  iface->pack_tools = window_pack_tools;
 }
 
