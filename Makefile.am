@@ -42,6 +42,8 @@ debugify_CPPFLAGS=\
 
 defaultui_la_SOURCES=\
 	src/default-user-interface.c \
+	src/default-window.c \
+	src/default-window.h \
 	src/preferences.c \
 	src/preferences.h \
 	src/window.c \

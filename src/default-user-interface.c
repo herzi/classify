@@ -23,7 +23,7 @@
 
 #include "user-interface.h"
 
-#include "window.h"
+#include "default-window.h"
 
 G_MODULE_EXPORT GtkWidget* c_user_interface_module_create_window (void);
 G_MODULE_EXPORT gint       c_ui_module_get_priority              (void);
@@ -32,7 +32,7 @@ G_MODULE_EXPORT void       c_ui_module_register_types            (GTypeModule* m
 GtkWidget*
 c_user_interface_module_create_window (void)
 {
-  return c_window_new ();
+  return c_default_window_new ();
 }
 
 gint
@@ -44,6 +44,7 @@ c_ui_module_get_priority (void)
 void
 c_ui_module_register_types (GTypeModule* module)
 {
-  c_ui_module_register_type (module);
+  c_ui_module_register_type      (module);
+  c_default_window_register_type (module);
 }
 
