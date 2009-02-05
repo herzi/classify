@@ -25,9 +25,6 @@
 
 #include <gtk/gtk.h>
 
-#ifndef HAVE_HILDON
-#include "preferences.h"
-#endif
 #include "task-list.h"
 #include "task-widget.h"
 
@@ -136,17 +133,6 @@ edit_paste_activated (GtkAction* action,
                 c_task_widget_paste_clipboard (C_TASK_WIDGET (gtk_window_get_focus(GTK_WINDOW (self))));
 	}
 }
-
-#ifndef HAVE_HILDON
-static void
-open_prefs (GtkAction* action,
-            CWindow  * self)
-{
-  GtkWidget* dialog = c_preferences_new (GTK_WINDOW (self));
-  gtk_dialog_run     (GTK_DIALOG (dialog));
-  gtk_widget_destroy (dialog);
-}
-#endif
 
 static void
 edit_rename (GtkAction* action,
@@ -329,52 +315,7 @@ static void
 window_pack_menu_shell (CWindow* self)
 {
 #ifndef HAVE_HILDON
-  GtkActionGroup* group;
-  GtkActionEntry  entries[] = {
-		{"EditPreferences", GTK_STOCK_PREFERENCES, NULL,
-		 NULL, NULL, // FIXME: add tooltip
-		 G_CALLBACK (open_prefs)}
-  };
   GtkWidget     * shell;
-  GError        * error = NULL;
-
-  group = gtk_action_group_new ("backend-actions");
-  gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), self);
-  gtk_ui_manager_insert_action_group (PRIV (self)->ui_manager, group, -1);
-  g_object_unref (group);
-
-        gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
-                                            "<ui>"
-                                                "<menubar name='menus'>"
-                                                        "<menu action='File'>"
-                                                                "<menuitem action='TaskNew'/>"
-								"<separator/>"
-								"<menuitem action='FileClose' />"
-							"</menu>"
-							"<menu action='Edit'>"
-								"<menuitem action='EditCopy'/>"
-								"<menuitem action='EditPaste'/>"
-								"<menuitem action='EditDelete'/>"
-								"<separator/>"
-								"<menuitem action='EditRename'/>"
-								"<separator/>"
-								"<menuitem action='EditPreferences' />"
-							"</menu>"
-							"<menu action='View'>"
-								"<menuitem action='ViewExpandAll'/>"
-								"<menuitem action='ViewCollapseAll'/>"
-							"</menu>"
-						"</menubar>"
-					    "</ui>",
-					    -1,
-					    &error);
-
-  if (error)
-    {
-      g_warning ("error constructing window: %s", error->message);
-      g_error_free (error);
-      return;
-    }
 
   shell = gtk_ui_manager_get_widget (PRIV (self)->ui_manager, "/ui/menus");
 
