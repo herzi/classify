@@ -68,45 +68,6 @@ c_hildon_window_get_type (void)
 }
 
 static void
-c_hildon_window_init (CHildonWindow* self)
-{}
-
-static gboolean
-window_state_event (GtkWidget          * widget,
-                    GdkEventWindowState* event)
-{
-  if ((event->changed_mask & GDK_WINDOW_STATE_FULLSCREEN) != 0)
-    {
-      GtkStockItem  item;
-      gchar const * stock_id = (event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN) ? GTK_STOCK_LEAVE_FULLSCREEN : GTK_STOCK_FULLSCREEN;
-      GtkAction   * action = gtk_ui_manager_get_action (c_window_get_ui_manager (C_WINDOW (widget)),
-                                                        "/menus/ViewToggleFullscreen");
-
-      if (gtk_stock_lookup (stock_id, &item))
-        {
-          g_object_set (action,
-                        "icon-name", "qgn_list_hw_button_view_toggle",
-                        "label", g_dgettext (item.translation_domain, item.label),
-                        "stock-id", NULL,
-                        NULL);
-        }
-      else
-        {
-          g_object_set (action,
-                        "stock-id", stock_id,
-                        NULL);
-        }
-    }
-
-  if (GTK_WIDGET_CLASS (c_hildon_window_parent_class)->window_state_event)
-    {
-      return GTK_WIDGET_CLASS (c_hildon_window_parent_class)->window_state_event (widget, event);
-    }
-
-  return FALSE;
-}
-
-static void
 view_fullscreen (GtkAction* action,
                  GtkWidget* widget)
 {
@@ -121,7 +82,7 @@ view_fullscreen (GtkAction* action,
 }
 
 static void
-hildon_window_pack_menu_shell (CWindow* window)
+c_hildon_window_init (CHildonWindow* self)
 {
   GtkActionGroup* group;
   GtkActionEntry  entries[] = {
@@ -130,14 +91,13 @@ hildon_window_pack_menu_shell (CWindow* window)
                  G_CALLBACK (view_fullscreen)}
   };
   GtkStockItem    item;
-  GtkWidget     * shell;
   GError        * error = NULL;
   GList         * groups;
   GList         * iter;
 
   group = gtk_action_group_new ("backend-actions");
-  gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), window);
-  gtk_ui_manager_insert_action_group (c_window_get_ui_manager (window), group, -1);
+  gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), self);
+  gtk_ui_manager_insert_action_group (c_window_get_ui_manager (C_WINDOW (self)), group, -1);
   g_object_unref (group);
 
   if (gtk_stock_lookup (GTK_STOCK_FULLSCREEN, &item))
@@ -149,7 +109,7 @@ hildon_window_pack_menu_shell (CWindow* window)
                     NULL);
     }
 
-  groups = gtk_ui_manager_get_action_groups (c_window_get_ui_manager (window));
+  groups = gtk_ui_manager_get_action_groups (c_window_get_ui_manager (C_WINDOW (self)));
   for (iter = groups; iter; iter = iter->next)
     {
       if (iter->data != group)
@@ -216,7 +176,7 @@ hildon_window_pack_menu_shell (CWindow* window)
                           NULL);
           }
 
-        gtk_ui_manager_add_ui_from_string  (c_window_get_ui_manager (window),
+        gtk_ui_manager_add_ui_from_string  (c_window_get_ui_manager (C_WINDOW (self)),
                                             "<ui>"
                                               "<popup name='menus'>"
                                                 "<menuitem action='TaskNew'/>"
@@ -238,15 +198,41 @@ hildon_window_pack_menu_shell (CWindow* window)
 					    "</ui>",
 					    -1,
 					    &error);
+}
 
-  if (C_WINDOW_CLASS (c_hildon_window_parent_class)->pack_menu_shell)
+static gboolean
+window_state_event (GtkWidget          * widget,
+                    GdkEventWindowState* event)
+{
+  if ((event->changed_mask & GDK_WINDOW_STATE_FULLSCREEN) != 0)
     {
-      C_WINDOW_CLASS (c_hildon_window_parent_class)->pack_menu_shell (window);
+      GtkStockItem  item;
+      gchar const * stock_id = (event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN) ? GTK_STOCK_LEAVE_FULLSCREEN : GTK_STOCK_FULLSCREEN;
+      GtkAction   * action = gtk_ui_manager_get_action (c_window_get_ui_manager (C_WINDOW (widget)),
+                                                        "/menus/ViewToggleFullscreen");
+
+      if (gtk_stock_lookup (stock_id, &item))
+        {
+          g_object_set (action,
+                        "icon-name", "qgn_list_hw_button_view_toggle",
+                        "label", g_dgettext (item.translation_domain, item.label),
+                        "stock-id", NULL,
+                        NULL);
+        }
+      else
+        {
+          g_object_set (action,
+                        "stock-id", stock_id,
+                        NULL);
+        }
     }
 
-  shell = gtk_ui_manager_get_widget (c_window_get_ui_manager (window), "/ui/menus");
+  if (GTK_WIDGET_CLASS (c_hildon_window_parent_class)->window_state_event)
+    {
+      return GTK_WIDGET_CLASS (c_hildon_window_parent_class)->window_state_event (widget, event);
+    }
 
-  hildon_window_set_menu (HILDON_WINDOW (window), GTK_MENU (shell));
+  return FALSE;
 }
 
 static void
@@ -254,6 +240,13 @@ hildon_window_pack_content (CWindow  * window,
                             GtkWidget* content)
 {
   gtk_container_add (GTK_CONTAINER (window), content);
+}
+
+static void
+hildon_window_pack_menu_shell (CWindow     * window,
+                               GtkMenuShell* menus)
+{
+  hildon_window_set_menu (HILDON_WINDOW (window), GTK_MENU (menus));
 }
 
 static void

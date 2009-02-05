@@ -40,6 +40,10 @@ GType c_main_window_get_type (void);
 
 struct _CMainWindowIface {
   GTypeInterface base_interface;
+
+  /* vtable */
+  void (*pack_menus) (CMainWindow * self,
+                      GtkMenuShell* menus);
 };
 
 G_END_DECLS

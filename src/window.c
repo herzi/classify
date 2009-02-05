@@ -40,8 +40,9 @@ struct _CWindowPrivate {
 
 #define PRIV(i) (((CWindow*)(i))->_private)
 
-static void     c_window_init        (CWindow     * self);
-static void     c_window_class_init  (CWindowClass* self_class);
+static void     c_window_init         (CWindow         * self);
+static void     c_window_class_init   (CWindowClass    * self_class);
+static void     implement_main_window (CMainWindowIface* iface);
 
 #ifdef HAVE_HILDON
 #define PARENT_TYPE HILDON_TYPE_WINDOW
@@ -69,7 +70,8 @@ c_ui_module_register_type (GTypeModule* module)
         NULL
       };
       GInterfaceInfo const iinfo = {
-        NULL, NULL, NULL
+        (GInterfaceInitFunc) implement_main_window,
+        NULL, NULL
       };
       c_window_type = g_type_module_register_type (module,
                                                    PARENT_TYPE,
@@ -327,12 +329,14 @@ window_constructed (GObject* object)
       G_OBJECT_CLASS (c_window_parent_class)->constructed (object);
     }
 
-  C_WINDOW_GET_CLASS (object)->pack_menu_shell (self);
+  C_WINDOW_GET_CLASS (object)->pack_menu_shell (self,
+                                                GTK_MENU_SHELL (gtk_ui_manager_get_widget (PRIV (object)->ui_manager,
+                                                                                           "/ui/menus")));
   C_WINDOW_GET_CLASS (object)->pack_toolbar    (self);
 
   gtk_widget_show (PRIV (self)->scrolled_window);
 
-  C_WINDOW_GET_CLASS (object)->pack_content    (self, PRIV (self)->scrolled_window);
+  C_WINDOW_GET_CLASS (object)->pack_content (self, PRIV (self)->scrolled_window);
 }
 
 static void
@@ -345,5 +349,20 @@ c_window_class_init (CWindowClass* self_class)
   c_window_parent_class = g_type_class_peek_parent (self_class);
 
   g_type_class_add_private (self_class, sizeof (CWindowPrivate));
+}
+
+static void
+window_pack_menus (CMainWindow * main_window,
+                   GtkMenuShell* menus)
+{
+  g_return_if_fail (C_WINDOW_GET_CLASS (main_window)->pack_menu_shell);
+
+  C_WINDOW_GET_CLASS (main_window)->pack_menu_shell (C_WINDOW (main_window), menus);
+}
+
+static void
+implement_main_window (CMainWindowIface* iface)
+{
+  iface->pack_menus = window_pack_menus;
 }
 

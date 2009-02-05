@@ -68,10 +68,11 @@ struct _CWindowClass {
 #endif
 
         /* vtable: all functions mandatory, unless marked as optional */
-        void (*pack_menu_shell) (CWindow  * self);
-        void (*pack_content)    (CWindow  * self,
-                                 GtkWidget* content);
-        void (*pack_toolbar)    (CWindow  * self);
+        void (*pack_menu_shell) (CWindow     * self,
+                                 GtkMenuShell* menus);
+        void (*pack_content)    (CWindow     * self,
+                                 GtkWidget   * content);
+        void (*pack_toolbar)    (CWindow     * self);
 };
 
 G_END_DECLS

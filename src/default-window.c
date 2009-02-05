@@ -69,14 +69,6 @@ c_default_window_register_type (GTypeModule* module)
 }
 
 static void
-c_default_window_init (CDefaultWindow* self)
-{
-  PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_DEFAULT_WINDOW, CDefaultWindowPrivate);
-
-  PRIV (self)->vbox = gtk_vbox_new (FALSE, 0);
-}
-
-static void
 open_prefs (GtkAction* action,
             CWindow  * self)
 {
@@ -86,7 +78,7 @@ open_prefs (GtkAction* action,
 }
 
 static void
-default_window_pack_menu_shell (CWindow* window)
+c_default_window_init (CDefaultWindow* self)
 {
   GtkActionGroup* group;
   GtkActionEntry  entries[] = {
@@ -94,15 +86,18 @@ default_window_pack_menu_shell (CWindow* window)
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (open_prefs)}
   };
-  GtkWidget     * shell;
   GError        * error = NULL;
 
+  PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_DEFAULT_WINDOW, CDefaultWindowPrivate);
+
+  PRIV (self)->vbox = gtk_vbox_new (FALSE, 0);
+
   group = gtk_action_group_new ("backend-actions");
-  gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), window);
-  gtk_ui_manager_insert_action_group (c_window_get_ui_manager (window), group, -1);
+  gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), self);
+  gtk_ui_manager_insert_action_group (c_window_get_ui_manager (C_WINDOW (self)), group, -1);
   g_object_unref (group);
 
-        gtk_ui_manager_add_ui_from_string  (c_window_get_ui_manager (window),
+        gtk_ui_manager_add_ui_from_string  (c_window_get_ui_manager (C_WINDOW (self)),
                                             "<ui>"
                                                 "<menubar name='menus'>"
                                                         "<menu action='File'>"
@@ -134,15 +129,19 @@ default_window_pack_menu_shell (CWindow* window)
       g_error_free (error);
       return;
     }
+}
+
+static void
+default_window_pack_menu_shell (CWindow     * window,
+                                GtkMenuShell* menus)
+{
 
   if (C_WINDOW_CLASS (c_default_window_parent_class)->pack_menu_shell)
     {
-      C_WINDOW_CLASS (c_default_window_parent_class)->pack_menu_shell (window);
+      C_WINDOW_CLASS (c_default_window_parent_class)->pack_menu_shell (window, menus);
     }
 
-  shell = gtk_ui_manager_get_widget (c_window_get_ui_manager (window), "/ui/menus");
-
-  gtk_box_pack_start (GTK_BOX (PRIV (window)->vbox), shell,
+  gtk_box_pack_start (GTK_BOX (PRIV (window)->vbox), GTK_WIDGET (menus),
                       FALSE, FALSE, 0);
 }
 
