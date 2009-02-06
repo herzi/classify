@@ -32,8 +32,7 @@
 #include <glib/gi18n.h>
 
 struct _CWindowPrivate {
-  GtkUIManager  * ui_manager;
-  GtkActionGroup* actions;
+  GtkUIManager* ui_manager;
 };
 
 #define PRIV(i) (((CWindow*)(i))->_private)
@@ -121,8 +120,6 @@ c_window_new (void)
 static void
 c_window_init (CWindow* self)
 {
-	GtkActionEntry  entries[] = {
-        };
         CTaskList   * store;
         GtkWidget   * tree;
   GError   * error = NULL;
@@ -130,13 +127,6 @@ c_window_init (CWindow* self)
         PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_WINDOW, CWindowPrivate);
 
         c_main_window_initialize (C_MAIN_WINDOW (self));
-
-        PRIV (self)->actions = gtk_action_group_new ("main-group");
-        gtk_action_group_add_actions (PRIV (self)->actions, entries, G_N_ELEMENTS (entries), self);
-
-        gtk_ui_manager_insert_action_group (PRIV (self)->ui_manager,
-                                            PRIV (self)->actions,
-                                            0);
 
 	tree = c_task_widget_new ();
 
@@ -187,8 +177,6 @@ window_constructed (GObject* object)
 static void
 window_finalize (GObject* object)
 {
-  g_object_unref (PRIV (object)->actions);
-
   g_object_unref (PRIV (object)->ui_manager);
 
   G_OBJECT_CLASS (c_window_parent_class)->finalize (object);
