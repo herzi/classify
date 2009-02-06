@@ -91,23 +91,58 @@ c_hildon_window_init (CHildonWindow* self)
                  G_CALLBACK (view_fullscreen)}
   };
   GtkStockItem    item;
+  GHashTable    * hildon_icons = g_hash_table_new (g_str_hash, g_str_equal);
   GError        * error = NULL;
   GList         * groups;
   GList         * iter;
+  gint            i;
+
+  g_hash_table_insert  (hildon_icons,
+                        "ViewToggleFullscreen",
+                        "qgn_list_hw_button_view_toggle");
 
   group = gtk_action_group_new ("backend-actions");
   gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), self);
   gtk_ui_manager_insert_action_group (c_window_get_ui_manager (C_WINDOW (self)), group, -1);
-  g_object_unref (group);
 
-  if (gtk_stock_lookup (GTK_STOCK_FULLSCREEN, &item))
+  for (i = 0; i < 1; i++)
     {
-      g_object_set (gtk_action_group_get_action (group, "ViewToggleFullscreen"),
-                    "icon-name", "qgn_list_hw_button_view_toggle",
-                    "label", g_dgettext (item.translation_domain, item.label),
-                    "stock-id", NULL,
-                    NULL);
+      GList* actions = gtk_action_group_list_actions (group);
+      GList* action;
+
+      for (action = actions; action; action = action->next)
+        {
+          gchar const* icon = g_hash_table_lookup (hildon_icons, gtk_action_get_name (action->data));
+          gchar      * stock_id = NULL;
+
+          if (!icon)
+            {
+              continue;
+            }
+
+          g_object_get (action->data,
+                        "stock-id", &stock_id,
+                        NULL);
+
+          if (stock_id && gtk_stock_lookup (stock_id, &item))
+            {
+              g_object_set (action->data,
+                            "label", g_dgettext (item.translation_domain, item.label),
+                            "stock-id", NULL,
+                            NULL);
+            }
+
+          g_object_set (action->data,
+                        "icon-name", icon,
+                        NULL);
+
+          g_free (stock_id);
+        }
+
+      g_list_free (actions);
     }
+  g_object_unref (group);
+  g_hash_table_destroy (hildon_icons);
 
   groups = gtk_ui_manager_get_action_groups (c_window_get_ui_manager (C_WINDOW (self)));
   for (iter = groups; iter; iter = iter->next)
