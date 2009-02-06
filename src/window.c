@@ -119,7 +119,14 @@ static void
 edit_delete_activated (GtkAction* action,
 		       CWindow  * self)
 {
-        c_task_widget_delete_selected (C_TASK_WIDGET (c_window_get_tree (self)));
+  if (GTK_IS_EDITABLE (gtk_window_get_focus (GTK_WINDOW (self))))
+    {
+      gtk_editable_delete_selection (GTK_IS_EDITABLE (gtk_window_get_focus (GTK_WINDOW (self))));
+    }
+  else if (C_IS_TASK_WIDGET (gtk_window_get_focus (GTK_WINDOW (self))))
+    {
+      c_task_widget_delete_selected (C_TASK_WIDGET (c_window_get_tree (self)));
+    }
 }
 
 static void
