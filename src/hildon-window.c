@@ -95,19 +95,40 @@ c_hildon_window_init (CHildonWindow* self)
   GError        * error = NULL;
   GList         * groups;
   GList         * iter;
-  gint            i;
 
-  g_hash_table_insert  (hildon_icons,
-                        "ViewToggleFullscreen",
-                        "qgn_list_hw_button_view_toggle");
+  g_hash_table_insert (hildon_icons,
+                       "ViewToggleFullscreen",
+                       "qgn_list_hw_button_view_toggle");
+  g_hash_table_insert (hildon_icons,
+                       "TaskNew",
+                       "qgn_indi_gene_plus");
+  g_hash_table_insert (hildon_icons,
+                       "TaskBottom",
+                       "qgn_indi_arrow_down");
+  g_hash_table_insert (hildon_icons,
+                       "TaskTop",
+                       "qgn_indi_arrow_up");
+  g_hash_table_insert (hildon_icons,
+                       "EditCopy",
+                       "qgn_list_gene_copy");
+  g_hash_table_insert (hildon_icons,
+                       "EditPaste",
+                       "qgn_list_gene_paste");
+  g_hash_table_insert (hildon_icons,
+                       "EditDelete",
+                       "qgn_toolb_gene_deletebutton");
+  g_hash_table_insert (hildon_icons,
+                       "FileClose",
+                       "qgn_toolb_gene_close");
 
   group = gtk_action_group_new ("backend-actions");
   gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), self);
   gtk_ui_manager_insert_action_group (c_window_get_ui_manager (C_WINDOW (self)), group, -1);
 
-  for (i = 0; i < 1; i++)
+  groups = gtk_ui_manager_get_action_groups (c_window_get_ui_manager (C_WINDOW (self)));
+  for (iter = groups; iter; iter = iter->next)
     {
-      GList* actions = gtk_action_group_list_actions (group);
+      GList* actions = gtk_action_group_list_actions (iter->data);
       GList* action;
 
       for (action = actions; action; action = action->next)
@@ -143,73 +164,6 @@ c_hildon_window_init (CHildonWindow* self)
     }
   g_object_unref (group);
   g_hash_table_destroy (hildon_icons);
-
-  groups = gtk_ui_manager_get_action_groups (c_window_get_ui_manager (C_WINDOW (self)));
-  for (iter = groups; iter; iter = iter->next)
-    {
-      if (iter->data != group)
-        {
-          group = iter->data;
-          break;
-        }
-    }
-
-        if (gtk_stock_lookup (GTK_STOCK_ADD, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "TaskNew"),
-                          "icon-name", "qgn_indi_gene_plus",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
-        if (gtk_stock_lookup (GTK_STOCK_GOTO_BOTTOM, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "TaskBottom"),
-                          "icon-name", "qgn_indi_arrow_down",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
-        if (gtk_stock_lookup (GTK_STOCK_GOTO_TOP, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "TaskTop"),
-                          "icon-name", "qgn_indi_arrow_up",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
-        if (gtk_stock_lookup (GTK_STOCK_COPY, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "EditCopy"),
-                          "icon-name", "qgn_list_gene_copy",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
-        if (gtk_stock_lookup (GTK_STOCK_PASTE, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "EditPaste"),
-                          "icon-name", "qgn_list_gene_paste",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
-        if (gtk_stock_lookup (GTK_STOCK_DELETE, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "EditDelete"),
-                          "icon-name", "qgn_toolb_gene_deletebutton",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
-        if (gtk_stock_lookup (GTK_STOCK_CLOSE, &item))
-          {
-            g_object_set (gtk_action_group_get_action (group, "FileClose"),
-                          "icon-name", "qgn_toolb_gene_close",
-                          "label", g_dgettext (item.translation_domain, item.label),
-                          "stock-id", NULL,
-                          NULL);
-          }
 
         gtk_ui_manager_add_ui_from_string  (c_window_get_ui_manager (C_WINDOW (self)),
                                             "<ui>"
