@@ -79,6 +79,11 @@ c_main_window_initialize (CMainWindow * self)
 {
   GtkActionGroup* actions;
   GtkUIManager  * ui_manager;
+  GtkActionEntry  entries[] = {
+		{"File", NULL, N_("_File")},
+		{"Edit", NULL, N_("_Edit")},
+		{"View", NULL, N_("_View")}
+  };
 
   g_return_if_fail (C_IS_MAIN_WINDOW (self));
 
@@ -96,6 +101,7 @@ c_main_window_initialize (CMainWindow * self)
                                gtk_ui_manager_get_accel_group (ui_manager));
 
   actions = gtk_action_group_new (g_type_name (C_TYPE_MAIN_WINDOW));
+  gtk_action_group_add_actions (actions, entries, G_N_ELEMENTS (entries), self);
   gtk_ui_manager_insert_action_group (ui_manager, actions, -1);
   g_object_unref (actions);
 

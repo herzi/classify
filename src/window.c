@@ -200,13 +200,10 @@ static void
 c_window_init (CWindow* self)
 {
 	GtkActionEntry  entries[] = {
-		{"File", NULL, N_("_File")},
-
 		{"FileClose", GTK_STOCK_CLOSE, NULL,
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (file_close_activated)},
 
-		{"Edit", NULL, N_("_Edit")},
 		{"EditCopy", GTK_STOCK_COPY, NULL,
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (edit_copy_activated)},
@@ -230,7 +227,6 @@ c_window_init (CWindow* self)
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (task_top_activated)},
 
-		{"View", NULL, N_("_View")},
 		{"ViewExpandAll", NULL, N_("_Expand All"),
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (view_expand_all_activated)},
