@@ -105,13 +105,6 @@ c_window_get_tree (CWindow* self)
 }
 
 static void
-file_close_activated (GtkAction* action,
-		      CWindow  * self)
-{
-	gtk_widget_destroy (GTK_WIDGET (self));
-}
-
-static void
 edit_copy_activated (GtkAction* action,
 		     CWindow  * self)
 {
@@ -165,10 +158,6 @@ static void
 c_window_init (CWindow* self)
 {
 	GtkActionEntry  entries[] = {
-		{"FileClose", GTK_STOCK_CLOSE, NULL,
-		 NULL, NULL, // FIXME: add tooltip
-		 G_CALLBACK (file_close_activated)},
-
 		{"EditCopy", GTK_STOCK_COPY, NULL,
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (edit_copy_activated)},

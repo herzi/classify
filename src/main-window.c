@@ -77,6 +77,13 @@ c_main_window_constructed (CMainWindow* self)
 }
 
 static void
+file_close_activated (GtkAction  * action,
+                      CMainWindow* self)
+{
+  gtk_widget_destroy (GTK_WIDGET (self));
+}
+
+static void
 task_bottom_activated (GtkAction  * action,
                        CMainWindow* self)
 {
@@ -118,6 +125,10 @@ c_main_window_initialize (CMainWindow * self)
   GtkUIManager  * ui_manager;
   GtkActionEntry  entries[] = {
 		{"File", NULL, N_("_File")},
+		{"FileClose", GTK_STOCK_CLOSE, NULL,
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (file_close_activated)},
+
 		{"Edit", NULL, N_("_Edit")},
 
 		{"TaskBottom", GTK_STOCK_GOTO_BOTTOM, N_("To _Bottom"),
