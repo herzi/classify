@@ -23,6 +23,7 @@
 
 #include "main-window.h"
 
+#include "task-list.h"
 #include "task-widget.h"
 
 #define GETTEXT_PACKAGE NULL
@@ -68,12 +69,23 @@ c_main_window_get_type (void)
 void
 c_main_window_constructed (CMainWindow* self)
 {
+        CTaskList   * store;
+        GtkWidget   * tree;
+
+	tree = c_task_widget_new ();
+
+	store = c_task_list_new_default ();
+	gtk_tree_view_set_model  (GTK_TREE_VIEW (tree),
+				  GTK_TREE_MODEL (store));
+	g_object_unref (store);
+	gtk_widget_show (tree);
+
   g_return_if_fail (C_IS_MAIN_WINDOW (self));
 
   c_main_window_pack_menus (self, c_main_window_get_menus (self));
   c_main_window_pack_tools (self, c_main_window_get_toolbar (self));
 
-  c_main_window_pack_content (self, c_main_window_get_content (self));
+  c_main_window_pack_content (self, tree);
 }
 
 static void

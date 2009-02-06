@@ -26,8 +26,6 @@
 #include <gtk/gtk.h>
 
 #include "main-window.h"
-#include "task-list.h"
-#include "task-widget.h"
 
 #include <glib/gi18n.h>
 
@@ -120,25 +118,9 @@ c_window_new (void)
 static void
 c_window_init (CWindow* self)
 {
-        CTaskList   * store;
-        GtkWidget   * tree;
-
         PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_WINDOW, CWindowPrivate);
 
         c_main_window_initialize (C_MAIN_WINDOW (self));
-
-	tree = c_task_widget_new ();
-
-        /* FIXME: properly use the private data */
-	g_object_set_data_full (G_OBJECT (self),
-				"CWindow::TreeView",
-				g_object_ref_sink (tree),
-				g_object_unref);
-	store = c_task_list_new_default ();
-	gtk_tree_view_set_model  (GTK_TREE_VIEW (tree),
-				  GTK_TREE_MODEL (store));
-	g_object_unref (store);
-	gtk_widget_show (tree);
 }
 
 static void
@@ -262,6 +244,12 @@ window_pack_content (CMainWindow* main_window,
   g_return_if_fail (C_WINDOW_GET_CLASS (main_window)->pack_content);
 
   C_WINDOW_GET_CLASS (main_window)->pack_content (C_WINDOW (main_window), content);
+
+        /* FIXME: properly use the private data */
+	g_object_set_data_full (G_OBJECT (main_window),
+				"CWindow::TreeView",
+				g_object_ref_sink (content),
+				g_object_unref);
 }
 
 static void
