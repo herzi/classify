@@ -77,7 +77,8 @@ c_main_window_constructed (CMainWindow* self)
 void
 c_main_window_initialize (CMainWindow * self)
 {
-  GtkUIManager* ui_manager;
+  GtkActionGroup* actions;
+  GtkUIManager  * ui_manager;
 
   g_return_if_fail (C_IS_MAIN_WINDOW (self));
 
@@ -93,6 +94,10 @@ c_main_window_initialize (CMainWindow * self)
 
   gtk_window_add_accel_group  (GTK_WINDOW (self),
                                gtk_ui_manager_get_accel_group (ui_manager));
+
+  actions = gtk_action_group_new (g_type_name (C_TYPE_MAIN_WINDOW));
+  gtk_ui_manager_insert_action_group (ui_manager, actions, -1);
+  g_object_unref (actions);
 
   g_object_unref (ui_manager);
 }
