@@ -122,7 +122,6 @@ c_window_init (CWindow* self)
 {
         CTaskList   * store;
         GtkWidget   * tree;
-  GError   * error = NULL;
 
         PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_WINDOW, CWindowPrivate);
 
@@ -140,25 +139,6 @@ c_window_init (CWindow* self)
 				  GTK_TREE_MODEL (store));
 	g_object_unref (store);
 	gtk_widget_show (tree);
-
-        gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
-                                            "<ui>"
-						"<toolbar name='toolbar'>"
-							"<toolitem action='TaskNew'/>"
-							"<separator/>"
-							"<toolitem action='TaskTop'/>"
-							"<toolitem action='TaskBottom'/>"
-						"</toolbar>"
-					    "</ui>",
-					    -1,
-					    &error);
-
-	if (error) {
-		g_warning ("Error setting up the user interface: %s",
-			   error->message);
-		g_error_free (error);
-		error = NULL;
-	}
 }
 
 static void

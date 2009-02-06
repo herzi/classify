@@ -204,6 +204,7 @@ c_main_window_initialize (CMainWindow * self)
 		 NULL, NULL, // FIXME: add tooltip
                  G_CALLBACK (view_collapse_all_activated)}
   };
+  GError        * error = NULL;
 
   g_return_if_fail (C_IS_MAIN_WINDOW (self));
 
@@ -224,6 +225,25 @@ c_main_window_initialize (CMainWindow * self)
   gtk_action_group_add_actions (actions, entries, G_N_ELEMENTS (entries), self);
   gtk_ui_manager_insert_action_group (ui_manager, actions, -1);
   g_object_unref (actions);
+
+  gtk_ui_manager_add_ui_from_string  (ui_manager,
+                                      "<ui>"
+                                        "<toolbar name='toolbar'>"
+                                          "<toolitem action='TaskNew'/>"
+                                          "<separator/>"
+                                          "<toolitem action='TaskTop'/>"
+                                          "<toolitem action='TaskBottom'/>"
+                                        "</toolbar>"
+                                      "</ui>",
+                                      -1,
+                                      &error);
+
+	if (error) {
+		g_warning ("Error setting up the user interface: %s",
+			   error->message);
+		g_error_free (error);
+		error = NULL;
+	}
 
   g_object_unref (ui_manager);
 }
