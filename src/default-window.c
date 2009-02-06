@@ -82,6 +82,7 @@ open_prefs (GtkAction* action,
 static void
 c_default_window_init (CDefaultWindow* self)
 {
+  /* FIXME: store/restore window size and position properly */
   GtkActionGroup* group;
   GtkActionEntry  entries[] = {
 		{"EditPreferences", GTK_STOCK_PREFERENCES, NULL,

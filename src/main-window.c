@@ -23,6 +23,9 @@
 
 #include "main-window.h"
 
+#define GETTEXT_PACKAGE NULL
+#include <glib/gi18n-lib.h>
+
 static void
 c_main_window_iface_init (gpointer iface)
 {
@@ -53,6 +56,8 @@ c_main_window_get_type (void)
       type = g_type_register_static (G_TYPE_INTERFACE,
                                      G_STRINGIFY (CMainWindow),
                                      &info, 0);
+
+      g_type_interface_add_prerequisite (type, GTK_TYPE_WINDOW);
     }
 
   return type;
@@ -80,6 +85,15 @@ c_main_window_initialize (CMainWindow * self)
   g_object_set (self,
                 "ui-manager", ui_manager,
                 NULL);
+
+  gtk_window_set_default_size (GTK_WINDOW (self),
+                               400, 300);
+  gtk_window_set_title        (GTK_WINDOW (self),
+                               _("List of Tasks"));
+
+  gtk_window_add_accel_group  (GTK_WINDOW (self),
+                               gtk_ui_manager_get_accel_group (ui_manager));
+
   g_object_unref (ui_manager);
 }
 

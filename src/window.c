@@ -252,17 +252,6 @@ c_window_init (CWindow* self)
 
         c_main_window_initialize (C_MAIN_WINDOW (self));
 
-        gtk_window_add_accel_group  (GTK_WINDOW (self),
-                                     gtk_ui_manager_get_accel_group (PRIV (self)->ui_manager));
-
-        /* FIXME: store/restore window size and position properly */
-        gtk_window_set_default_size (GTK_WINDOW (self),
-				     400, 300);
-	gtk_window_set_title        (GTK_WINDOW (self),
-                                     _("List of Tasks"));
-	g_signal_connect (self, "destroy",
-                          G_CALLBACK (gtk_main_quit), NULL);
-
         PRIV (self)->actions = gtk_action_group_new ("main-group");
         gtk_action_group_add_actions (PRIV (self)->actions, entries, G_N_ELEMENTS (entries), self);
 
@@ -372,15 +361,26 @@ window_set_property (GObject     * object,
 }
 
 static void
+window_destroy (GtkObject* object)
+{
+  gtk_main_quit ();
+
+  GTK_OBJECT_CLASS (c_window_parent_class)->destroy (object);
+}
+
+static void
 c_window_class_init (CWindowClass* self_class)
 {
   GObjectClass  * object_class = G_OBJECT_CLASS (self_class);
+  GtkObjectClass* gtk_object_class = GTK_OBJECT_CLASS (self_class);
 
   object_class->constructed  = window_constructed;
 
   object_class->finalize     = window_finalize;
   object_class->get_property = window_get_property;
   object_class->set_property = window_set_property;
+
+  gtk_object_class->destroy  = window_destroy;
 
   c_main_window_implement (object_class, PROP_UI_MANAGER);
 
