@@ -23,6 +23,8 @@
 
 #include "main-window.h"
 
+#include "task-widget.h"
+
 #define GETTEXT_PACKAGE NULL
 #include <glib/gi18n-lib.h>
 
@@ -75,6 +77,27 @@ c_main_window_constructed (CMainWindow* self)
 }
 
 static void
+task_bottom_activated (GtkAction  * action,
+                       CMainWindow* self)
+{
+  c_task_widget_move_bottom (C_TASK_WIDGET (c_main_window_get_content (self)));
+}
+
+static void
+task_new_activated (GtkAction  * action,
+                    CMainWindow* self)
+{
+  c_task_widget_create_task (C_TASK_WIDGET (c_main_window_get_content (self)));
+}
+
+static void
+task_top_activated (GtkAction  * action,
+                    CMainWindow* self)
+{
+  c_task_widget_move_top (C_TASK_WIDGET (c_main_window_get_content (self)));
+}
+
+static void
 view_expand_all_activated (GtkAction  * action,
                            CMainWindow* self)
 {
@@ -96,6 +119,16 @@ c_main_window_initialize (CMainWindow * self)
   GtkActionEntry  entries[] = {
 		{"File", NULL, N_("_File")},
 		{"Edit", NULL, N_("_Edit")},
+
+		{"TaskBottom", GTK_STOCK_GOTO_BOTTOM, N_("To _Bottom"),
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (task_bottom_activated)},
+		{"TaskNew", GTK_STOCK_ADD, NULL,
+		 "<Ctrl>n", NULL, // FIXME: add tooltip
+		 G_CALLBACK (task_new_activated)},
+		{"TaskTop", GTK_STOCK_GOTO_TOP, N_("To _Top"),
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (task_top_activated)},
 
 		{"View", NULL, N_("_View")},
 		{"ViewExpandAll", NULL, N_("_Expand All"),

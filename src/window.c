@@ -147,27 +147,6 @@ edit_rename (GtkAction* action,
   c_task_widget_rename_selection (C_TASK_WIDGET (c_window_get_tree (self)));
 }
 
-static void
-task_bottom_activated (GtkAction* action,
-                       CWindow  * self)
-{
-  c_task_widget_move_bottom (C_TASK_WIDGET (c_window_get_tree (self)));
-}
-
-static void
-task_new_activated (GtkAction* action,
-                    CWindow  * self)
-{
-  c_task_widget_create_task (C_TASK_WIDGET (c_window_get_tree (self)));
-}
-
-static void
-task_top_activated (GtkAction* action,
-                    CWindow  * self)
-{
-  c_task_widget_move_top (C_TASK_WIDGET (c_window_get_tree (self)));
-}
-
 GtkUIManager*
 c_window_get_ui_manager (CWindow* self)
 {
@@ -202,16 +181,6 @@ c_window_init (CWindow* self)
 		{"EditRename", NULL, N_("_Rename"),
 		 "F2", NULL, // FIXME: add tooltip
 		 G_CALLBACK (edit_rename)},
-
-		{"TaskBottom", GTK_STOCK_GOTO_BOTTOM, N_("To _Bottom"),
-		 NULL, NULL, // FIXME: add tooltip
-		 G_CALLBACK (task_bottom_activated)},
-		{"TaskNew", GTK_STOCK_ADD, NULL,
-		 "<Ctrl>n", NULL, // FIXME: add tooltip
-		 G_CALLBACK (task_new_activated)},
-		{"TaskTop", GTK_STOCK_GOTO_TOP, N_("To _Top"),
-		 NULL, NULL, // FIXME: add tooltip
-		 G_CALLBACK (task_top_activated)},
         };
         CTaskList   * store;
         GtkWidget   * tree;
