@@ -84,6 +84,49 @@ file_close_activated (GtkAction  * action,
 }
 
 static void
+edit_copy_activated (GtkAction  * action,
+                     CMainWindow* self)
+{
+	if (GTK_IS_EDITABLE (gtk_window_get_focus (GTK_WINDOW (self)))) {
+		gtk_editable_copy_clipboard (GTK_EDITABLE (gtk_window_get_focus (GTK_WINDOW (self))));
+	} else if (C_IS_TASK_WIDGET (gtk_window_get_focus (GTK_WINDOW (self)))) {
+                c_task_widget_copy_clipboard (C_TASK_WIDGET (gtk_window_get_focus (GTK_WINDOW (self))));
+	}
+}
+
+static void
+edit_delete_activated (GtkAction  * action,
+                       CMainWindow* self)
+{
+  if (GTK_IS_EDITABLE (gtk_window_get_focus (GTK_WINDOW (self))))
+    {
+      gtk_editable_delete_selection (GTK_EDITABLE (gtk_window_get_focus (GTK_WINDOW (self))));
+    }
+  else if (C_IS_TASK_WIDGET (gtk_window_get_focus (GTK_WINDOW (self))))
+    {
+      c_task_widget_delete_selected (C_TASK_WIDGET (gtk_window_get_focus (GTK_WINDOW (self))));
+    }
+}
+
+static void
+edit_paste_activated (GtkAction  * action,
+                      CMainWindow* self)
+{
+	if (GTK_IS_EDITABLE (gtk_window_get_focus(GTK_WINDOW (self)))) {
+		gtk_editable_paste_clipboard (GTK_EDITABLE (gtk_window_get_focus(GTK_WINDOW (self))));
+	} else if (C_IS_TASK_WIDGET (gtk_window_get_focus(GTK_WINDOW (self)))) {
+                c_task_widget_paste_clipboard (C_TASK_WIDGET (gtk_window_get_focus(GTK_WINDOW (self))));
+	}
+}
+
+static void
+edit_rename (GtkAction  * action,
+             CMainWindow* self)
+{
+  c_task_widget_rename_selection (C_TASK_WIDGET (c_main_window_get_content (self)));
+}
+
+static void
 task_bottom_activated (GtkAction  * action,
                        CMainWindow* self)
 {
@@ -130,6 +173,18 @@ c_main_window_initialize (CMainWindow * self)
 		 G_CALLBACK (file_close_activated)},
 
 		{"Edit", NULL, N_("_Edit")},
+		{"EditCopy", GTK_STOCK_COPY, NULL,
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (edit_copy_activated)},
+		{"EditDelete", GTK_STOCK_DELETE, NULL,
+		 "Delete", NULL, // FIXME: add tooltip
+		 G_CALLBACK (edit_delete_activated)},
+		{"EditPaste", GTK_STOCK_PASTE, NULL,
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (edit_paste_activated)},
+		{"EditRename", NULL, N_("_Rename"),
+		 "F2", NULL, // FIXME: add tooltip
+		 G_CALLBACK (edit_rename)},
 
 		{"TaskBottom", GTK_STOCK_GOTO_BOTTOM, N_("To _Bottom"),
 		 NULL, NULL, // FIXME: add tooltip

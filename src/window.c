@@ -104,49 +104,6 @@ c_window_get_tree (CWindow* self)
 	return g_object_get_data (G_OBJECT (self), "CWindow::TreeView");
 }
 
-static void
-edit_copy_activated (GtkAction* action,
-		     CWindow  * self)
-{
-	if (GTK_IS_EDITABLE (gtk_window_get_focus (GTK_WINDOW (self)))) {
-		gtk_editable_copy_clipboard (GTK_EDITABLE (gtk_window_get_focus (GTK_WINDOW (self))));
-	} else if (C_IS_TASK_WIDGET (gtk_window_get_focus (GTK_WINDOW (self)))) {
-                c_task_widget_copy_clipboard (C_TASK_WIDGET (gtk_window_get_focus (GTK_WINDOW (self))));
-	}
-}
-
-static void
-edit_delete_activated (GtkAction* action,
-		       CWindow  * self)
-{
-  if (GTK_IS_EDITABLE (gtk_window_get_focus (GTK_WINDOW (self))))
-    {
-      gtk_editable_delete_selection (GTK_IS_EDITABLE (gtk_window_get_focus (GTK_WINDOW (self))));
-    }
-  else if (C_IS_TASK_WIDGET (gtk_window_get_focus (GTK_WINDOW (self))))
-    {
-      c_task_widget_delete_selected (C_TASK_WIDGET (c_window_get_tree (self)));
-    }
-}
-
-static void
-edit_paste_activated (GtkAction* action,
-		      CWindow  * self)
-{
-	if (GTK_IS_EDITABLE (gtk_window_get_focus(GTK_WINDOW (self)))) {
-		gtk_editable_paste_clipboard (GTK_EDITABLE (gtk_window_get_focus(GTK_WINDOW (self))));
-	} else if (C_IS_TASK_WIDGET (gtk_window_get_focus(GTK_WINDOW (self)))) {
-                c_task_widget_paste_clipboard (C_TASK_WIDGET (gtk_window_get_focus(GTK_WINDOW (self))));
-	}
-}
-
-static void
-edit_rename (GtkAction* action,
-             CWindow  * self)
-{
-  c_task_widget_rename_selection (C_TASK_WIDGET (c_window_get_tree (self)));
-}
-
 GtkUIManager*
 c_window_get_ui_manager (CWindow* self)
 {
@@ -165,18 +122,6 @@ static void
 c_window_init (CWindow* self)
 {
 	GtkActionEntry  entries[] = {
-		{"EditCopy", GTK_STOCK_COPY, NULL,
-		 NULL, NULL, // FIXME: add tooltip
-		 G_CALLBACK (edit_copy_activated)},
-		{"EditDelete", GTK_STOCK_DELETE, NULL,
-		 "Delete", NULL, // FIXME: add tooltip
-		 G_CALLBACK (edit_delete_activated)},
-		{"EditPaste", GTK_STOCK_PASTE, NULL,
-		 NULL, NULL, // FIXME: add tooltip
-		 G_CALLBACK (edit_paste_activated)},
-		{"EditRename", NULL, N_("_Rename"),
-		 "F2", NULL, // FIXME: add tooltip
-		 G_CALLBACK (edit_rename)},
         };
         CTaskList   * store;
         GtkWidget   * tree;
