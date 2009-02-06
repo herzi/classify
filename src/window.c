@@ -243,8 +243,7 @@ c_window_init (CWindow* self)
 		{"ViewCollapseAll", NULL, N_("_Collapse All"),
 		 NULL, NULL, // FIXME: add tooltip
                  G_CALLBACK (view_collapse_all_activated)}
-	};
-	GtkActionGroup* group;
+        };
         CTaskList   * store;
         GtkWidget   * tree;
   GError   * error = NULL;
@@ -264,16 +263,12 @@ c_window_init (CWindow* self)
 	g_signal_connect (self, "destroy",
                           G_CALLBACK (gtk_main_quit), NULL);
 
-        group = gtk_action_group_new ("main-group");
-        gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), self);
+        PRIV (self)->actions = gtk_action_group_new ("main-group");
+        gtk_action_group_add_actions (PRIV (self)->actions, entries, G_N_ELEMENTS (entries), self);
 
         gtk_ui_manager_insert_action_group (PRIV (self)->ui_manager,
-                                            group,
+                                            PRIV (self)->actions,
                                             0);
-
-        /* FIXME: delay until finalize */
-        g_object_unref (group);
-        PRIV (self)->actions = group;
 
 	tree = c_task_widget_new ();
 
@@ -324,6 +319,8 @@ window_constructed (GObject* object)
 static void
 window_finalize (GObject* object)
 {
+  g_object_unref (PRIV (object)->actions);
+
   g_object_unref (PRIV (object)->ui_manager);
 
   G_OBJECT_CLASS (c_window_parent_class)->finalize (object);
@@ -364,10 +361,6 @@ window_set_property (GObject     * object,
 #else
             PRIV (object)->ui_manager = g_object_ref (g_value_get_object (value));
 #endif
-          }
-        else
-          {
-            PRIV (object)->ui_manager = gtk_ui_manager_new ();
           }
 
         g_object_notify (object, "ui-manager");
