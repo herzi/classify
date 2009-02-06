@@ -99,12 +99,6 @@ c_window_get_type (void)
 }
 
 GtkWidget*
-c_window_get_button (CWindow* self)
-{
-	return g_object_get_data (G_OBJECT (self), "CWindow::Button");
-}
-
-GtkWidget*
 c_window_get_tree (CWindow* self)
 {
 	return g_object_get_data (G_OBJECT (self), "CWindow::TreeView");
