@@ -168,20 +168,6 @@ task_top_activated (GtkAction* action,
   c_task_widget_move_top (C_TASK_WIDGET (c_window_get_tree (self)));
 }
 
-static void
-view_expand_all_activated (GtkAction* action,
-                           CWindow  * self)
-{
-  gtk_tree_view_expand_all (GTK_TREE_VIEW (c_window_get_tree (self)));
-}
-
-static void
-view_collapse_all_activated (GtkAction* action,
-                             CWindow  * self)
-{
-  gtk_tree_view_collapse_all (GTK_TREE_VIEW (c_window_get_tree (self)));
-}
-
 GtkUIManager*
 c_window_get_ui_manager (CWindow* self)
 {
@@ -226,13 +212,6 @@ c_window_init (CWindow* self)
 		{"TaskTop", GTK_STOCK_GOTO_TOP, N_("To _Top"),
 		 NULL, NULL, // FIXME: add tooltip
 		 G_CALLBACK (task_top_activated)},
-
-		{"ViewExpandAll", NULL, N_("_Expand All"),
-		 NULL, NULL, // FIXME: add tooltip
-		 G_CALLBACK (view_expand_all_activated)},
-		{"ViewCollapseAll", NULL, N_("_Collapse All"),
-		 NULL, NULL, // FIXME: add tooltip
-                 G_CALLBACK (view_collapse_all_activated)}
         };
         CTaskList   * store;
         GtkWidget   * tree;

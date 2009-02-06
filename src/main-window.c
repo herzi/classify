@@ -74,6 +74,20 @@ c_main_window_constructed (CMainWindow* self)
   c_main_window_pack_content (self, c_main_window_get_content (self));
 }
 
+static void
+view_expand_all_activated (GtkAction  * action,
+                           CMainWindow* self)
+{
+  gtk_tree_view_expand_all (GTK_TREE_VIEW (c_main_window_get_content (self)));
+}
+
+static void
+view_collapse_all_activated (GtkAction  * action,
+                             CMainWindow* self)
+{
+  gtk_tree_view_collapse_all (GTK_TREE_VIEW (c_main_window_get_content (self)));
+}
+
 void
 c_main_window_initialize (CMainWindow * self)
 {
@@ -82,7 +96,14 @@ c_main_window_initialize (CMainWindow * self)
   GtkActionEntry  entries[] = {
 		{"File", NULL, N_("_File")},
 		{"Edit", NULL, N_("_Edit")},
-		{"View", NULL, N_("_View")}
+
+		{"View", NULL, N_("_View")},
+		{"ViewExpandAll", NULL, N_("_Expand All"),
+		 NULL, NULL, // FIXME: add tooltip
+		 G_CALLBACK (view_expand_all_activated)},
+		{"ViewCollapseAll", NULL, N_("_Collapse All"),
+		 NULL, NULL, // FIXME: add tooltip
+                 G_CALLBACK (view_collapse_all_activated)}
   };
 
   g_return_if_fail (C_IS_MAIN_WINDOW (self));
