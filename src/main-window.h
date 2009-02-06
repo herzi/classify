@@ -38,7 +38,10 @@ typedef struct _CMainWindowIface CMainWindowIface;
 
 GType         c_main_window_get_type (void);
 
-void          c_main_window_constructed (CMainWindow* self);
+void          c_main_window_implement    (GObjectClass* object_class,
+                                          guint         prop_ui_manager);
+void          c_main_window_constructed  (CMainWindow * self);
+void          c_main_window_initialize   (CMainWindow * self);
 
 GtkWidget*    c_main_window_get_content  (CMainWindow * self);
 GtkMenuShell* c_main_window_get_menus    (CMainWindow * self);

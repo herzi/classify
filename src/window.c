@@ -38,6 +38,11 @@ struct _CWindowPrivate {
 
 #define PRIV(i) (((CWindow*)(i))->_private)
 
+enum {
+  PROP_0,
+  PROP_UI_MANAGER
+};
+
 static void     c_window_init         (CWindow         * self);
 static void     c_window_class_init   (CWindowClass    * self_class);
 static void     implement_main_window (CMainWindowIface* iface);
@@ -244,18 +249,12 @@ c_window_init (CWindow* self)
         GtkWidget   * tree;
   GError   * error = NULL;
 
-
         PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_WINDOW, CWindowPrivate);
 
-        PRIV (self)->ui_manager = gtk_ui_manager_new ();
+        c_main_window_initialize (C_MAIN_WINDOW (self));
+
         gtk_window_add_accel_group  (GTK_WINDOW (self),
                                      gtk_ui_manager_get_accel_group (PRIV (self)->ui_manager));
-
-        /* FIXME: remove this and properly use the private data */
-        g_object_set_data_full (G_OBJECT (self),
-                                "CWindow::UIManager",
-                                PRIV (self)->ui_manager,
-                                g_object_unref);
 
         /* FIXME: store/restore window size and position properly */
         gtk_window_set_default_size (GTK_WINDOW (self),
@@ -323,11 +322,74 @@ window_constructed (GObject* object)
 }
 
 static void
+window_finalize (GObject* object)
+{
+  g_object_unref (PRIV (object)->ui_manager);
+
+  G_OBJECT_CLASS (c_window_parent_class)->finalize (object);
+}
+
+static void
+window_get_property (GObject   * object,
+                     guint       prop_id,
+                     GValue    * value,
+                     GParamSpec* pspec)
+{
+  switch (prop_id)
+    {
+      case PROP_UI_MANAGER:
+        g_value_set_object (value, PRIV (object)->ui_manager);
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+window_set_property (GObject     * object,
+                     guint         prop_id,
+                     GValue const* value,
+                     GParamSpec  * pspec)
+{
+  switch (prop_id)
+    {
+      case PROP_UI_MANAGER:
+        g_return_if_fail (!PRIV (object)->ui_manager);
+
+        if (g_value_get_object (value))
+          {
+#if GTK_CHECK_VERSION(2,14,0)
+            PRIV (object)->ui_manager = g_value_dup_object (value);
+#else
+            PRIV (object)->ui_manager = g_object_ref (g_value_get_object (value));
+#endif
+          }
+        else
+          {
+            PRIV (object)->ui_manager = gtk_ui_manager_new ();
+          }
+
+        g_object_notify (object, "ui-manager");
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
 c_window_class_init (CWindowClass* self_class)
 {
   GObjectClass  * object_class = G_OBJECT_CLASS (self_class);
 
-  object_class->constructed = window_constructed;
+  object_class->constructed  = window_constructed;
+
+  object_class->finalize     = window_finalize;
+  object_class->get_property = window_get_property;
+  object_class->set_property = window_set_property;
+
+  c_main_window_implement (object_class, PROP_UI_MANAGER);
 
   c_window_parent_class = g_type_class_peek_parent (self_class);
 

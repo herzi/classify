@@ -23,6 +23,17 @@
 
 #include "main-window.h"
 
+static void
+c_main_window_iface_init (gpointer iface)
+{
+  g_object_interface_install_property (iface,
+                                       g_param_spec_object ("ui-manager",
+                                                            "ui manager",
+                                                            "the ui manager of this window",
+                                                            GTK_TYPE_UI_MANAGER,
+                                                            G_PARAM_READWRITE));
+}
+
 GType
 c_main_window_get_type (void)
 {
@@ -33,7 +44,8 @@ c_main_window_get_type (void)
       GTypeInfo const info = {
         sizeof (CMainWindowIface),
         NULL, NULL,
-        NULL, NULL, NULL,
+        (GClassInitFunc) c_main_window_iface_init,
+        NULL, NULL,
         0, 0,
         NULL
       };
@@ -55,6 +67,27 @@ c_main_window_constructed (CMainWindow* self)
   c_main_window_pack_tools (self, c_main_window_get_toolbar (self));
 
   c_main_window_pack_content (self, c_main_window_get_content (self));
+}
+
+void
+c_main_window_initialize (CMainWindow * self)
+{
+  GtkUIManager* ui_manager;
+
+  g_return_if_fail (C_IS_MAIN_WINDOW (self));
+
+  ui_manager = gtk_ui_manager_new ();
+  g_object_set (self,
+                "ui-manager", ui_manager,
+                NULL);
+  g_object_unref (ui_manager);
+}
+
+void
+c_main_window_implement (GObjectClass* object_class,
+                         guint         prop_ui_manager)
+{
+  g_object_class_override_property (object_class, prop_ui_manager, "ui-manager");
 }
 
 GtkWidget*
