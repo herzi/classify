@@ -23,6 +23,7 @@
 
 #include "default-window.h"
 
+#include "main-window.h"
 #include "preferences.h"
 
 struct _CDefaultWindowPrivate {
@@ -35,6 +36,7 @@ struct _CDefaultWindowPrivate {
 
 static void c_default_window_init       (CDefaultWindow     * self);
 static void c_default_window_class_init (CDefaultWindowClass* self_class);
+static void implement_main_window       (CMainWindowIface   * iface);
 
 static GType    c_default_window_type = 0;
 static gpointer c_default_window_parent_class = NULL;
@@ -59,12 +61,22 @@ c_default_window_register_type (GTypeModule* module)
         (GInstanceInitFunc) c_default_window_init,
         NULL
       };
+      GInterfaceInfo const iinfo = {
+        (GInterfaceInitFunc) implement_main_window,
+        NULL, NULL
+      };
 
       c_default_window_type = g_type_module_register_type (module,
                                                            c_ui_module_register_type (module),
                                                            G_STRINGIFY (CDefaultWindow),
                                                            &info,
                                                            0);
+      g_message ("begin: if you see a warning after this...");
+      g_type_module_add_interface (module,
+                                   c_default_window_type,
+                                   C_TYPE_MAIN_WINDOW,
+                                   &iinfo);
+      g_message ("end:   ...and before this, you need the patches from http://bugzilla.gnome.org/show_bug.cgi?id=570826");
     }
 
   return c_default_window_type;
@@ -201,5 +213,10 @@ c_default_window_new (void)
 {
   return g_object_new (C_TYPE_DEFAULT_WINDOW,
                        NULL);
+}
+
+static void
+implement_main_window (CMainWindowIface* iface)
+{
 }
 
