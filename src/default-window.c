@@ -27,12 +27,18 @@
 #include "preferences.h"
 
 struct _CDefaultWindowPrivate {
-  GtkWidget* vbox;
+  GtkUIManager* ui_manager;
 
-  GtkWidget* scrolled_window;
+  GtkWidget   * vbox;
+  GtkWidget   * scrolled_window;
 };
 
 #define PRIV(i) (((CDefaultWindow*)(i))->_private)
+
+enum {
+  PROP_0,
+  PROP_UI_MANAGER
+};
 
 static void c_default_window_init       (CDefaultWindow     * self);
 static void c_default_window_class_init (CDefaultWindowClass* self_class);
@@ -105,14 +111,16 @@ c_default_window_init (CDefaultWindow* self)
 
   PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_DEFAULT_WINDOW, CDefaultWindowPrivate);
 
+        c_main_window_initialize (C_MAIN_WINDOW (self));
+
   PRIV (self)->vbox = gtk_vbox_new (FALSE, 0);
 
   group = gtk_action_group_new ("backend-actions");
   gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), self);
-  gtk_ui_manager_insert_action_group (c_window_get_ui_manager (C_WINDOW (self)), group, -1);
+  gtk_ui_manager_insert_action_group (PRIV (self)->ui_manager, group, -1);
   g_object_unref (group);
 
-        gtk_ui_manager_add_ui_from_string  (c_window_get_ui_manager (C_WINDOW (self)),
+        gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
                                             "<ui>"
                                                 "<menubar name='menus'>"
                                                         "<menu action='File'>"
@@ -184,9 +192,70 @@ default_window_pack_content (CMainWindow* window,
 }
 
 static void
+window_finalize (GObject* object)
+{
+  g_object_unref (PRIV (object)->ui_manager);
+
+  G_OBJECT_CLASS (c_default_window_parent_class)->finalize (object);
+}
+
+static void
+window_get_property (GObject   * object,
+                     guint       prop_id,
+                     GValue    * value,
+                     GParamSpec* pspec)
+{
+  switch (prop_id)
+    {
+      case PROP_UI_MANAGER:
+        g_value_set_object (value, PRIV (object)->ui_manager);
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+window_set_property (GObject     * object,
+                     guint         prop_id,
+                     GValue const* value,
+                     GParamSpec  * pspec)
+{
+  switch (prop_id)
+    {
+      case PROP_UI_MANAGER:
+        g_return_if_fail (!PRIV (object)->ui_manager);
+
+        if (g_value_get_object (value))
+          {
+#if GTK_CHECK_VERSION(2,14,0)
+            PRIV (object)->ui_manager = g_value_dup_object (value);
+#else
+            PRIV (object)->ui_manager = g_object_ref (g_value_get_object (value));
+#endif
+          }
+
+        g_object_notify (object, "ui-manager");
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
 c_default_window_class_init (CDefaultWindowClass* self_class)
 {
+  GObjectClass  * object_class = G_OBJECT_CLASS (self_class);
+
   c_default_window_parent_class = g_type_class_peek_parent (self_class);
+
+  object_class->finalize     = window_finalize;
+  object_class->get_property = window_get_property;
+  object_class->set_property = window_set_property;
+
+  c_main_window_implement (object_class, PROP_UI_MANAGER);
 
   g_type_class_add_private (self_class, sizeof (CDefaultWindowPrivate));
 }

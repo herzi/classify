@@ -30,10 +30,17 @@
 #include <glib/gi18n-lib.h>
 
 struct _CHildonWindowPrivate {
-  GtkWidget* content;
+  GtkUIManager* ui_manager;
+
+  GtkWidget   * content;
 };
 
 #define PRIV(i) (((CHildonWindow*)(i))->_private)
+
+enum {
+  PROP_0,
+  PROP_UI_MANAGER
+};
 
 #if !GLIB_CHECK_VERSION(2,18,0)
 #define g_dgettext(dom,msg) dgettext (dom, msg)
@@ -117,6 +124,8 @@ c_hildon_window_init (CHildonWindow* self)
 
   PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_HILDON_WINDOW, CHildonWindowPrivate);
 
+        c_main_window_initialize (C_MAIN_WINDOW (self));
+
   g_hash_table_insert (hildon_icons,
                        "ViewToggleFullscreen",
                        "qgn_list_hw_button_view_toggle");
@@ -144,9 +153,9 @@ c_hildon_window_init (CHildonWindow* self)
 
   group = gtk_action_group_new ("backend-actions");
   gtk_action_group_add_actions (group, entries, G_N_ELEMENTS (entries), self);
-  gtk_ui_manager_insert_action_group (c_window_get_ui_manager (C_WINDOW (self)), group, -1);
+  gtk_ui_manager_insert_action_group (PRIV (self)->ui_manager, group, -1);
 
-  groups = gtk_ui_manager_get_action_groups (c_window_get_ui_manager (C_WINDOW (self)));
+  groups = gtk_ui_manager_get_action_groups (PRIV (self)->ui_manager);
   for (iter = groups; iter; iter = iter->next)
     {
       GList* actions = gtk_action_group_list_actions (iter->data);
@@ -186,7 +195,7 @@ c_hildon_window_init (CHildonWindow* self)
   g_object_unref (group);
   g_hash_table_destroy (hildon_icons);
 
-        gtk_ui_manager_add_ui_from_string  (c_window_get_ui_manager (C_WINDOW (self)),
+        gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
                                             "<ui>"
                                               "<popup name='menus'>"
                                                 "<menuitem action='TaskNew'/>"
@@ -218,7 +227,7 @@ window_state_event (GtkWidget          * widget,
     {
       GtkStockItem  item;
       gchar const * stock_id = (event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN) ? GTK_STOCK_LEAVE_FULLSCREEN : GTK_STOCK_FULLSCREEN;
-      GtkAction   * action = gtk_ui_manager_get_action (c_window_get_ui_manager (C_WINDOW (widget)),
+      GtkAction   * action = gtk_ui_manager_get_action (PRIV (widget)->ui_manager,
                                                         "/menus/ViewToggleFullscreen");
 
       if (gtk_stock_lookup (stock_id, &item))
@@ -272,13 +281,73 @@ hildon_window_pack_toolbar (CMainWindow* window,
 }
 
 static void
+window_finalize (GObject* object)
+{
+  g_object_unref (PRIV (object)->ui_manager);
+
+  G_OBJECT_CLASS (c_hildon_window_parent_class)->finalize (object);
+}
+
+static void
+window_get_property (GObject   * object,
+                     guint       prop_id,
+                     GValue    * value,
+                     GParamSpec* pspec)
+{
+  switch (prop_id)
+    {
+      case PROP_UI_MANAGER:
+        g_value_set_object (value, PRIV (object)->ui_manager);
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+window_set_property (GObject     * object,
+                     guint         prop_id,
+                     GValue const* value,
+                     GParamSpec  * pspec)
+{
+  switch (prop_id)
+    {
+      case PROP_UI_MANAGER:
+        g_return_if_fail (!PRIV (object)->ui_manager);
+
+        if (g_value_get_object (value))
+          {
+#if GTK_CHECK_VERSION(2,14,0)
+            PRIV (object)->ui_manager = g_value_dup_object (value);
+#else
+            PRIV (object)->ui_manager = g_object_ref (g_value_get_object (value));
+#endif
+          }
+
+        g_object_notify (object, "ui-manager");
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
 c_hildon_window_class_init (CHildonWindowClass* self_class)
 {
+  GObjectClass  * object_class = G_OBJECT_CLASS (self_class);
   GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (self_class);
 
   c_hildon_window_parent_class = g_type_class_peek_parent (self_class);
 
+  object_class->finalize     = window_finalize;
+  object_class->get_property = window_get_property;
+  object_class->set_property = window_set_property;
+
   widget_class->window_state_event = window_state_event;
+
+  c_main_window_implement (object_class, PROP_UI_MANAGER);
 
   g_type_class_add_private (self_class, sizeof (CHildonWindowPrivate));
 }

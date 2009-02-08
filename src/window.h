@@ -48,7 +48,6 @@ GType      c_ui_module_register_type (GTypeModule* module);
 GType         c_window_get_type       (void);
 GtkWidget*    c_window_new            (void);
 GtkWidget*    c_window_get_tree       (CWindow* self);
-GtkUIManager* c_window_get_ui_manager (CWindow* self);
 
 struct _CWindow {
 #ifdef HAVE_HILDON
