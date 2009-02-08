@@ -76,12 +76,10 @@ c_hildon_window_register_type (GTypeModule* module)
                                                           G_STRINGIFY (CHildonWindow),
                                                           &info,
                                                           0);
-      g_message ("begin: if you see a warning after this...");
       g_type_module_add_interface (module,
                                    c_hildon_window_type,
                                    C_TYPE_MAIN_WINDOW,
                                    &iinfo);
-      g_message ("end:   ...and before this, you need the patches from http://bugzilla.gnome.org/show_bug.cgi?id=570826");
     }
 
   return c_hildon_window_type;
