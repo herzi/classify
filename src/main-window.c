@@ -242,6 +242,7 @@ c_main_window_initialize (CMainWindow * self)
                                       "<ui>"
                                         "<toolbar name='toolbar'>"
                                           "<toolitem action='TaskNew'/>"
+                                          "<placeholder name='remove'/>"
                                           "<separator/>"
                                           "<toolitem action='TaskTop'/>"
                                           "<toolitem action='TaskBottom'/>"

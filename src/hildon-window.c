@@ -24,6 +24,7 @@
 #include "hildon-window.h"
 
 #include "main-window.h"
+#include "task-widget.h"
 
 /* FIXME: define a proper package */
 #define GETTEXT_PACKAGE NULL
@@ -92,6 +93,13 @@ c_hildon_window_get_type (void)
 }
 
 static void
+task_remove (GtkAction    * action,
+             CHildonWindow* self)
+{
+  c_task_widget_delete_selected (C_TASK_WIDGET (PRIV (self)->content));
+}
+
+static void
 view_fullscreen (GtkAction* action,
                  GtkWidget* widget)
 {
@@ -110,9 +118,12 @@ c_hildon_window_init (CHildonWindow* self)
 {
   GtkActionGroup* group;
   GtkActionEntry  entries[] = {
-                {"ViewToggleFullscreen", GTK_STOCK_FULLSCREEN, NULL,
-                 "F6", NULL, // FIXME: add tooltip
-                 G_CALLBACK (view_fullscreen)}
+     {"TaskRemove", GTK_STOCK_REMOVE, NULL,
+      NULL, NULL, // FIXME: add tooltip
+      G_CALLBACK (task_remove)},
+     {"ViewToggleFullscreen", GTK_STOCK_FULLSCREEN, NULL,
+      "F6", NULL, // FIXME: add tooltip
+      G_CALLBACK (view_fullscreen)}
   };
   GtkStockItem    item;
   GHashTable    * hildon_icons = g_hash_table_new (g_str_hash, g_str_equal);
@@ -130,6 +141,9 @@ c_hildon_window_init (CHildonWindow* self)
   g_hash_table_insert (hildon_icons,
                        "TaskNew",
                        "qgn_indi_gene_plus");
+  g_hash_table_insert (hildon_icons,
+                       "TaskRemove",
+                       "qgn_indi_gene_minus");
   g_hash_table_insert (hildon_icons,
                        "TaskBottom",
                        "qgn_indi_arrow_down");
@@ -193,28 +207,33 @@ c_hildon_window_init (CHildonWindow* self)
   g_object_unref (group);
   g_hash_table_destroy (hildon_icons);
 
-        gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
-                                            "<ui>"
-                                              "<popup name='menus'>"
-                                                "<menuitem action='TaskNew'/>"
-                                                "<separator/>"
-                                                "<menu action='Edit'>"
-                                                  "<menuitem action='EditCopy'/>"
-                                                  "<menuitem action='EditPaste'/>"
-                                                  "<menuitem action='EditDelete'/>"
-                                                  "<separator/>"
-                                                /*  "<menuitem action='EditRename'/>" */ // FIXME: doesn't work yet
-                                                "</menu>"
-                                                "<separator/>"
-                                                "<menuitem action='ViewToggleFullscreen'/>"
-                                                "<menuitem action='ViewExpandAll'/>"
-                                                "<menuitem action='ViewCollapseAll'/>"
-                                                "<separator/>"
-                                                "<menuitem action='FileClose' />"
-					      "</popup>"
-					    "</ui>",
-					    -1,
-					    &error);
+  gtk_ui_manager_add_ui_from_string  (PRIV (self)->ui_manager,
+                                      "<ui>"
+                                        "<popup name='menus'>"
+                                          "<menuitem action='TaskNew'/>"
+                                          "<separator/>"
+                                          "<menu action='Edit'>"
+                                            "<menuitem action='EditCopy'/>"
+                                            "<menuitem action='EditPaste'/>"
+                                            "<menuitem action='EditDelete'/>"
+                                            "<separator/>"
+                                          /*  "<menuitem action='EditRename'/>" */ // FIXME: doesn't work yet
+                                          "</menu>"
+                                          "<separator/>"
+                                          "<menuitem action='ViewToggleFullscreen'/>"
+                                          "<menuitem action='ViewExpandAll'/>"
+                                          "<menuitem action='ViewCollapseAll'/>"
+                                          "<separator/>"
+                                          "<menuitem action='FileClose' />"
+				        "</popup>"
+                                        "<toolbar name='toolbar'>"
+                                          "<placeholder name='remove'>"
+                                            "<toolitem action='TaskRemove'/>"
+                                          "</placeholder>"
+                                        "</toolbar>"
+				      "</ui>",
+				      -1,
+                                      &error);
 }
 
 static gboolean
