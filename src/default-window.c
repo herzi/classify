@@ -73,7 +73,7 @@ c_default_window_register_type (GTypeModule* module)
       };
 
       c_default_window_type = g_type_module_register_type (module,
-                                                           c_ui_module_register_type (module),
+                                                           GTK_TYPE_WINDOW,
                                                            G_STRINGIFY (CDefaultWindow),
                                                            &info,
                                                            0);
@@ -89,8 +89,8 @@ c_default_window_register_type (GTypeModule* module)
 }
 
 static void
-open_prefs (GtkAction* action,
-            CWindow  * self)
+open_prefs (GtkAction     * action,
+            CDefaultWindow* self)
 {
   GtkWidget* dialog = c_preferences_new (GTK_WINDOW (self));
   gtk_dialog_run     (GTK_DIALOG (dialog));
@@ -194,14 +194,12 @@ default_window_pack_content (CMainWindow* window,
 static void
 window_constructed (GObject* object)
 {
-  CWindow* self = C_WINDOW (object);
-
   if (G_OBJECT_CLASS (c_default_window_parent_class)->constructed)
     {
       G_OBJECT_CLASS (c_default_window_parent_class)->constructed (object);
     }
 
-  c_main_window_constructed (C_MAIN_WINDOW (self));
+  c_main_window_constructed (C_MAIN_WINDOW (object));
 }
 
 static void

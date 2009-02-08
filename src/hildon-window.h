@@ -24,7 +24,7 @@
 #ifndef HILDON_WINDOW_H
 #define HILDON_WINDOW_H
 
-#include "window.h"
+#include <hildon/hildon.h>
 
 G_BEGIN_DECLS
 
@@ -44,12 +44,12 @@ GType      c_hildon_window_register_type (GTypeModule* module);
 GtkWidget* c_hildon_window_new           (void);
 
 struct _CHildonWindow {
-        CWindow               base_instance;
+        HildonWindow          base_instance;
         CHildonWindowPrivate* _private;
 };
 
 struct _CHildonWindowClass {
-        CWindowClass          base_class;
+        HildonWindowClass     base_class;
 };
 
 G_END_DECLS

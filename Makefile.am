@@ -47,8 +47,6 @@ defaultui_la_SOURCES=\
 	src/default-window.h \
 	src/preferences.c \
 	src/preferences.h \
-	src/window.c \
-	src/window.h \
 	$(NULL)
 defaultui_la_CPPFLAGS=$(AM_CPPFLAGS) -UHAVE_HILDON -UHAVE_OSSO
 defaultui_la_LIBADD=$(LDADD) libclassifyui.la
@@ -61,8 +59,6 @@ hildonui_la_SOURCES=\
 	src/hildon-user-interface.c \
 	src/hildon-window.c \
 	src/hildon-window.h \
-	src/window.c \
-	src/window.h \
 	$(NULL)
 hildonui_la_LIBADD=$(defaultui_la_LIBADD)
 hildonui_la_LDFLAGS=$(defaultui_la_LDFLAGS)

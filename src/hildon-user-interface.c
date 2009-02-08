@@ -46,7 +46,6 @@ c_ui_module_get_priority (void)
 void
 c_ui_module_register_types (GTypeModule* module)
 {
-  c_ui_module_register_type     (module);
   c_hildon_window_register_type (module);
 }
 

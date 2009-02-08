@@ -24,7 +24,7 @@
 #ifndef DEFAULT_WINDOW_H
 #define DEFAULT_WINDOW_H
 
-#include "window.h"
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
@@ -45,12 +45,12 @@ GType      c_default_window_register_type (GTypeModule* module);
 GtkWidget* c_default_window_new           (void);
 
 struct _CDefaultWindow {
-  CWindow                base_instance;
+  GtkWindow              base_instance;
   CDefaultWindowPrivate* _private;
 };
 
 struct _CDefaultWindowClass {
-  CWindowClass           base_class;
+  GtkWindowClass         base_class;
 };
 
 G_END_DECLS

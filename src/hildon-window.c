@@ -72,7 +72,7 @@ c_hildon_window_register_type (GTypeModule* module)
         NULL, NULL
       };
       c_hildon_window_type = g_type_module_register_type (module,
-                                                          c_ui_module_register_type (module),
+                                                          HILDON_TYPE_WINDOW,
                                                           G_STRINGIFY (CHildonWindow),
                                                           &info,
                                                           0);
@@ -283,14 +283,12 @@ hildon_window_pack_toolbar (CMainWindow* window,
 static void
 window_constructed (GObject* object)
 {
-  CWindow* self = C_WINDOW (object);
-
   if (G_OBJECT_CLASS (c_hildon_window_parent_class)->constructed)
     {
       G_OBJECT_CLASS (c_hildon_window_parent_class)->constructed (object);
     }
 
-  c_main_window_constructed (C_MAIN_WINDOW (self));
+  c_main_window_constructed (C_MAIN_WINDOW (object));
 }
 
 static void
