@@ -98,18 +98,6 @@ c_window_init (CWindow* self)
         PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_WINDOW, CWindowPrivate);
 }
 
-static void
-window_constructed (GObject* object)
-{
-  CWindow* self = C_WINDOW (object);
-
-  if (G_OBJECT_CLASS (c_window_parent_class)->constructed)
-    {
-      G_OBJECT_CLASS (c_window_parent_class)->constructed (object);
-    }
-
-  c_main_window_constructed (C_MAIN_WINDOW (self));
-}
 
 static void
 window_destroy (GtkObject* object)
@@ -122,10 +110,7 @@ window_destroy (GtkObject* object)
 static void
 c_window_class_init (CWindowClass* self_class)
 {
-  GObjectClass  * object_class = G_OBJECT_CLASS (self_class);
   GtkObjectClass* gtk_object_class = GTK_OBJECT_CLASS (self_class);
-
-  object_class->constructed  = window_constructed;
 
   gtk_object_class->destroy  = window_destroy;
 

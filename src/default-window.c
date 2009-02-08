@@ -192,6 +192,19 @@ default_window_pack_content (CMainWindow* window,
 }
 
 static void
+window_constructed (GObject* object)
+{
+  CWindow* self = C_WINDOW (object);
+
+  if (G_OBJECT_CLASS (c_default_window_parent_class)->constructed)
+    {
+      G_OBJECT_CLASS (c_default_window_parent_class)->constructed (object);
+    }
+
+  c_main_window_constructed (C_MAIN_WINDOW (self));
+}
+
+static void
 window_finalize (GObject* object)
 {
   g_object_unref (PRIV (object)->ui_manager);
@@ -250,6 +263,8 @@ c_default_window_class_init (CDefaultWindowClass* self_class)
   GObjectClass  * object_class = G_OBJECT_CLASS (self_class);
 
   c_default_window_parent_class = g_type_class_peek_parent (self_class);
+
+  object_class->constructed  = window_constructed;
 
   object_class->finalize     = window_finalize;
   object_class->get_property = window_get_property;

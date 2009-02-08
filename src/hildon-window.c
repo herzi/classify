@@ -281,6 +281,19 @@ hildon_window_pack_toolbar (CMainWindow* window,
 }
 
 static void
+window_constructed (GObject* object)
+{
+  CWindow* self = C_WINDOW (object);
+
+  if (G_OBJECT_CLASS (c_hildon_window_parent_class)->constructed)
+    {
+      G_OBJECT_CLASS (c_hildon_window_parent_class)->constructed (object);
+    }
+
+  c_main_window_constructed (C_MAIN_WINDOW (self));
+}
+
+static void
 window_finalize (GObject* object)
 {
   g_object_unref (PRIV (object)->ui_manager);
@@ -340,6 +353,8 @@ c_hildon_window_class_init (CHildonWindowClass* self_class)
   GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (self_class);
 
   c_hildon_window_parent_class = g_type_class_peek_parent (self_class);
+
+  object_class->constructed  = window_constructed;
 
   object_class->finalize     = window_finalize;
   object_class->get_property = window_get_property;
