@@ -212,19 +212,6 @@ c_window_class_init (CWindowClass* self_class)
   g_type_class_add_private (self_class, sizeof (CWindowPrivate));
 }
 
-static GtkMenuShell*
-window_get_menus (CMainWindow* main_window)
-{
-  return GTK_MENU_SHELL (gtk_ui_manager_get_widget (PRIV (main_window)->ui_manager, "/ui/menus"));
-}
-
-static GtkToolbar*
-window_get_toolbar (CMainWindow* main_window)
-{
-  return GTK_TOOLBAR (gtk_ui_manager_get_widget (PRIV (main_window)->ui_manager,
-                                                 "/ui/toolbar"));
-}
-
 static void
 window_pack_menus (CMainWindow * main_window,
                    GtkMenuShell* menus)
@@ -246,9 +233,6 @@ window_pack_tools (CMainWindow* main_window,
 static void
 implement_main_window (CMainWindowIface* iface)
 {
-  iface->get_menus    = window_get_menus;
-  iface->get_toolbar  = window_get_toolbar;
-
   iface->pack_menus   = window_pack_menus;
   iface->pack_tools   = window_pack_tools;
 }

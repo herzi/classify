@@ -59,8 +59,6 @@ struct _CMainWindowIface {
 
   /* vtable */
   GtkWidget*    (*get_content)  (CMainWindow * self);
-  GtkMenuShell* (*get_menus)    (CMainWindow * self);
-  GtkToolbar*   (*get_toolbar)  (CMainWindow * self);
 
   void          (*pack_content) (CMainWindow * self,
                                  GtkWidget   * content);

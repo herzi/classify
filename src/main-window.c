@@ -284,21 +284,22 @@ c_main_window_get_content (CMainWindow* self)
     }
 }
 
+static inline GtkUIManager*
+main_window_get_ui_manager (CMainWindow* self)
+{
+  GtkUIManager* result = NULL;
+
+  g_object_get (self, "ui-manager", &result, NULL);
+
+  return result;
+}
+
 GtkMenuShell*
 c_main_window_get_menus (CMainWindow* self)
 {
   g_return_val_if_fail (C_IS_MAIN_WINDOW (self), NULL);
 
-  if (C_MAIN_WINDOW_GET_IFACE (self)->get_menus)
-    {
-      return C_MAIN_WINDOW_GET_IFACE (self)->get_menus (self);
-    }
-  else
-    {
-      g_warning ("%s doesn't implement get_menus()",
-                 G_OBJECT_TYPE_NAME (self));
-      return NULL;
-    }
+  return GTK_MENU_SHELL (gtk_ui_manager_get_widget (main_window_get_ui_manager (self), "/ui/menus"));
 }
 
 GtkToolbar*
@@ -306,16 +307,7 @@ c_main_window_get_toolbar (CMainWindow * self)
 {
   g_return_val_if_fail (C_IS_MAIN_WINDOW (self), NULL);
 
-  if (C_MAIN_WINDOW_GET_IFACE (self)->get_toolbar)
-    {
-      return C_MAIN_WINDOW_GET_IFACE (self)->get_toolbar (self);
-    }
-  else
-    {
-      g_warning ("%s doesn't implement get_toolbar()",
-                 G_OBJECT_TYPE_NAME (self));
-      return NULL;
-    }
+  return GTK_TOOLBAR (gtk_ui_manager_get_widget (main_window_get_ui_manager (self), "/ui/toolbar"));
 }
 
 void
