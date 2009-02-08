@@ -65,12 +65,6 @@ struct _CWindowClass {
 #else
 	GtkWindowClass     base_class;
 #endif
-
-        /* vtable: all functions mandatory, unless marked as optional */
-        void (*pack_menu_shell) (CWindow     * self,
-                                 GtkMenuShell* menus);
-        void (*pack_toolbar)    (CWindow     * self,
-                                 GtkToolbar  * toolbar);
 };
 
 G_END_DECLS

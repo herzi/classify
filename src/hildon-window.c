@@ -258,21 +258,16 @@ hildon_window_pack_content (CMainWindow* window,
 }
 
 static void
-hildon_window_pack_menu_shell (CWindow     * window,
+hildon_window_pack_menu_shell (CMainWindow * window,
                                GtkMenuShell* menus)
 {
   hildon_window_set_menu (HILDON_WINDOW (window), GTK_MENU (menus));
 }
 
 static void
-hildon_window_pack_toolbar (CWindow   * window,
-                            GtkToolbar* toolbar)
+hildon_window_pack_toolbar (CMainWindow* window,
+                            GtkToolbar * toolbar)
 {
-  if (C_WINDOW_CLASS (c_hildon_window_parent_class)->pack_toolbar)
-    {
-      C_WINDOW_CLASS (c_hildon_window_parent_class)->pack_toolbar (window, toolbar);
-    }
-
   hildon_window_add_toolbar (HILDON_WINDOW (window), toolbar);
 }
 
@@ -280,14 +275,10 @@ static void
 c_hildon_window_class_init (CHildonWindowClass* self_class)
 {
   GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (self_class);
-  CWindowClass  * window_class = C_WINDOW_CLASS (self_class);
 
   c_hildon_window_parent_class = g_type_class_peek_parent (self_class);
 
   widget_class->window_state_event = window_state_event;
-
-  window_class->pack_menu_shell    = hildon_window_pack_menu_shell;
-  window_class->pack_toolbar       = hildon_window_pack_toolbar;
 
   g_type_class_add_private (self_class, sizeof (CHildonWindowPrivate));
 }
@@ -310,5 +301,8 @@ implement_main_window (CMainWindowIface* iface)
 {
   iface->get_content  = hildon_window_get_content;
   iface->pack_content = hildon_window_pack_content;
+
+  iface->pack_menus   = hildon_window_pack_menu_shell;
+  iface->pack_tools   = hildon_window_pack_toolbar;
 }
 

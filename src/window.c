@@ -213,27 +213,6 @@ c_window_class_init (CWindowClass* self_class)
 }
 
 static void
-window_pack_menus (CMainWindow * main_window,
-                   GtkMenuShell* menus)
-{
-  g_return_if_fail (C_WINDOW_GET_CLASS (main_window)->pack_menu_shell);
-
-  C_WINDOW_GET_CLASS (main_window)->pack_menu_shell (C_WINDOW (main_window), menus);
-}
-
-static void
-window_pack_tools (CMainWindow* main_window,
-                   GtkToolbar * tools)
-{
-  g_return_if_fail (C_WINDOW_GET_CLASS (main_window)->pack_toolbar);
-
-  C_WINDOW_GET_CLASS (main_window)->pack_toolbar (C_WINDOW (main_window), tools);
-}
-
-static void
 implement_main_window (CMainWindowIface* iface)
-{
-  iface->pack_menus   = window_pack_menus;
-  iface->pack_tools   = window_pack_tools;
-}
+{}
 

@@ -157,28 +157,17 @@ c_default_window_init (CDefaultWindow* self)
 }
 
 static void
-default_window_pack_menu_shell (CWindow     * window,
+default_window_pack_menu_shell (CMainWindow * window,
                                 GtkMenuShell* menus)
 {
-
-  if (C_WINDOW_CLASS (c_default_window_parent_class)->pack_menu_shell)
-    {
-      C_WINDOW_CLASS (c_default_window_parent_class)->pack_menu_shell (window, menus);
-    }
-
   gtk_box_pack_start (GTK_BOX (PRIV (window)->vbox), GTK_WIDGET (menus),
                       FALSE, FALSE, 0);
 }
 
 static void
-default_window_pack_toolbar (CWindow   * window,
-                             GtkToolbar* toolbar)
+default_window_pack_toolbar (CMainWindow* window,
+                             GtkToolbar * toolbar)
 {
-  if (C_WINDOW_CLASS (c_default_window_parent_class)->pack_toolbar)
-    {
-      C_WINDOW_CLASS (c_default_window_parent_class)->pack_toolbar (window, toolbar);
-    }
-
   gtk_box_pack_start (GTK_BOX (PRIV (window)->vbox), GTK_WIDGET (toolbar),
                       FALSE, FALSE, 0);
 }
@@ -197,12 +186,7 @@ default_window_pack_content (CMainWindow* window,
 static void
 c_default_window_class_init (CDefaultWindowClass* self_class)
 {
-  CWindowClass* window_class = C_WINDOW_CLASS (self_class);
-
   c_default_window_parent_class = g_type_class_peek_parent (self_class);
-
-  window_class->pack_menu_shell = default_window_pack_menu_shell;
-  window_class->pack_toolbar    = default_window_pack_toolbar;
 
   g_type_class_add_private (self_class, sizeof (CDefaultWindowPrivate));
 }
@@ -225,5 +209,8 @@ implement_main_window (CMainWindowIface* iface)
 {
   iface->get_content  = default_window_get_content;
   iface->pack_content = default_window_pack_content;
+
+  iface->pack_tools   = default_window_pack_toolbar;
+  iface->pack_menus   = default_window_pack_menu_shell;
 }
 
