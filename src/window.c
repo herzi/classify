@@ -226,15 +226,6 @@ window_get_toolbar (CMainWindow* main_window)
 }
 
 static void
-window_pack_content (CMainWindow* main_window,
-                     GtkWidget  * content)
-{
-  g_return_if_fail (C_WINDOW_GET_CLASS (main_window)->pack_content);
-
-  C_WINDOW_GET_CLASS (main_window)->pack_content (C_WINDOW (main_window), content);
-}
-
-static void
 window_pack_menus (CMainWindow * main_window,
                    GtkMenuShell* menus)
 {
@@ -258,7 +249,6 @@ implement_main_window (CMainWindowIface* iface)
   iface->get_menus    = window_get_menus;
   iface->get_toolbar  = window_get_toolbar;
 
-  iface->pack_content = window_pack_content;
   iface->pack_menus   = window_pack_menus;
   iface->pack_tools   = window_pack_tools;
 }

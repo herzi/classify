@@ -184,8 +184,8 @@ default_window_pack_toolbar (CWindow   * window,
 }
 
 static void
-default_window_pack_content (CWindow  * window,
-                             GtkWidget* content)
+default_window_pack_content (CMainWindow* window,
+                             GtkWidget  * content)
 {
   gtk_container_add (GTK_CONTAINER (PRIV (window)->scrolled_window), content);
 
@@ -201,7 +201,6 @@ c_default_window_class_init (CDefaultWindowClass* self_class)
 
   c_default_window_parent_class = g_type_class_peek_parent (self_class);
 
-  window_class->pack_content    = default_window_pack_content;
   window_class->pack_menu_shell = default_window_pack_menu_shell;
   window_class->pack_toolbar    = default_window_pack_toolbar;
 
@@ -224,6 +223,7 @@ default_window_get_content (CMainWindow* main_window)
 static void
 implement_main_window (CMainWindowIface* iface)
 {
-  iface->get_content = default_window_get_content;
+  iface->get_content  = default_window_get_content;
+  iface->pack_content = default_window_pack_content;
 }
 

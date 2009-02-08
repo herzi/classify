@@ -246,8 +246,8 @@ window_state_event (GtkWidget          * widget,
 }
 
 static void
-hildon_window_pack_content (CWindow  * window,
-                            GtkWidget* content)
+hildon_window_pack_content (CMainWindow* window,
+                            GtkWidget  * content)
 {
   hildon_window_add_with_scrollbar (HILDON_WINDOW (window), content);
 
@@ -286,7 +286,6 @@ c_hildon_window_class_init (CHildonWindowClass* self_class)
 
   widget_class->window_state_event = window_state_event;
 
-  window_class->pack_content       = hildon_window_pack_content;
   window_class->pack_menu_shell    = hildon_window_pack_menu_shell;
   window_class->pack_toolbar       = hildon_window_pack_toolbar;
 
@@ -309,6 +308,7 @@ hildon_window_get_content (CMainWindow* main_window)
 static void
 implement_main_window (CMainWindowIface* iface)
 {
-  iface->get_content = hildon_window_get_content;
+  iface->get_content  = hildon_window_get_content;
+  iface->pack_content = hildon_window_pack_content;
 }
 
