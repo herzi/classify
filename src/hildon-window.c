@@ -29,6 +29,12 @@
 #define GETTEXT_PACKAGE NULL
 #include <glib/gi18n-lib.h>
 
+struct _CHildonWindowPrivate {
+  GtkWidget* content;
+};
+
+#define PRIV(i) (((CHildonWindow*)(i))->_private)
+
 #if !GLIB_CHECK_VERSION(2,18,0)
 #define g_dgettext(dom,msg) dgettext (dom, msg)
 #endif
@@ -46,11 +52,11 @@ c_hildon_window_register_type (GTypeModule* module)
   if (G_UNLIKELY (!c_hildon_window_type))
     {
       GTypeInfo const info = {
-        sizeof (CWindowClass),
+        sizeof (CHildonWindowClass),
         NULL, NULL,
         (GClassInitFunc) c_hildon_window_class_init,
         NULL, NULL,
-        sizeof (CWindow), 0,
+        sizeof (CHildonWindow), 0,
         (GInstanceInitFunc) c_hildon_window_init,
         NULL
       };
@@ -108,6 +114,8 @@ c_hildon_window_init (CHildonWindow* self)
   GError        * error = NULL;
   GList         * groups;
   GList         * iter;
+
+  PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_HILDON_WINDOW, CHildonWindowPrivate);
 
   g_hash_table_insert (hildon_icons,
                        "ViewToggleFullscreen",
@@ -243,6 +251,9 @@ hildon_window_pack_content (CWindow  * window,
 {
   hildon_window_add_with_scrollbar (HILDON_WINDOW (window), content);
 
+  PRIV (window)->content = content;
+
+  /* FIXME: debug, bug-report, fix and workaround */
   gtk_widget_show_all (GTK_WIDGET (window));
 }
 
@@ -278,6 +289,8 @@ c_hildon_window_class_init (CHildonWindowClass* self_class)
   window_class->pack_content       = hildon_window_pack_content;
   window_class->pack_menu_shell    = hildon_window_pack_menu_shell;
   window_class->pack_toolbar       = hildon_window_pack_toolbar;
+
+  g_type_class_add_private (self_class, sizeof (CHildonWindowPrivate));
 }
 
 GtkWidget*
@@ -287,8 +300,15 @@ c_hildon_window_new (void)
                        NULL);
 }
 
+static GtkWidget*
+hildon_window_get_content (CMainWindow* main_window)
+{
+  return PRIV (main_window)->content;
+}
+
 static void
 implement_main_window (CMainWindowIface* iface)
 {
+  iface->get_content = hildon_window_get_content;
 }
 

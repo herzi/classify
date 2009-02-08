@@ -95,12 +95,6 @@ c_window_get_type (void)
   return c_window_type;
 }
 
-GtkWidget*
-c_window_get_tree (CWindow* self)
-{
-	return g_object_get_data (G_OBJECT (self), "CWindow::TreeView");
-}
-
 GtkUIManager*
 c_window_get_ui_manager (CWindow* self)
 {
@@ -218,12 +212,6 @@ c_window_class_init (CWindowClass* self_class)
   g_type_class_add_private (self_class, sizeof (CWindowPrivate));
 }
 
-static GtkWidget*
-window_get_content (CMainWindow* main_window)
-{
-  return c_window_get_tree (C_WINDOW (main_window));
-}
-
 static GtkMenuShell*
 window_get_menus (CMainWindow* main_window)
 {
@@ -244,12 +232,6 @@ window_pack_content (CMainWindow* main_window,
   g_return_if_fail (C_WINDOW_GET_CLASS (main_window)->pack_content);
 
   C_WINDOW_GET_CLASS (main_window)->pack_content (C_WINDOW (main_window), content);
-
-        /* FIXME: properly use the private data */
-	g_object_set_data_full (G_OBJECT (main_window),
-				"CWindow::TreeView",
-				g_object_ref_sink (content),
-				g_object_unref);
 }
 
 static void
@@ -273,7 +255,6 @@ window_pack_tools (CMainWindow* main_window,
 static void
 implement_main_window (CMainWindowIface* iface)
 {
-  iface->get_content  = window_get_content;
   iface->get_menus    = window_get_menus;
   iface->get_toolbar  = window_get_toolbar;
 

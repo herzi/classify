@@ -215,8 +215,15 @@ c_default_window_new (void)
                        NULL);
 }
 
+static GtkWidget*
+default_window_get_content (CMainWindow* main_window)
+{
+  return gtk_bin_get_child (GTK_BIN (PRIV (main_window)->scrolled_window));
+}
+
 static void
 implement_main_window (CMainWindowIface* iface)
 {
+  iface->get_content = default_window_get_content;
 }
 
