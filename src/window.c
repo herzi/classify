@@ -98,22 +98,9 @@ c_window_init (CWindow* self)
         PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, C_TYPE_WINDOW, CWindowPrivate);
 }
 
-
-static void
-window_destroy (GtkObject* object)
-{
-  gtk_main_quit ();
-
-  GTK_OBJECT_CLASS (c_window_parent_class)->destroy (object);
-}
-
 static void
 c_window_class_init (CWindowClass* self_class)
 {
-  GtkObjectClass* gtk_object_class = GTK_OBJECT_CLASS (self_class);
-
-  gtk_object_class->destroy  = window_destroy;
-
   c_window_parent_class = g_type_class_peek_parent (self_class);
 
   g_type_class_add_private (self_class, sizeof (CWindowPrivate));

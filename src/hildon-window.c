@@ -347,9 +347,18 @@ window_set_property (GObject     * object,
 }
 
 static void
+window_destroy (GtkObject* object)
+{
+  gtk_main_quit ();
+
+  GTK_OBJECT_CLASS (c_hildon_window_parent_class)->destroy (object);
+}
+
+static void
 c_hildon_window_class_init (CHildonWindowClass* self_class)
 {
   GObjectClass  * object_class = G_OBJECT_CLASS (self_class);
+  GtkObjectClass* gtk_object_class = GTK_OBJECT_CLASS (self_class);
   GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (self_class);
 
   c_hildon_window_parent_class = g_type_class_peek_parent (self_class);
@@ -359,6 +368,8 @@ c_hildon_window_class_init (CHildonWindowClass* self_class)
   object_class->finalize     = window_finalize;
   object_class->get_property = window_get_property;
   object_class->set_property = window_set_property;
+
+  gtk_object_class->destroy  = window_destroy;
 
   widget_class->window_state_event = window_state_event;
 
