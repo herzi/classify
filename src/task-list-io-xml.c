@@ -78,7 +78,7 @@ sax_characters_cb (gpointer       ctx,
 
 	if (pdata->stack) {
 		g_string_append_len (((struct StackLevel*)pdata->stack->data)->string,
-				     text,
+				     (gchar*)text,
 				     length);
 	}
 }
@@ -103,9 +103,9 @@ sax_start_element_cb (gpointer       ctx,
 		return;
 	}
 
-	if (!strcmp (localname, "tasks")) {
+	if (!strcmp ((gchar*)localname, "tasks")) {
 		// toplevel tasks item
-	} else if (!strcmp (localname, "task")) {
+	} else if (!strcmp ((gchar*)localname, "task")) {
 		// task item
 		GtkTreeIter  iter;
 		GtkTreeIter  parent;
@@ -120,8 +120,8 @@ sax_start_element_cb (gpointer       ctx,
 		}
 
 		for (i = 0; i < n_attributes; i++) {
-			if (!strcmp (attributes[5*i], "uuid") && !uuid) {
-				uuid = g_strndup (attributes[5*i+3], attributes[5*i+4] - attributes[5*i+3]);
+			if (!strcmp ((gchar*)attributes[5*i], "uuid") && !uuid) {
+				uuid = g_strndup ((gchar*)attributes[5*i+3], attributes[5*i+4] - attributes[5*i+3]);
 			}
 		}
 		data = c_task_new_with_uuid (uuid);
@@ -161,7 +161,7 @@ sax_end_element_cb (gpointer       ctx,
 		return;
 	}
 
-	if (!strcmp (localname, "task")) {
+	if (!strcmp ((gchar*)localname, "task")) {
 		c_task_set_text    (((struct StackLevel*)pdata->stack->data)->data,
 				    ((struct StackLevel*)pdata->stack->data)->string->str);
 	}
