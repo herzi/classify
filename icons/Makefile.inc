@@ -15,6 +15,14 @@ icon32dir=$(datadir)/icons/hicolor/32x32/apps
 icon48_DATA=icons/48x48/classify.png
 icon48dir=$(datadir)/icons/hicolor/48x48/apps
 
+EXTRA_DIST+=\
+	$(icon16_DATA) \
+	$(icon22_DATA) \
+	$(icon24_DATA) \
+	$(icon32_DATA) \
+	$(icon48_DATA) \
+	$(NULL)
+
 # install-data-hook is run after all install rules
 install-data-hook:
 	@if test -z "$(DESTDIR)"; then \

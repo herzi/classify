@@ -6,6 +6,8 @@ if WITH_GIO
 noinst_PROGRAMS=debugify
 endif
 
+EXTRA_DIST=
+
 include icons/Makefile.inc
 
 BUILT_SOURCES=\
@@ -23,7 +25,7 @@ classify_SOURCES=\
 	src/user-interface-factory.c \
 	src/user-interface-factory.h \
 	$(NULL)
-classify_LDADD=$(libclassify_ui_LIBADD) libclassifyui.la
+classify_LDADD=$(libclassifyui_la_LIBADD) libclassifyui.la
 LDADD=\
 	$(libclassify_la_LIBADD) \
 	libclassify.la \
@@ -121,7 +123,7 @@ CLEANFILES=\
 	$(applications_DATA) \
 	$(NULL)
 
-EXTRA_DIST=\
+EXTRA_DIST+=\
 	$(applications_in_files) \
 	$(marshaller) \
 	$(osso_backup_DATA) \
