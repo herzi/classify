@@ -1,3 +1,11 @@
+classify (0.0.1-7) diablo; urgency=low
+
+  * updated the packaging
+  * debian/control: don't depend that strongly on the hildon framework
+  * debian/rules: properly provide documentation
+
+ -- Sven Herzberg <herzi@gnome-de.org>  Sat, 14 Feb 2009 11:20:38 +0100
+
 classify (0.0.1-6) diablo; urgency=low
 
   * debian/classify.install: install only the .so files of the modules

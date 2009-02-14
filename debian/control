@@ -2,12 +2,13 @@ Source: classify
 Section: user/utilities
 Priority: extra
 Maintainer: Sven Herzberg <herzi@gnome-de.org>
-Build-Depends: cdbs, debhelper (>= 5), autotools-dev, docbook-xsl, gnome-common, libgtk2.0-dev, libhildon1-dev, libxml2-dev, uuid-dev, xsltproc
+Build-Depends: cdbs, debhelper (>= 5), autotools-dev, docbook-xsl, gnome-common, libgtk2.0-dev, libhildon1-dev | libhildon-1-dev, libxml2-dev, uuid-dev, xsltproc
 Standards-Version: 3.7.3
 
 Package: classify
 Architecture: any
-Depends: hildon-application-manager, ${shlibs:Depends}, libclassify0 (= ${binary:Version})
+Depends: ${shlibs:Depends}, libclassify0 (= ${binary:Version})
+Recommends: hildon-application-manager
 Description: todo list application
  Classify is a simple todo list tool that allows users to manage their lists
  on multiple computers.
