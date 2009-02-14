@@ -93,7 +93,7 @@ editing_started_cb (GtkCellRenderer* renderer,
 {
   if (GTK_IS_ENTRY (editable))
     {
-#ifdef HAVE_HILDON
+#ifdef HAVE_MAEMO_GTK
       /* FIXME: eeek! this should not be hildon-agnostic */
       hildon_gtk_im_context_show (GTK_ENTRY (editable)->im_context);
 #endif

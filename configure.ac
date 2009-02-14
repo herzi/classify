@@ -64,6 +64,10 @@ gnome)
 esac
 AC_MSG_RESULT([$extra_pkgs])
 
+if test -n "${extra_pkgs}"; then
+        AC_CHECK_LIB(gtk-2.0,hildon_im_context_show,[AC_DEFINE_UNQUOTED(HAVE_MAEMO_GTK,,[whether we have maemo-gtk+])])
+fi
+
 PKG_CHECK_EXISTS([gio-2.0],
 		 [extra_pkgs="${extra_pkgs} gio-2.0"],
 		 [])
