@@ -90,6 +90,8 @@ main (int   argc,
       g_log_set_default_handler (my_log_func, old_handler);
     }
 
+  gtk_window_set_default_icon_name ("classify");
+
   user_interface = c_user_interface_factory_get_ui ();
   if (!user_interface || !g_type_module_use (G_TYPE_MODULE (user_interface)))
     {

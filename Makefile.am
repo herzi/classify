@@ -6,6 +6,8 @@ if WITH_GIO
 noinst_PROGRAMS=debugify
 endif
 
+include icons/Makefile.inc
+
 BUILT_SOURCES=\
 	marshal.c \
 	marshal.h \

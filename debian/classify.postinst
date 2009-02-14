@@ -20,8 +20,14 @@ set -e
 
 case "$1" in
     configure)
-        if test -z "$2"; then
+        if test -z "$2" && which maemo-select-menu-location >/dev/null 2>&1; then
             maemo-select-menu-location classify.desktop tana_fi_utilities
+        fi
+
+        if which update-icon-caches >/dev/null 2>&1 ; then
+            update-icon-caches "/usr/share/icons/hicolor"
+        else
+            gtk-update-icon-cache -f "/usr/share/icons/hicolor"
         fi
     ;;
 
