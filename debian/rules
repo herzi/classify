@@ -1,5 +1,15 @@
 #!/usr/bin/make -f
 
+## sed 's@\([[:alpha:]]*\) (\(.*\)-\(.*\)) \([[:alpha:]]*\); urgency=\(.*\)@\1 (\2-\3) \4; urgency=\5@'
+
+# FIXME: create XB-Maemo-Upgrade-Description with content of NEWS or debian/changelog
+debian/control:: debian/control.noicon debian/rules icons/26x26/hildon/classify.png
+	cat debian/control.noicon > debian/control
+	echo "XB-Maemo-Icon-26:" >> debian/control
+	uuencode -m icons/26x26/hildon/classify.png /dev/stdout | \
+		/bin/grep -v '^begin-base64 644 /dev/stdout$$' | \
+		awk '{print " " $$1 }' >> debian/control
+
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 
@@ -11,10 +21,9 @@ DEB_INSTALL_DOCS_classify := -Xdebian/copyright
 DEB_INSTALL_MANPAGES_classify := debian/classify.1
 
 # Add here any variable or target overrides you need.
-clean:: configure
-	test -f Makefile && make distclean || true
+clean:: configure debian/control
 
-configure:
+configure: configure.ac debian/rules
 	NOCONFIGURE=1 ./autogen.sh
 
 install/classify:: debian/classify.1

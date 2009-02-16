@@ -1,7 +1,8 @@
-tmp
 classify.1
+control
+*.debhelper
+files
+libclassify0
 stamp-*
 *.substvars
-files
-*.debhelper
-libclassify0
+tmp

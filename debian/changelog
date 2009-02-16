@@ -1,3 +1,12 @@
+classify (0.0.1-8) diablo; urgency=low
+
+  * debian/control -> debian/control.noicon: moved the file and rearragned it
+    a bit
+  * debian/rules: added a rule to create debian/control (and add the Maemo
+    icon as well as the Maemo package name to the classify package)
+
+ -- Sven Herzberg <herzi@gnome-de.org>  Mon, 16 Feb 2009 21:15:38 +0100
+
 classify (0.0.1-7) diablo; urgency=low
 
   * updated the packaging
