@@ -275,12 +275,13 @@ static void
 hildon_window_pack_content (CMainWindow* window,
                             GtkWidget  * content)
 {
-  hildon_window_add_with_scrollbar (HILDON_WINDOW (window), content);
+  GtkWidget* scrolled = gtk_scrolled_window_new (NULL, NULL);
+  gtk_container_add (GTK_CONTAINER (window), scrolled);
+  gtk_container_add (GTK_CONTAINER (scrolled), content);
 
   PRIV (window)->content = content;
 
-  /* FIXME: debug, bug-report, fix and workaround */
-  gtk_widget_show_all (GTK_WIDGET (window));
+  gtk_widget_show (GTK_WIDGET (scrolled));
 }
 
 static void
