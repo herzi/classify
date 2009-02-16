@@ -33,7 +33,10 @@
 #include <glib/gi18n-lib.h>
 
 struct _CTaskWidgetPrivate {
-  CTaskList* list;
+  CTaskList  * list;
+
+  guint        is_editing : 1;
+  GtkTreeIter  edit_iter;
 };
 
 #define PRIV(i) (((CTaskWidget*)(i))->_private)
@@ -91,6 +94,8 @@ editing_started_cb (GtkCellRenderer* renderer,
 		    gchar const    * path,
 		    gpointer         user_data)
 {
+  GtkTreePath* real_path;
+
   if (GTK_IS_ENTRY (editable))
     {
 #ifdef HAVE_MAEMO_GTK
@@ -100,6 +105,17 @@ editing_started_cb (GtkCellRenderer* renderer,
       g_signal_connect (editable, "key-press-event",
                         G_CALLBACK (entry_key_press_event), NULL);
     }
+
+  real_path = gtk_tree_path_new_from_string (path);
+  if (!gtk_tree_model_get_iter (gtk_tree_view_get_model (user_data), &PRIV (user_data)->edit_iter, real_path))
+    {
+      g_warning ("it's unbelievable...");
+    }
+  else
+    {
+      PRIV (user_data)->is_editing = TRUE;
+    }
+  gtk_tree_path_free (real_path);
 }
 
 static void
@@ -113,6 +129,8 @@ edited_cb (GtkCellRendererText* renderer,
 	gtk_tree_model_get_iter (gtk_tree_view_get_model (tree), &iter, _path);
 	c_task_list_set_text (C_TASK_LIST (gtk_tree_view_get_model (tree)), &iter, new_text);
 	gtk_tree_path_free (_path);
+
+  PRIV (tree)->is_editing = FALSE;
 }
 
 static void
@@ -149,7 +167,7 @@ c_task_widget_init (CTaskWidget* self)
 			  "wrap-mode", PANGO_WRAP_WORD_CHAR,
 			  NULL);
 	g_signal_connect (renderer, "editing-started",
-			  G_CALLBACK (editing_started_cb), NULL);
+			  G_CALLBACK (editing_started_cb), self);
 	g_signal_connect (renderer, "edited",
 			  G_CALLBACK (edited_cb), self);
 	gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (self),
@@ -270,6 +288,18 @@ task_widget_size_allocate (GtkWidget    * widget,
 	}
 
 	g_list_free (renderers);
+
+  if (PRIV (widget)->is_editing)
+    {
+      GtkTreeView* treeview = GTK_TREE_VIEW (widget);
+      GtkTreePath* path = gtk_tree_model_get_path (gtk_tree_view_get_model (treeview), &PRIV (widget)->edit_iter);
+      gtk_tree_view_scroll_to_cell (treeview,
+                                    path,
+                                    gtk_tree_view_get_column (treeview, 0),
+                                    FALSE,
+                                    0.0, 0.0);
+      gtk_tree_path_free (path);
+    }
 }
 
 static gboolean
