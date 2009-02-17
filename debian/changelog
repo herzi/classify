@@ -1,3 +1,9 @@
+classify (0.0.1-9) diablo; urgency=low
+
+  * updated to the new code
+
+ -- Sven Herzberg <herzi@gnome-de.org>  Mon, 16 Feb 2009 21:45:55 +0100
+
 classify (0.0.1-8) diablo; urgency=low
 
   * debian/control -> debian/control.noicon: moved the file and rearragned it
