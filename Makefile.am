@@ -96,6 +96,7 @@ modtest_SOURCES=\
 	tests/modtest.c \
 	$(NULL)
 modtest_CPPFLAGS=$(AM_CPPFLAGS) -I$(top_srcdir)/src
+modtest_LDADD=libclassifyui.la $(libclassifyui_la_LIBADD)
 
 applications_in_files=classify.desktop.in
 applications_DATA=$(applications_in_files:.desktop.in=.desktop)

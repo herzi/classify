@@ -31,6 +31,7 @@
 #define g_test_init(argc,argv,...) g_log_set_always_fatal(G_LOG_LEVEL_WARNING|G_LOG_LEVEL_CRITICAL)
 #define gtk_test_init(argc,argv,...) g_test_init (argc,argv, NULL); gtk_init(argc, argv)
 #endif
+#include "main-window.h"
 #include "user-interface.h"
 
 int
@@ -46,8 +47,9 @@ main (int   argc,
       return 1;
     }
 
-  g_test_init (&argc, &argv, NULL);
-  g_type_init ();
+  gtk_test_init (&argc, &argv, NULL);
+
+  C_TYPE_MAIN_WINDOW;
 
   filename = g_strdup_printf (".libs" G_DIR_SEPARATOR_S "%s", argv[1]);
   filename[strlen(filename)-2] = 's';
