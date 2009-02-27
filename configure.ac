@@ -76,6 +76,9 @@ AM_CONDITIONAL(WITH_GIO,[echo "${extra_pkgs}" | grep -q "gio-2.0"])
 AM_PATH_GLIB_2_0
 PKG_CHECK_MODULES(CLASSIFY,[gmodule-2.0 gtk+-2.0 libxml-2.0 uuid $extra_pkgs])
 
+AC_CHECK_LIB([glib-2.0],[g_test_init],
+             [AC_DEFINE_UNQUOTED(HAVE_G_TEST,,[whether we have the glib testing framework])])
+
 dnl  ----------------
 dnl | compiler flags |--------------------------------------------------------
 dnl  ----------------
