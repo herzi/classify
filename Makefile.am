@@ -1,4 +1,5 @@
 bin_PROGRAMS=classify
+check_PROGRAMS=modtest
 lib_LTLIBRARIES=libclassify.la libclassifyui.la
 mod_LTLIBRARIES=defaultui.la
 moddir=$(libdir)/classify-@MILESTONE@
@@ -91,6 +92,10 @@ libclassifyui_la_SOURCES=\
 	$(NULL)
 libclassifyui_la_LIBADD=$(LDADD)
 
+modtest_SOURCES=\
+	tests/modtest.c \
+	$(NULL)
+
 applications_in_files=classify.desktop.in
 applications_DATA=$(applications_in_files:.desktop.in=.desktop)
 if WITH_MAEMO
@@ -129,4 +134,10 @@ EXTRA_DIST+=\
 	$(osso_backup_DATA) \
 	run-classify.sh \
 	$(NULL)
+
+check-local: $(addsuffix -modtest,$(mod_LTLIBRARIES))
+
+%-modtest: % modtest
+	@echo "[TEST] modtest $<"
+	@$(TESTS_ENVIRONMENT) ./modtest $<
 
