@@ -34,6 +34,14 @@
 #include "main-window.h"
 #include "user-interface.h"
 
+static gboolean
+failsave_quit (gpointer unused)
+{
+  g_warning ("destroying the last window should stop the main loop");
+  gtk_main_quit ();
+  return FALSE;
+}
+
 static void
 test_create_window (CUserInterface* ui)
 {
@@ -46,6 +54,7 @@ test_create_window (CUserInterface* ui)
   g_assert (GTK_IS_WIDGET (widget));
 
   g_timeout_add (30, (GSourceFunc)gtk_widget_destroy, widget);
+  g_timeout_add (300, failsave_quit, NULL);
   gtk_main ();
 
   g_type_module_unuse (G_TYPE_MODULE (ui));
