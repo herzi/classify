@@ -127,6 +127,7 @@ marshal.c: $(marshaller) Makefile
 
 CLEANFILES=\
 	$(applications_DATA) \
+	$(BUILT_SOURCES) \
 	$(NULL)
 
 EXTRA_DIST+=\
