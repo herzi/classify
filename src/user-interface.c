@@ -157,8 +157,9 @@ ui_load (GTypeModule* module)
 
   if (!PRIV (module)->module)
     {
-      g_warning ("error loading module from \"%s\"",
-                 PRIV (module)->module_path);
+      g_warning ("error loading module from \"%s\": %s",
+                 PRIV (module)->module_path,
+                 g_module_error ());
       return FALSE;
     }
 
@@ -222,6 +223,7 @@ c_user_interface_new (gchar const* path)
                        NULL);
 }
 
+/* FIXME: rename to create_window() */
 GtkWidget*
 c_user_interface_get_main_window (CUserInterface* self)
 {
