@@ -166,15 +166,16 @@ ui_load (GTypeModule* module)
   if (!g_module_symbol (PRIV (module)->module, "c_ui_module_register_types", &tfunc) || !tfunc)
     {
       g_warning ("%s: c_ui_module_register_types() undefined", g_module_name (PRIV (module)->module));
+      return FALSE;
     }
   else
     {
       GType (*register_type) (GTypeModule* module) = tfunc;
 
       register_type (module);
-    }
 
-  return PRIV (module)->module != NULL;
+      return TRUE;
+    }
 }
 
 static void
