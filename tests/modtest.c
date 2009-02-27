@@ -46,6 +46,7 @@ static void
 test_create_window (CUserInterface* ui)
 {
   GtkWidget* widget;
+  GtkUIManager* ui_manager = NULL;
 
   g_type_module_use (G_TYPE_MODULE (ui));
 
@@ -53,6 +54,14 @@ test_create_window (CUserInterface* ui)
 
   g_assert (GTK_IS_WIDGET (widget));
   g_assert (C_IS_MAIN_WINDOW (widget));
+
+  g_object_get (widget, "ui-manager", &ui_manager, NULL);
+  if (!GTK_IS_UI_MANAGER (ui_manager))
+    {
+      g_warning ("%s doesn't call c_main_window_initialize() to set the GtkUIManager property \"ui-manager\"",
+                 G_OBJECT_TYPE_NAME (widget));
+    }
+  g_object_unref (ui_manager);
 
   g_timeout_add (30, (GSourceFunc)gtk_widget_destroy, widget);
   g_timeout_add (300, failsave_quit, NULL);
