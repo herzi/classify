@@ -21,8 +21,6 @@ classify_SOURCES=\
 	src/main.c \
 	src/parser.c \
 	src/parser.h \
-	src/user-interface.c \
-	src/user-interface.h \
 	src/user-interface-factory.c \
 	src/user-interface-factory.h \
 	$(NULL)
@@ -80,6 +78,8 @@ libclassify_la_SOURCES=\
 	src/task-list-io-text.h \
 	src/task-list-io-xml.c \
 	src/task-list-io-xml.h \
+	src/user-interface.c \
+	src/user-interface.h \
 	src/uuid.c \
 	src/uuid.h \
 	$(NULL)
