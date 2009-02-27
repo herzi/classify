@@ -52,6 +52,7 @@ test_create_window (CUserInterface* ui)
   widget = c_user_interface_get_main_window (ui);
 
   g_assert (GTK_IS_WIDGET (widget));
+  g_assert (C_IS_MAIN_WINDOW (widget));
 
   g_timeout_add (30, (GSourceFunc)gtk_widget_destroy, widget);
   g_timeout_add (300, failsave_quit, NULL);
