@@ -94,7 +94,7 @@ ui_constructed (GObject* object)
 
   if (!ui_lookup_create (self, func_ptr))
     {
-      g_info ("%s: c_user_interface_module_create_window() undefined", g_module_name (PRIV (self)->module));
+      g_warning ("%s: c_user_interface_module_create_window() undefined", g_module_name (PRIV (self)->module));
       goto cleanup;
     }
 
@@ -164,7 +164,7 @@ ui_load (GTypeModule* module)
 
   if (!g_module_symbol (PRIV (module)->module, "c_ui_module_register_types", &tfunc) || !tfunc)
     {
-      g_info ("%s: c_window_register_types() undefined", g_module_name (PRIV (module)->module));
+      g_warning ("%s: c_ui_module_register_types() undefined", g_module_name (PRIV (module)->module));
     }
   else
     {
