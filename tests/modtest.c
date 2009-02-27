@@ -34,6 +34,23 @@
 #include "main-window.h"
 #include "user-interface.h"
 
+static void
+test_create_window (CUserInterface* ui)
+{
+  GtkWidget* widget;
+
+  g_type_module_use (G_TYPE_MODULE (ui));
+
+  widget = c_user_interface_get_main_window (ui);
+
+  g_assert (GTK_IS_WIDGET (widget));
+
+  g_timeout_add (30, (GSourceFunc)gtk_widget_destroy, widget);
+  gtk_main ();
+
+  g_type_module_unuse (G_TYPE_MODULE (ui));
+}
+
 int
 main (int   argc,
       char**argv)
@@ -56,6 +73,8 @@ main (int   argc,
   filename[strlen(filename)-1] = 'o';
   ui = c_user_interface_new (filename);
   g_free (filename);
+
+  test_create_window (ui);
 
   return 0;
 }

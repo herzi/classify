@@ -83,6 +83,7 @@ libclassify_la_SOURCES=\
 	src/uuid.c \
 	src/uuid.h \
 	$(NULL)
+libclassify_la_CPPFLAGS=$(AM_CPPFLAGS) -DG_LOG_DOMAIN=\"libclassify\"
 libclassify_la_LIBADD=$(CLASSIFY_LIBS)
 libclassifyui_la_SOURCES=\
 	src/main-window.c \
