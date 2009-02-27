@@ -53,8 +53,11 @@ failsave_quit (gpointer unused)
 static void
 test_create_window (CUserInterface* ui)
 {
-  GtkWidget* widget;
+  GtkWidget   * content;
+  GtkMenuShell* menus;
+  GtkToolbar  * toolbar;
   GtkUIManager* ui_manager = NULL;
+  GtkWidget   * widget;
 
   g_type_module_use (G_TYPE_MODULE (ui));
 
@@ -70,6 +73,15 @@ test_create_window (CUserInterface* ui)
                  G_OBJECT_TYPE_NAME (widget));
     }
   g_object_unref (ui_manager);
+
+  content = c_main_window_get_content (C_MAIN_WINDOW (widget));
+  g_assert (content);
+
+  menus   = c_main_window_get_menus   (C_MAIN_WINDOW (widget));
+  g_assert (menus);
+
+  toolbar = c_main_window_get_toolbar (C_MAIN_WINDOW (widget));
+  g_assert (toolbar);
 
   g_timeout_add (30, (GSourceFunc)gtk_widget_destroy, widget);
   g_timeout_add (300, failsave_quit, NULL);
