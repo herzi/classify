@@ -23,10 +23,38 @@
  * if advised of the possibility of such damage.
  */
 
+#include <string.h>
+#include <gtk/gtk.h>
+#if defined(HAVE_G_TEST) && ! GTK_CHECK_VERSION (2,14,0)
+#include <gtk/gtktestutils.h>
+#else
+#define g_test_init(argc,argv,...) g_log_set_always_fatal(G_LOG_LEVEL_WARNING|G_LOG_LEVEL_CRITICAL)
+#define gtk_test_init(argc,argv,...) g_test_init (argc,argv, NULL); gtk_init(argc, argv)
+#endif
+#include "user-interface.h"
+
 int
 main (int   argc,
       char**argv)
 {
+  CUserInterface* ui;
+  gchar         * filename;
+
+  if (argc != 2)
+    {
+      g_warning ("Usage:\n\t%s module.la", argv[0]);
+      return 1;
+    }
+
+  g_test_init (&argc, &argv, NULL);
+  g_type_init ();
+
+  filename = g_strdup_printf (".libs" G_DIR_SEPARATOR_S "%s", argv[1]);
+  filename[strlen(filename)-2] = 's';
+  filename[strlen(filename)-1] = 'o';
+  ui = c_user_interface_new (filename);
+  g_free (filename);
+
   return 0;
 }
 
