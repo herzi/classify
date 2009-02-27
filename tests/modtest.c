@@ -25,14 +25,22 @@
 
 #include <string.h>
 #include <gtk/gtk.h>
-#if defined(HAVE_G_TEST) && ! GTK_CHECK_VERSION (2,14,0)
-#include <gtk/gtktestutils.h>
-#else
-#define g_test_init(argc,argv,...) g_log_set_always_fatal(G_LOG_LEVEL_WARNING|G_LOG_LEVEL_CRITICAL)
-#define gtk_test_init(argc,argv,...) g_test_init (argc,argv, NULL); gtk_init(argc, argv)
-#endif
+
 #include "main-window.h"
 #include "user-interface.h"
+
+#if defined(HAVE_G_TEST) && ! GTK_CHECK_VERSION (2,14,0)
+#include <gtk/gtktestutils.h>
+#elif ! defined(HAVE_G_TEST)
+#define g_test_init(argc,argv,...)          g_log_set_always_fatal(G_LOG_LEVEL_WARNING|G_LOG_LEVEL_CRITICAL)
+#define gtk_test_init(argc,argv,...)        g_test_init (argc,argv, NULL); gtk_init(argc, argv)
+#define g_test_add_data_func(path,arg,func) G_STMT_START { void (*exec) (gpointer) = func; \
+                                                           g_print ("%s: ", path)  ;\
+                                                           exec(arg); \
+                                                           g_print ("OK\n"); \
+                                            } G_STMT_END
+#define g_test_run()                        0
+#endif
 
 static gboolean
 failsave_quit (gpointer unused)
@@ -93,8 +101,8 @@ main (int   argc,
   ui = c_user_interface_new (filename);
   g_free (filename);
 
-  test_create_window (ui);
+  g_test_add_data_func ("/classify/module/create-window", ui, (gpointer)test_create_window);
 
-  return 0;
+  return g_test_run ();
 }
 
