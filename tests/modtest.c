@@ -72,6 +72,12 @@ test_create_window (CUserInterface* ui)
       g_warning ("%s doesn't call c_main_window_initialize() to set the GtkUIManager property \"ui-manager\"",
                  G_OBJECT_TYPE_NAME (widget));
     }
+
+  if (!gtk_ui_manager_get_widget (ui_manager, "/ui/menus"))
+    {
+      g_warning ("%s doesn't set up a menu shell at \"/ui/menus\"",
+                 G_OBJECT_TYPE_NAME (widget));
+    }
   g_object_unref (ui_manager);
 
   content = c_main_window_get_content (C_MAIN_WINDOW (widget));
