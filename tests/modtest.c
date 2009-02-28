@@ -96,6 +96,12 @@ test_create_window (CUserInterface* ui)
   g_type_module_unuse (G_TYPE_MODULE (ui));
 }
 
+static void
+test_test (CUserInterface* ui)
+{
+  c_user_interface_test (ui);
+}
+
 int
 main (int   argc,
       char**argv)
@@ -120,6 +126,7 @@ main (int   argc,
   g_free (filename);
 
   g_test_add_data_func ("/classify/module/create-window", ui, (gpointer)test_create_window);
+  g_test_add_data_func ("/classify/module/test", ui, (gpointer)test_test);
 
   return g_test_run ();
 }
