@@ -203,12 +203,22 @@ c_task_list_new (void)
 CTaskList*
 c_task_list_new_default (void)
 {
-        CTaskList* self;
-        GError   * error = NULL;
-	gchar* path = g_build_filename (g_get_home_dir (),
-				 ".local",
-				 "share",
-				 "classify",
+        CTaskList  * self;
+        GError     * error = NULL;
+        gchar const* prefix;
+        gchar      * path;
+
+        if (g_getenv ("CLASSIFY_PATH"))
+          {
+            prefix = g_getenv ("CLASSIFY_PATH");
+          }
+        else
+          {
+            prefix = g_get_user_data_dir ();
+          }
+
+        path = g_build_filename (prefix,
+                                 "classify",
                                  NULL);
 
         self = c_task_list_new_from_file (path, &error);
@@ -253,13 +263,20 @@ c_task_list_new_from_file (gchar const* path,
 		}
 	}
 
-        /* don't request save after loading a file */
         if (G_UNLIKELY (i == G_N_ELEMENTS (loaders)))
           {
             /* FIXME: populate with some instructions… */
           }
+
+	/* Special-case the text loader, there have been public revisions that
+	 * leave a text file there */
+	if (c_task_list_io_test (C_TYPE_TASK_LIST_IO_TEXT, path)) {
+		c_task_list_io_remove (C_TYPE_TASK_LIST_IO_TEXT, path);
+	}
+
         if (PRIV (self)->save_timeout)
           {
+            /* don't request save after loading a file with content */
             g_source_remove (self->_private->save_timeout);
             self->_private->save_timeout = 0;
           }
@@ -415,3 +432,4 @@ implement_tree_model (GtkTreeModelIface* iface)
 	iface->rows_reordered        = task_list_rows_reordered;
 }
 
+/* vim:set et sw=2 cino=t0,f0,(0,{s,>2s,n-1s,^-1s,e2s: */
