@@ -263,9 +263,14 @@ c_task_list_new_from_file (gchar const* path,
 		}
 	}
 
-        if (G_UNLIKELY (i == G_N_ELEMENTS (loaders)))
+        if (i == G_N_ELEMENTS (loaders))
           {
-            /* FIXME: populate with some instructions… */
+            /* no file found; create some default content */
+            GtkTreeIter  iter;
+            c_task_list_append (self, &iter, NULL, _("Double-Click or Press F2 to change this into a task"));
+            c_task_list_append (self, &iter, &iter, _("Press Ctrl-N to add a new task after the current one"));
+            c_task_list_append (self, &iter, &iter, _("Press Ctrl-V to paste something from the clipboard"));
+            c_task_list_append (self, &iter, &iter, _("Start typing in this list and you can quickly search for items"));
           }
 
 	/* Special-case the text loader, there have been public revisions that
