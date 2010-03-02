@@ -1,3 +1,8 @@
+noinst_PROGRAMS=
+TESTS=
+
+include test/Makefile.inc
+
 bin_PROGRAMS=classify
 check_PROGRAMS=modtest
 lib_LTLIBRARIES=libclassify.la libclassifyui.la
